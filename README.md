@@ -35,6 +35,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
 .header-sub{font-size:11px;color:var(--muted)}
 .btn-icon{background:rgba(201,168,76,.15);border:1px solid var(--border);color:var(--gold);padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;margin-left:8px}
 .btn-logout{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+.btn-danger{background:rgba(231,76,60,.2);border:1px solid var(--red);color:var(--red);}
 .lang-bar{display:flex;gap:8px;padding:14px 20px 0;overflow-x:auto;scrollbar-width:none}
 .lang-bar::-webkit-scrollbar{display:none}
 .lang-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s}
@@ -73,23 +74,27 @@ input:focus,select:focus{border-color:var(--gold)}
 .metric-value.neg{color:var(--red)}
 .metric-value.pos{color:var(--green)}
 .customer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.customer-card.has-debt{border-color:rgba(231,76,60,.6);border-width:2px}
 .cust-name{font-size:16px;font-weight:700;margin-bottom:4px}
 .cust-info{font-size:12px;color:var(--muted);direction:ltr;margin-bottom:10px}
 .cust-balances{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .bal-badge{border-radius:20px;padding:4px 10px;font-size:12px;direction:ltr}
 .bal-badge.pos{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:var(--green)}
 .bal-badge.neg{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:var(--red)}
-.tx-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.tx-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;position:relative}
 .tx-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.tx-icon.plus{background:rgba(46,204,113,.15)}
-.tx-icon.minus{background:rgba(231,76,60,.15)}
+.tx-icon.deposit{background:rgba(46,204,113,.15)}
+.tx-icon.withdraw{background:rgba(231,76,60,.15)}
 .tx-details{flex:1;min-width:0}
 .tx-name{font-size:14px;font-weight:600}
 .tx-note{font-size:12px;color:var(--muted)}
 .tx-date{font-size:10px;color:var(--muted);direction:ltr;margin-top:2px}
 .tx-amount{text-align:left;direction:ltr;font-weight:700;font-size:15px;flex-shrink:0}
-.tx-amount.plus{color:var(--green)}
-.tx-amount.minus{color:var(--red)}
+.tx-amount.deposit{color:var(--green)}
+.tx-amount.withdraw{color:var(--red)}
+.tx-actions{display:flex;gap:5px;margin-top:5px}
+.btn-edit{background:rgba(52,152,219,.15);border:1px solid var(--blue);color:var(--blue);padding:4px 8px;border-radius:5px;font-size:11px;cursor:pointer}
+.btn-delete{background:rgba(231,76,60,.15);border:1px solid var(--red);color:var(--red);padding:4px 8px;border-radius:5px;font-size:11px;cursor:pointer}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;align-items:center;justify-content:center}
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:450px;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
@@ -125,6 +130,8 @@ input:focus,select:focus{border-color:var(--gold)}
 .admin-name{color:#000;font-size:20px;font-weight:800;margin-bottom:8px}
 .admin-phone{color:#000;font-size:28px;font-weight:900;margin-bottom:16px;direction:ltr}
 .admin-label{color:rgba(0,0,0,0.7);font-size:14px;margin-bottom:4px}
+.debt-summary{background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:12px;padding:16px;margin-bottom:16px}
+.debt-summary-title{color:var(--red);font-weight:700;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -223,6 +230,7 @@ input:focus,select:focus{border-color:var(--gold)}
     <button class="tab active" onclick="showTab('daily')" id="tab-daily">📊 اليومية</button>
     <button class="tab" onclick="showTab('customers')" id="tab-customers">👥 زبائن</button>
     <button class="tab" onclick="showTab('txs')" id="tab-txs">💸 حركات</button>
+    <button class="tab" onclick="showTab('debts')" id="tab-debts">🔴 ديون</button>
     <button class="tab" onclick="showTab('rates')" id="tab-rates">💱 أسعار</button>
     <button class="tab" onclick="showTab('new-customer')" id="tab-new">➕ جديد</button>
   </div>
@@ -322,6 +330,7 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
+  <!-- PANEL: الزبائن -->
   <div id="panel-customers" class="tab-panel">
     <div class="content">
       <div class="search-wrap" style="position:relative;margin-bottom:16px">
@@ -332,10 +341,24 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
+  <!-- PANEL: الحركات -->
   <div id="panel-txs" class="tab-panel">
-    <div class="content"><div id="all-txs-list"></div></div>
+    <div class="content">
+      <div class="section-title">💸 جميع الحركات</div>
+      <div id="all-txs-list"></div>
+    </div>
   </div>
 
+  <!-- PANEL: الديون -->
+  <div id="panel-debts" class="tab-panel">
+    <div class="content">
+      <div class="section-title" id="debts-title">🔴 الزبائن المدينون</div>
+      <div id="debts-summary-container"></div>
+      <div id="debts-list"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: الأسعار -->
   <div id="panel-rates" class="tab-panel">
     <div class="content">
       <div class="section-title" id="rates-title">💱 أسعار الصرف (IQD)</div>
@@ -345,6 +368,7 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
+  <!-- PANEL: زبون جديد -->
   <div id="panel-new-customer" class="tab-panel">
     <div class="content">
       <div class="section-title" id="new-cust-title">➕ تسجيل زبون جديد</div>
@@ -375,7 +399,7 @@ input:focus,select:focus{border-color:var(--gold)}
     <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
   </div>
   <div class="content">
-    <!-- بطاقة المدير (تظهر في الأعلى) -->
+    <!-- بطاقة المدير -->
     <div class="admin-contact-card">
       <div class="admin-label" id="admin-label">👑 المدير / الصاحب</div>
       <div class="admin-name" id="admin-name">برهان دكاني</div>
@@ -395,17 +419,71 @@ input:focus,select:focus{border-color:var(--gold)}
     
     <div class="section-title" id="my-balance-title">💰 رصيدي</div>
     <div class="metrics" id="cust-balances"></div>
+    
+    <!-- ديون الزبون (إذا موجودة) -->
+    <div id="cust-debt-banner"></div>
+    
+    <div class="section-title" id="my-history-title" style="margin-top:20px">📋 حركاتي</div>
+    <div id="cust-txs"></div>
+    
     <p style="color:var(--muted);text-align:center;margin-top:20px;font-size:13px" id="contact-admin-msg">للاستفسار أو تغيير كلمة السر، تواصل مع المدير</p>
   </div>
 </div>
 
-<!-- FORGOT PASSWORD MODAL (للزبون) -->
+<!-- TX MODAL (إيداع / سحب) -->
+<div class="modal-overlay" id="modal-tx">
+  <div class="modal">
+    <button class="modal-close" onclick="closeTxModal()">×</button>
+    <div class="modal-title" id="modal-tx-title">معاملة جديدة</div>
+    <div id="alert-tx" class="alert error"></div>
+    <label id="lbl-tx-type">نوع المعاملة</label>
+    <select id="tx-type" onchange="updatePreview()">
+      <option value="deposit" id="opt-deposit">⬆️ إيداع (الزبون أعطاني)</option>
+      <option value="withdraw" id="opt-withdraw">⬇️ سحب (أنا أعطيت الزبون)</option>
+    </select>
+    <label id="lbl-tx-amount">المبلغ</label>
+    <input type="text" id="tx-amount" placeholder="0" oninput="formatNumberInput(this);updatePreview()" dir="ltr">
+    <label id="lbl-tx-currency">العملة</label>
+    <select id="tx-currency" onchange="updatePreview()">
+      <option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option>
+      <option value="IQD" selected>IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option>
+    </select>
+    <label id="lbl-tx-note">ملاحظة</label>
+    <input type="text" id="tx-note" placeholder="اختياري" style="direction:rtl">
+    <div id="tx-preview" style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;display:none">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)" id="preview-label">بعد المعاملة:</span><span id="preview-value" style="font-weight:700;direction:ltr">0</span></div>
+    </div>
+    <button class="btn" onclick="confirmTx()" id="btn-confirm-tx">✅ تأكيد المعاملة</button>
+  </div>
+</div>
+
+<!-- EDIT TX MODAL (تعديل حركة) -->
+<div class="modal-overlay" id="modal-edit-tx">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditTxModal()">×</button>
+    <div class="modal-title" id="edit-tx-title">✏️ تعديل الحركة</div>
+    <div id="alert-edit-tx" class="alert error"></div>
+    <input type="hidden" id="edit-tx-id">
+    <label id="lbl-edit-amount">المبلغ</label>
+    <input type="text" id="edit-tx-amount" placeholder="0" oninput="formatNumberInput(this)" dir="ltr">
+    <label id="lbl-edit-currency">العملة</label>
+    <select id="edit-tx-currency">
+      <option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option>
+      <option value="IQD">IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option>
+    </select>
+    <label id="lbl-edit-note">ملاحظة</label>
+    <input type="text" id="edit-tx-note" placeholder="اختياري" style="direction:rtl">
+    <button class="btn" onclick="saveEditedTx()" id="btn-save-edit">💾 حفظ التعديلات</button>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
 <div class="modal-overlay" id="modal-forgot-password">
   <div class="modal">
     <button class="modal-close" onclick="closeForgotPasswordModal()">×</button>
     <div class="modal-title" id="forgot-title">🔑 استرجاع كلمة السر</div>
     <div id="alert-forgot" class="alert info"></div>
-    <p style="margin-bottom:16px;color:var(--muted);text-align:center" id="forgot-msg">أدخل رقم هاتفك وسيتم إرسال طلب للمدير لإعادة تعيين كلمة السر</p>
+    <p style="margin-bottom:16px;color:var(--muted);text-align:center" id="forgot-msg">أدخل رقم هاتفك وسيتم إرسال طلب للمدير</p>
     <label id="forgot-phone-label">رقم الهاتف</label>
     <input type="tel" id="forgot-phone" placeholder="+964..." dir="ltr">
     <button class="btn" onclick="sendResetRequest()" id="send-request-btn">📧 إرسال الطلب</button>
@@ -422,7 +500,7 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- RESET CUSTOMER PASSWORD MODAL (للمدير) -->
+<!-- RESET CUSTOMER PASSWORD MODAL -->
 <div class="modal-overlay" id="modal-reset-cust-password">
   <div class="modal">
     <button class="modal-close" onclick="closeResetCustPasswordModal()">×</button>
@@ -466,7 +544,7 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
-// ==================== MULTI-LANGUAGE SYSTEM ====================
+// ==================== TRANSLATIONS ====================
 const translations = {
   ar: {
     splashTitle: 'صيرفة المستقبل', splashSub: 'Sayrafa Al-Mustaqbal',
@@ -481,217 +559,60 @@ const translations = {
     adminHeaderTitle: 'صيرفة المستقبل', adminPanelLabel: 'لوحة المدير',
     profileBtn: '👤 الملف', logoutBtn: '🚪 خروج',
     tabDaily: '📊 اليومية', tabCustomers: '👥 زبائن', tabTxs: '💸 حركات',
-    tabRates: '💱 أسعار', tabNew: '➕ جديد',
+    tabDebts: '🔴 ديون', tabRates: '💱 أسعار', tabNew: '➕ جديد',
     yesterdayBtn: '◀ أمس', todayBtn: '📅 اليوم', tomorrowBtn: 'غداً ▶',
     openingLabel: '🏦 الرصيد الافتتاحي', currentLabel: '💰 الرصيد الحالي',
     profitLabel: '📈 صافي الربح (IQD)',
     fundsTitle: '💼 موجودات الصيرفة', saveFundsBtn: '💾 حفظ',
-    iqdTitle: '💵 الدينار العراقي', amountLabel: 'المبلغ (IQD)',
-    valueLabel: 'القيمة:',
+    iqdTitle: '💵 الدينار العراقي', amountLabel: 'المبلغ (IQD)', valueLabel: 'القيمة:',
     usdTitle: '💵 الدولار الأمريكي', quantityLabel: 'الكمية (USD)',
     rateLabel: 'سعر الصرف', valueIqdLabel: 'القيمة (IQD):',
-    korkTitle: '💳 كارت كورك (دولار)',
-    korkQuantityLabel: 'الكمية (USD)', korkRateLabel: 'سعر الصرف',
-    korkValueLabel: 'القيمة (IQD):',
-    bankTitle: '🏦 فلوس بالبنوك', bankAmountLabel: 'المبلغ (IQD)',
-    bankValueLabel: 'القيمة:',
+    korkTitle: '💳 كارت كورك (دولار)', korkQuantityLabel: 'الكمية (USD)',
+    korkRateLabel: 'سعر الصرف', korkValueLabel: 'القيمة (IQD):',
+    bankTitle: '🏦 فلوس بالبنوك', bankAmountLabel: 'المبلغ (IQD)', bankValueLabel: 'القيمة:',
     totalFundsLabel: '📊 إجمالي الموجودات (IQD)',
     dailyTxsTitle: '📋 حركات اليوم',
+    debtsTitle: '🔴 الزبائن المدينون', noDebts: '✅ لا يوجد زبائن مدينون',
+    totalDebtLabel: 'إجمالي الديون المستحقة:', debtCountLabel: 'عدد المدينين:',
     ratesTitle: '💱 أسعار الصرف (IQD)', saveRatesBtn: '💾 حفظ الأسعار',
     newCustTitle: '➕ تسجيل زبون جديد',
     fnameLabel: 'الاسم', lnameLabel: 'اللقب', telLabel: 'رقم الهاتف',
-    idLabel: 'رقم الهوية', newpassLabel: 'كلمة السر',
-    registerBtn: '✅ تسجيل',
+    idLabel: 'رقم الهوية', newpassLabel: 'كلمة السر', registerBtn: '✅ تسجيل',
     custHeaderTitle: 'صيرفة المستقبل', custWelcomeLabel: 'مرحباً',
     custLogoutBtn: '🚪 خروج', myBalanceTitle: '💰 رصيدي',
+    myHistoryTitle: '📋 حركاتي',
     adminLabel: '👑 المدير / الصاحب', adminName: 'برهان دكاني',
     contactAdminMsg: 'للاستفسار أو تغيير كلمة السر، تواصل مع المدير',
+    modalTxTitle: '💸 معاملة جديدة', txType: 'نوع المعاملة',
+    deposit: '⬆️ إيداع (الزبون أعطاني)', withdraw: '⬇️ سحب (أنا أعطيت الزبون)',
+    amount: 'المبلغ', currency: 'العملة', note: 'ملاحظة',
+    confirmTx: '✅ تأكيد المعاملة', previewLabel: 'بعد المعاملة:',
+    editTxTitle: '✏️ تعديل الحركة', saveEdit: '💾 حفظ التعديلات',
     forgotTitle: '🔑 استرجاع كلمة السر',
-    forgotMsg: 'أدخل رقم هاتفك وسيتم إرسال طلب للمدير لإعادة تعيين كلمة السر',
+    forgotMsg: 'أدخل رقم هاتفك وسيتم إرسال طلب للمدير',
     forgotPhoneLabel: 'رقم الهاتف', sendRequestBtn: '📧 إرسال الطلب',
     orContact: 'أو تواصل مباشرة مع المدير:',
-    resetCustTitle: '🔑 إعادة تعيين كلمة سر الزبون',
-    resetCustLabel: 'الزبون:', lblNewCustPass: 'كلمة السر الجديدة',
-    lblConfirmCustPass: 'تأكيد كلمة السر', btnResetCustPass: '✅ تعيين كلمة السر الجديدة',
-    changePassBtn: '🔑 تغيير الرمز',
+    resetCustTitle: '🔑 إعادة تعيين كلمة سر الزبون', resetCustLabel: 'الزبون:',
+    lblNewCustPass: 'كلمة السر الجديدة', lblConfirmCustPass: 'تأكيد كلمة السر',
+    btnResetCustPass: '✅ تعيين كلمة السر الجديدة', changePassBtn: '🔑 تغيير الرمز',
+    deleteCustBtn: '🗑️ حذف', editBtn: '✏️ تعديل', deleteBtn: '🗑️ حذف',
     requestSent: '✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً',
     customerNotFound: '❌ رقم الهاتف غير مسجل',
     wrongPass: '❌ كلمة السر خاطئة!', notFound: '❌ الزبون غير موجود!',
-    noTxs: 'لا توجد حركات في هذا التاريخ', noCusts: 'لا يوجد زبائن',
+    noTxs: 'لا توجد حركات', noCusts: 'لا يوجد زبائن',
     saved: '✅ تم الحفظ', fillAll: '⚠️ أكمل جميع الحقول!',
     phoneExists: '⚠️ الهاتف مسجل مسبقاً!', registered: '✅ تم التسجيل!',
-    passMismatch: '❌ كلمة السر غير متطابقة',
-    passChanged: '✅ تم تغيير كلمة السر بنجاح'
-  },
-  ku: {
-    splashTitle: 'صرافة ئایندە', splashSub: 'Sayrafa Al-Mustaqbal',
-    welcomeTitle: 'صرافة ئایندە', welcomeSub: 'سیستەمی بەڕێوەبردنی دراو',
-    welcomeMsg: '👋 بەخێربێیت بۆ ئەپی صرافة',
-    installBtn: '📲 دامەزراندنی ئەپ', continueBtn: '➡️ بەردەوامبوون بۆ ئەپ',
-    loginTitle: 'صرافة ئایندە', loginSub: 'سیستەمی بەڕێوەبردنی دراو',
-    adminTab: '👑 بەڕێوەبەر', customerTab: '👤 کڕیار',
-    passwordLabel: 'تێپەڕەوشە', loginBtn: 'چوونەژوورەوە',
-    phoneLabel: 'ژمارەی تەلەفۆن', customerPasswordLabel: 'تێپەڕەوشە',
-    customerLoginBtn: 'چوونەژوورەوە', forgotPasswordBtn: '🔑 تێپەڕەوشەت بیرچووە؟',
-    adminHeaderTitle: 'صرافة ئایندە', adminPanelLabel: 'پانێلی بەڕێوەبەر',
-    profileBtn: '👤 پڕۆفایل', logoutBtn: '🚪 چوونەدەرەوە',
-    tabDaily: '📊 ڕۆژانە', tabCustomers: '👥 کڕیارەکان', tabTxs: '💸 جووڵەکان',
-    tabRates: '💱 نرخەکان', tabNew: '➕ نوێ',
-    yesterdayBtn: '◀ دوێنێ', todayBtn: '📅 ئەمڕۆ', tomorrowBtn: 'سبەینێ ▶',
-    openingLabel: '🏦 باڵانسی کردنەوە', currentLabel: '💰 باڵانسی ئێستا',
-    profitLabel: '📈 قازانج (IQD)',
-    fundsTitle: '💼 سامانی صرافة', saveFundsBtn: '💾 پاشەکەوت',
-    iqdTitle: '💵 دیناری عێراقی', amountLabel: 'بڕ (IQD)',
-    valueLabel: 'نرخ:',
-    usdTitle: '💵 دۆلاری ئەمریکی', quantityLabel: 'بڕ (USD)',
-    rateLabel: 'نرخی ئاڵوگۆڕ', valueIqdLabel: 'نرخ (IQD):',
-    korkTitle: '💳 کارتی کۆرک (دۆلار)',
-    korkQuantityLabel: 'بڕ (USD)', korkRateLabel: 'نرخی ئاڵوگۆڕ',
-    korkValueLabel: 'نرخ (IQD):',
-    bankTitle: '🏦 پارە لە بانکەکان', bankAmountLabel: 'بڕ (IQD)',
-    bankValueLabel: 'نرخ:',
-    totalFundsLabel: '📊 کۆی گشتی سامان (IQD)',
-    dailyTxsTitle: '📋 جووڵەکانی ئەمڕۆ',
-    ratesTitle: '💱 نرخی ئاڵوگۆڕ (IQD)', saveRatesBtn: '💾 پاشەکەوتکردنی نرخەکان',
-    newCustTitle: '➕ تۆمارکردنی کڕیاری نوێ',
-    fnameLabel: 'ناو', lnameLabel: 'باوکی ناو', telLabel: 'تەلەفۆن',
-    idLabel: 'ژمارەی نەتەوەیی', newpassLabel: 'تێپەڕەوشە',
-    registerBtn: '✅ تۆمارکردن',
-    custHeaderTitle: 'صرافة ئایندە', custWelcomeLabel: 'بەخێربێیت',
-    custLogoutBtn: '🚪 چوونەدەرەوە', myBalanceTitle: '💰 باڵانسەکەم',
-    adminLabel: '👑 بەڕێوەبەر / خاوەن', adminName: 'بورهان دکانی',
-    contactAdminMsg: 'بۆ پرسیار یان گۆڕینی تێپەڕەوشە، پەیوەندی بە بەڕێوەبەرەوە بکە',
-    forgotTitle: '🔑 گەڕاندنەوەی تێپەڕەوشە',
-    forgotMsg: 'ژمارەی تەلەفۆنت بنووسە، داواکاری بۆ بەڕێوەبەر دەنێردرێت',
-    forgotPhoneLabel: 'ژمارەی تەلەفۆن', sendRequestBtn: '📧 ناردنی داواکاری',
-    orContact: 'یان ڕاستەوخۆ پەیوەندی بە بەڕێوەبەرەوە بکە:',
-    resetCustTitle: '🔑 ڕێکخستنەوەی تێپەڕەوشەی کڕیار',
-    resetCustLabel: 'کڕیار:', lblNewCustPass: 'تێپەڕەوشەی نوێ',
-    lblConfirmCustPass: 'دووپاتکردنەوەی تێپەڕەوشە', btnResetCustPass: '✅ دانانی تێپەڕەوشە',
-    changePassBtn: '🔑 گۆڕینی تێپەڕەوشە',
-    requestSent: '✅ داواکاریەکەت نێردرا. بەڕێوەبەر پەیوەندیت پێوە دەکات',
-    customerNotFound: '❌ ژمارەی تەلەفۆن تۆمارنەکراوە',
-    wrongPass: '❌ تێپەڕەوشە هەڵەیە!', notFound: '❌ کڕیار نەدۆزرایەوە!',
-    noTxs: 'هیچ جووڵەیەک نییە', noCusts: 'هیچ کڕیارێک نییە',
-    saved: '✅ پاشەکەوت کرا', fillAll: '⚠️ هەموو خانەکان پڕبکەرەوە!',
-    phoneExists: '⚠️ تەلەفۆن پێشتر تۆمارکراوە!', registered: '✅ تۆمارکرا!',
-    passMismatch: '❌ تێپەڕەوشەکان یەک ناگرنەوە',
-    passChanged: '✅ تێپەڕەوشە بەسەرکەوتوویی گۆڕدرا'
-  },
-  tr: {
-    splashTitle: 'Sarraf El-Mustakbal', splashSub: 'Sarraf El-Mustakbal',
-    welcomeTitle: 'Sarraf El-Mustakbal', welcomeSub: 'Döviz Bürosu Yönetim Sistemi',
-    welcomeMsg: '👋 Sarraf uygulamasına hoş geldiniz',
-    installBtn: '📲 Uygulamayı Yükle', continueBtn: '➡️ Uygulamaya Devam Et',
-    loginTitle: 'Sarraf El-Mustakbal', loginSub: 'Döviz Bürosu Yönetim Sistemi',
-    adminTab: '👑 Admin', customerTab: '👤 Müşteri',
-    passwordLabel: 'Şifre', loginBtn: 'Giriş',
-    phoneLabel: 'Telefon', customerPasswordLabel: 'Şifre',
-    customerLoginBtn: 'Giriş', forgotPasswordBtn: '🔑 Şifremi Unuttum?',
-    adminHeaderTitle: 'Sarraf El-Mustakbal', adminPanelLabel: 'Admin Paneli',
-    profileBtn: '👤 Profil', logoutBtn: '🚪 Çıkış',
-    tabDaily: '📊 Günlük', tabCustomers: '👥 Müşteriler', tabTxs: '💸 İşlemler',
-    tabRates: '💱 Kurlar', tabNew: '➕ Yeni',
-    yesterdayBtn: '◀ Dün', todayBtn: '📅 Bugün', tomorrowBtn: 'Yarın ▶',
-    openingLabel: '🏦 Açılış Bakiyesi', currentLabel: '💰 Güncel Bakiye',
-    profitLabel: '📈 Net Kâr (IQD)',
-    fundsTitle: '💼 Sarraf Varlıkları', saveFundsBtn: '💾 Kaydet',
-    iqdTitle: '💵 Irak Dinarı', amountLabel: 'Miktar (IQD)',
-    valueLabel: 'Değer:',
-    usdTitle: '💵 ABD Doları', quantityLabel: 'Miktar (USD)',
-    rateLabel: 'Kur', valueIqdLabel: 'Değer (IQD):',
-    korkTitle: '💳 Kork Kartı (Dolar)',
-    korkQuantityLabel: 'Miktar (USD)', korkRateLabel: 'Kur',
-    korkValueLabel: 'Değer (IQD):',
-    bankTitle: '🏦 Bankalardaki Para', bankAmountLabel: 'Miktar (IQD)',
-    bankValueLabel: 'Değer:',
-    totalFundsLabel: '📊 Toplam Varlıklar (IQD)',
-    dailyTxsTitle: '📋 Bugünkü İşlemler',
-    ratesTitle: '💱 Döviz Kurları (IQD)', saveRatesBtn: '💾 Kurları Kaydet',
-    newCustTitle: '➕ Yeni Müşteri Kaydı',
-    fnameLabel: 'Ad', lnameLabel: 'Soyad', telLabel: 'Telefon',
-    idLabel: 'Kimlik No', newpassLabel: 'Şifre',
-    registerBtn: '✅ Kaydet',
-    custHeaderTitle: 'Sarraf El-Mustakbal', custWelcomeLabel: 'Hoş geldin',
-    custLogoutBtn: '🚪 Çıkış', myBalanceTitle: '💰 Bakiyem',
-    adminLabel: '👑 Yönetici / Sahip', adminName: 'Burhan Dekani',
-    contactAdminMsg: 'Bakiye veya şifre değişikliği için yöneticiyle iletişime geçin',
-    forgotTitle: '🔑 Şifre Kurtarma',
-    forgotMsg: 'Telefon numaranızı girin, yöneticiye şifre sıfırlama talebi gönderilsin',
-    forgotPhoneLabel: 'Telefon Numarası', sendRequestBtn: '📧 Talep Gönder',
-    orContact: 'Veya doğrudan yöneticiyle iletişime geçin:',
-    resetCustTitle: '🔑 Müşteri Şifresini Sıfırla',
-    resetCustLabel: 'Müşteri:', lblNewCustPass: 'Yeni Şifre',
-    lblConfirmCustPass: 'Şifreyi Onayla', btnResetCustPass: '✅ Yeni Şifreyi Ayarla',
-    changePassBtn: '🔑 Şifre Değiştir',
-    requestSent: '✅ Talebiniz gönderildi. Yönetici sizinle iletişime geçecek',
-    customerNotFound: '❌ Telefon numarası kayıtlı değil',
-    wrongPass: '❌ Yanlış şifre!', notFound: '❌ Müşteri bulunamadı!',
-    noTxs: 'İşlem yok', noCusts: 'Müşteri yok',
-    saved: '✅ Kaydedildi', fillAll: '⚠️ Tüm alanları doldurun!',
-    phoneExists: '⚠️ Telefon zaten kayıtlı!', registered: '✅ Kaydedildi!',
-    passMismatch: '❌ Şifreler eşleşmiyor',
-    passChanged: '✅ Şifre başarıyla değiştirildi'
-  },
-  en: {
-    splashTitle: 'Sayrafa Al-Mustaqbal', splashSub: 'Sayrafa Al-Mustaqbal',
-    welcomeTitle: 'Sayrafa Al-Mustaqbal', welcomeSub: 'Currency Exchange Management System',
-    welcomeMsg: '👋 Welcome to Sarrafa App',
-    installBtn: '📲 Install Application', continueBtn: '➡️ Continue to App',
-    loginTitle: 'Sayrafa Al-Mustaqbal', loginSub: 'Currency Exchange Management System',
-    adminTab: '👑 Admin', customerTab: '👤 Customer',
-    passwordLabel: 'Password', loginBtn: 'Login',
-    phoneLabel: 'Phone Number', customerPasswordLabel: 'Password',
-    customerLoginBtn: 'Login', forgotPasswordBtn: '🔑 Forgot Password?',
-    adminHeaderTitle: 'Sayrafa Al-Mustaqbal', adminPanelLabel: 'Admin Panel',
-    profileBtn: '👤 Profile', logoutBtn: '🚪 Logout',
-    tabDaily: '📊 Daily', tabCustomers: '👥 Customers', tabTxs: '💸 Transactions',
-    tabRates: '💱 Rates', tabNew: '➕ New',
-    yesterdayBtn: '◀ Yesterday', todayBtn: '📅 Today', tomorrowBtn: 'Tomorrow ▶',
-    openingLabel: '🏦 Opening Balance', currentLabel: '💰 Current Balance',
-    profitLabel: '📈 Net Profit (IQD)',
-    fundsTitle: '💼 Office Funds', saveFundsBtn: '💾 Save',
-    iqdTitle: '💵 Iraqi Dinar', amountLabel: 'Amount (IQD)',
-    valueLabel: 'Value:',
-    usdTitle: '💵 US Dollar', quantityLabel: 'Quantity (USD)',
-    rateLabel: 'Exchange Rate', valueIqdLabel: 'Value (IQD):',
-    korkTitle: '💳 Kork Card (USD)',
-    korkQuantityLabel: 'Quantity (USD)', korkRateLabel: 'Exchange Rate',
-    korkValueLabel: 'Value (IQD):',
-    bankTitle: '🏦 Bank Funds', bankAmountLabel: 'Amount (IQD)',
-    bankValueLabel: 'Value:',
-    totalFundsLabel: '📊 Total Funds (IQD)',
-    dailyTxsTitle: '📋 Today\'s Transactions',
-    ratesTitle: '💱 Exchange Rates (IQD)', saveRatesBtn: '💾 Save Rates',
-    newCustTitle: '➕ Register New Customer',
-    fnameLabel: 'First Name', lnameLabel: 'Last Name', telLabel: 'Phone',
-    idLabel: 'ID Number', newpassLabel: 'Password',
-    registerBtn: '✅ Register',
-    custHeaderTitle: 'Sayrafa Al-Mustaqbal', custWelcomeLabel: 'Welcome',
-    custLogoutBtn: '🚪 Logout', myBalanceTitle: '💰 My Balance',
-    adminLabel: '👑 Manager / Owner', adminName: 'Burhan Dekani',
-    contactAdminMsg: 'For inquiries or password change, contact the manager',
-    forgotTitle: '🔑 Password Recovery',
-    forgotMsg: 'Enter your phone number to request password reset from manager',
-    forgotPhoneLabel: 'Phone Number', sendRequestBtn: '📧 Send Request',
-    orContact: 'Or contact manager directly:',
-    resetCustTitle: '🔑 Reset Customer Password',
-    resetCustLabel: 'Customer:', lblNewCustPass: 'New Password',
-    lblConfirmCustPass: 'Confirm Password', btnResetCustPass: '✅ Set New Password',
-    changePassBtn: '🔑 Change Password',
-    requestSent: '✅ Your request has been sent. Manager will contact you soon',
-    customerNotFound: '❌ Phone number not registered',
-    wrongPass: '❌ Wrong password!', notFound: '❌ Customer not found!',
-    noTxs: 'No transactions', noCusts: 'No customers',
-    saved: '✅ Saved', fillAll: '⚠️ Fill all fields!',
-    phoneExists: '⚠️ Phone already registered!', registered: '✅ Registered!',
-    passMismatch: '❌ Passwords do not match',
-    passChanged: '✅ Password changed successfully'
+    passMismatch: '❌ كلمة السر غير متطابقة', passChanged: '✅ تم تغيير كلمة السر بنجاح',
+    confirmDeleteCust: 'هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!',
+    confirmDeleteTx: 'هل أنت متأكد من حذف هذه الحركة؟',
+    txDeleted: '✅ تم حذف الحركة بنجاح',
+    txEdited: '✅ تم تعديل الحركة بنجاح',
+    custDeleted: '✅ تم حذف الزبون بنجاح',
+    txCompleted: '✅ تمت المعاملة بنجاح'
   }
 };
 
 let currentLang = 'ar';
-
 function t(key) { return translations[currentLang][key] || key; }
 
 function setLang(lang) {
@@ -730,6 +651,7 @@ function updateAllTexts() {
   if (el('tab-daily')) el('tab-daily').textContent = t('tabDaily');
   if (el('tab-customers')) el('tab-customers').textContent = t('tabCustomers');
   if (el('tab-txs')) el('tab-txs').textContent = t('tabTxs');
+  if (el('tab-debts')) el('tab-debts').textContent = t('tabDebts');
   if (el('tab-rates')) el('tab-rates').textContent = t('tabRates');
   if (el('tab-new')) el('tab-new').textContent = t('tabNew');
   if (el('yesterday-btn')) el('yesterday-btn').textContent = t('yesterdayBtn');
@@ -756,6 +678,7 @@ function updateAllTexts() {
   if (el('bank-value-label')) el('bank-value-label').textContent = t('bankValueLabel');
   if (el('total-funds-label')) el('total-funds-label').textContent = t('totalFundsLabel');
   if (el('daily-txs-title')) el('daily-txs-title').textContent = t('dailyTxsTitle');
+  if (el('debts-title')) el('debts-title').textContent = t('debtsTitle');
   if (el('rates-title')) el('rates-title').textContent = t('ratesTitle');
   if (el('save-rates-btn')) el('save-rates-btn').textContent = t('saveRatesBtn');
   if (el('new-cust-title')) el('new-cust-title').textContent = t('newCustTitle');
@@ -769,9 +692,21 @@ function updateAllTexts() {
   if (el('cust-welcome-label')) el('cust-welcome-label').textContent = t('custWelcomeLabel');
   if (el('cust-logout-btn')) el('cust-logout-btn').innerHTML = t('custLogoutBtn');
   if (el('my-balance-title')) el('my-balance-title').textContent = t('myBalanceTitle');
+  if (el('my-history-title')) el('my-history-title').textContent = t('myHistoryTitle');
   if (el('admin-label')) el('admin-label').textContent = t('adminLabel');
   if (el('admin-name')) el('admin-name').textContent = t('adminName');
   if (el('contact-admin-msg')) el('contact-admin-msg').textContent = t('contactAdminMsg');
+  if (el('modal-tx-title')) el('modal-tx-title').textContent = t('modalTxTitle');
+  if (el('lbl-tx-type')) el('lbl-tx-type').textContent = t('txType');
+  if (el('opt-deposit')) el('opt-deposit').textContent = t('deposit');
+  if (el('opt-withdraw')) el('opt-withdraw').textContent = t('withdraw');
+  if (el('lbl-tx-amount')) el('lbl-tx-amount').textContent = t('amount');
+  if (el('lbl-tx-currency')) el('lbl-tx-currency').textContent = t('currency');
+  if (el('lbl-tx-note')) el('lbl-tx-note').textContent = t('note');
+  if (el('btn-confirm-tx')) el('btn-confirm-tx').textContent = t('confirmTx');
+  if (el('preview-label')) el('preview-label').textContent = t('previewLabel');
+  if (el('edit-tx-title')) el('edit-tx-title').textContent = t('editTxTitle');
+  if (el('btn-save-edit')) el('btn-save-edit').textContent = t('saveEdit');
   if (el('forgot-title')) el('forgot-title').textContent = t('forgotTitle');
   if (el('forgot-msg')) el('forgot-msg').textContent = t('forgotMsg');
   if (el('forgot-phone-label')) el('forgot-phone-label').textContent = t('forgotPhoneLabel');
@@ -782,24 +717,18 @@ function updateAllTexts() {
   if (el('lbl-new-cust-pass')) el('lbl-new-cust-pass').textContent = t('lblNewCustPass');
   if (el('lbl-confirm-cust-pass')) el('lbl-confirm-cust-pass').textContent = t('lblConfirmCustPass');
   if (el('btn-reset-cust-pass')) el('btn-reset-cust-pass').textContent = t('btnResetCustPass');
-  if (el('install-title')) el('install-title').textContent = t('installTitle');
-  if (el('ok-btn')) el('ok-btn').textContent = t('okBtn');
-  if (el('profile-title')) el('profile-title').textContent = t('profileTitle');
-  if (el('email-label')) el('email-label').textContent = t('emailLabel');
-  if (el('current-pass-label')) el('current-pass-label').textContent = t('currentPassLabel');
-  if (el('new-pass-label')) el('new-pass-label').textContent = t('newPassLabel');
-  if (el('confirm-pass-label')) el('confirm-pass-label').textContent = t('confirmPassLabel');
-  if (el('save-profile-btn')) el('save-profile-btn').textContent = t('saveProfileBtn');
 }
 
 // ==================== CORE FUNCTIONS ====================
 const ENCRYPTION_KEY = "S@yr4f4#M$st4qb4l!2025*XK9@zQ7!#&^mP3rVnL8wE";
-const STORE = 'sarafa_office_v4';
+const STORE = 'sarafa_pro_v1';
 const ADMIN_HASH = CryptoJS.SHA256('admin123').toString();
 
 let DB, currentUser = null, currentRole = null, selectedDailyDate = new Date().toISOString().split('T')[0];
 let deferredPrompt;
 let resetCustPhone = null;
+let selectedCustomerForTx = null;
+let editingTxId = null;
 
 function initDB() {
   return {
@@ -910,12 +839,29 @@ function renderDailyTransactions() {
   const todayTxs = DB.transactions.filter(tx => tx.date.startsWith(selectedDailyDate.split('-').reverse().join('/')));
   const container = el('daily-transactions');
   if (todayTxs.length === 0) { container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
-  container.innerHTML = todayTxs.reverse().map(tx => `
+  container.innerHTML = todayTxs.reverse().map(tx => renderTxItem(tx)).join('');
+}
+
+function renderTxItem(tx) {
+  const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب';
+  const typeClass = tx.type;
+  return `
     <div class="tx-item">
-      <div class="tx-icon ${tx.type}">${tx.type === 'plus' ? '⬆️' : '⬇️'}</div>
-      <div class="tx-details"><div class="tx-name">${tx.name}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div>
-      <div class="tx-amount ${tx.type}">${tx.type === 'plus' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-    </div>`).join('');
+      <div class="tx-icon ${typeClass}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div>
+      <div class="tx-details">
+        <div class="tx-name">${tx.customerName} - ${typeLabel}</div>
+        <div class="tx-note">${tx.note || '—'}</div>
+        <div class="tx-date">${tx.date}</div>
+        ${currentRole === 'admin' ? `
+          <div class="tx-actions">
+            <button class="btn-edit" onclick="editTransaction('${tx.id}')">✏️ تعديل</button>
+            <button class="btn-delete" onclick="deleteTransaction('${tx.id}')">🗑️ حذف</button>
+          </div>
+        ` : ''}
+      </div>
+      <div class="tx-amount ${typeClass}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
+    </div>
+  `;
 }
 
 function changeDailyDate(offset) {
@@ -930,15 +876,30 @@ function renderCustomers() {
   const custs = Object.values(DB.customers).filter(c => (c.fname + ' ' + c.lname + ' ' + c.phone).toLowerCase().includes(q));
   const list = el('customers-list');
   if (!custs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">👥</div>${t('noCusts')}</div>`; return; }
-  list.innerHTML = custs.map(c => `
-    <div class="customer-card">
-      <div class="cust-name">👤 ${c.fname} ${c.lname}</div>
-      <div class="cust-info">${c.phone} | ID: ${c.id_no}</div>
-      <div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">${t('changePassBtn')}</button>
+  list.innerHTML = custs.map(c => {
+    const hasDebt = Object.values(c.balance).some(v => v < 0);
+    return `
+      <div class="customer-card ${hasDebt ? 'has-debt' : ''}">
+        <div class="cust-name">👤 ${c.fname} ${c.lname} ${hasDebt ? '<span style="color:var(--red);font-size:12px">● مديون</span>' : ''}</div>
+        <div class="cust-info">${c.phone} | ID: ${c.id_no}</div>
+        <div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="openTxModal('${c.phone}')">💸 معاملة</button>
+          <button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">${t('changePassBtn')}</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.phone}')">${t('deleteCustBtn')}</button>
+        </div>
       </div>
-    </div>`).join('');
+    `;
+  }).join('');
+}
+
+function deleteCustomer(phone) {
+  if (!confirm(t('confirmDeleteCust'))) return;
+  delete DB.customers[phone];
+  save(DB);
+  alert(t('custDeleted'));
+  renderCustomers();
+  renderDebts();
 }
 
 function addCustomer() {
@@ -951,6 +912,45 @@ function addCustomer() {
   el('new-fname').value = ''; el('new-lname').value = ''; el('new-tel').value = ''; el('new-id').value = ''; el('new-pass').value = '';
   alert(t('registered'));
   showTab('customers');
+}
+
+function renderDebts() {
+  const debtors = Object.values(DB.customers).filter(c => Object.values(c.balance).some(v => v < 0));
+  const list = el('debts-list');
+  const summaryContainer = el('debts-summary-container');
+  
+  const totalDebt = debtors.reduce((sum, c) => {
+    return sum + Object.values(c.balance).filter(v => v < 0).reduce((a, b) => a + Math.abs(b) * (DB.rates[Object.keys(c.balance).find(k => c.balance[k] === b)] || 1), 0);
+  }, 0);
+  
+  summaryContainer.innerHTML = debtors.length > 0 ? `
+    <div class="debt-summary">
+      <div class="debt-summary-title">📊 ملخص الديون</div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px">
+        <span>${t('debtCountLabel')}</span>
+        <span style="font-weight:700;color:var(--red)">${debtors.length}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span>${t('totalDebtLabel')}</span>
+        <span style="font-weight:700;color:var(--red)">${fmt(totalDebt)} IQD</span>
+      </div>
+    </div>
+  ` : '';
+  
+  if (!debtors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>${t('noDebts')}</div>`; return; }
+  
+  list.innerHTML = debtors.map(c => `
+    <div class="customer-card has-debt">
+      <div class="cust-name">👤 ${c.fname} ${c.lname}</div>
+      <div class="cust-info">${c.phone}</div>
+      <div class="debt-banner" style="margin-top:10px;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:12px;padding:14px">
+        <div style="color:var(--red);font-weight:700;margin-bottom:8px">🔴 مديون:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">${Object.entries(c.balance).filter(([, v]) => v < 0).map(([cur, amt]) => 
+          `<span style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`
+        ).join('')}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function renderRates() {
@@ -966,84 +966,175 @@ function renderRates() {
 
 function saveRates() {
   ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); });
-  save(DB); alert(t('saved')); renderDailySummary();
+  save(DB); alert(t('saved')); renderDailySummary(); renderDebts();
 }
 
 function renderAllTxs() {
   const txs = [...DB.transactions].reverse();
   const list = el('all-txs-list');
   if (!txs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
-  list.innerHTML = txs.map(tx => `
-    <div class="tx-item">
-      <div class="tx-icon ${tx.type}">${tx.type === 'plus' ? '⬆️' : '⬇️'}</div>
-      <div class="tx-details"><div class="tx-name">${tx.name}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div>
-      <div class="tx-amount ${tx.type}">${tx.type === 'plus' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-    </div>`).join('');
+  list.innerHTML = txs.map(tx => renderTxItem(tx)).join('');
 }
 
-function showAdminProfileModal() {
-  const admin = DB.admin || { email: '' };
-  el('admin-email').value = admin.email || '';
-  el('current-password').value = ''; el('new-password').value = ''; el('confirm-password').value = '';
-  el('modal-admin-profile').classList.add('show');
+// ==================== TRANSACTIONS ====================
+function openTxModal(phone) {
+  selectedCustomerForTx = phone;
+  el('tx-amount').value = '';
+  el('tx-note').value = '';
+  el('tx-type').value = 'deposit';
+  el('tx-currency').value = 'USD';
+  el('tx-preview').style.display = 'none';
+  el('modal-tx').classList.add('show');
 }
-function closeAdminProfileModal() { el('modal-admin-profile').classList.remove('show'); }
 
-function updateAdminProfile() {
-  const email = el('admin-email').value.trim();
-  const currentPass = el('current-password').value;
-  const newPass = el('new-password').value;
-  const confirmPass = el('confirm-password').value;
+function closeTxModal() { el('modal-tx').classList.remove('show'); selectedCustomerForTx = null; }
+
+function updatePreview() {
+  const amount = parseNumber(el('tx-amount').value);
+  const currency = el('tx-currency').value;
+  const type = el('tx-type').value;
+  if (!amount) { el('tx-preview').style.display = 'none'; return; }
   
-  if (newPass) {
-    if (CryptoJS.SHA256(currentPass).toString() !== DB.admin.passwordHash) { alert(t('wrongPass')); return; }
-    if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
-    DB.admin.passwordHash = CryptoJS.SHA256(newPass).toString();
-  }
-  DB.admin.email = email;
+  const c = DB.customers[selectedCustomerForTx];
+  const current = c.balance[currency] || 0;
+  const after = type === 'deposit' ? current + amount : current - amount;
+  
+  el('tx-preview').style.display = 'block';
+  el('preview-value').textContent = (after < 0 ? '-' : '') + fmt(Math.abs(after)) + ' ' + currency;
+  el('preview-value').style.color = after < 0 ? 'var(--red)' : 'var(--green)';
+}
+
+function confirmTx() {
+  const amount = parseNumber(el('tx-amount').value);
+  const currency = el('tx-currency').value;
+  const type = el('tx-type').value;
+  const note = el('tx-note').value.trim();
+  
+  if (!amount) { alert('⚠️ أدخل المبلغ'); return; }
+  
+  const c = DB.customers[selectedCustomerForTx];
+  const current = c.balance[currency] || 0;
+  c.balance[currency] = type === 'deposit' ? current + amount : current - amount;
+  
+  const now = new Date();
+  const tx = {
+    id: Date.now() + '-' + Math.random().toString(36),
+    phone: selectedCustomerForTx,
+    customerName: c.fname + ' ' + c.lname,
+    type: type,
+    amount: amount,
+    currency: currency,
+    note: note,
+    date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'})
+  };
+  
+  DB.transactions.push(tx);
   save(DB);
-  alert(t('saved'));
-  closeAdminProfileModal();
+  closeTxModal();
+  renderAdminView();
+  alert(t('txCompleted'));
 }
 
-// ==================== FORGOT PASSWORD ====================
-function showForgotPasswordModal() {
-  el('forgot-phone').value = '';
-  el('modal-forgot-password').classList.add('show');
-}
-function closeForgotPasswordModal() { el('modal-forgot-password').classList.remove('show'); }
-
-function sendResetRequest() {
-  const phone = el('forgot-phone').value.trim();
-  if (!DB.customers[phone]) { alert(t('customerNotFound')); return; }
-  alert(t('requestSent'));
-  closeForgotPasswordModal();
+function editTransaction(txId) {
+  const tx = DB.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  
+  editingTxId = txId;
+  el('edit-tx-id').value = txId;
+  el('edit-tx-amount').value = fmt(tx.amount);
+  el('edit-tx-currency').value = tx.currency;
+  el('edit-tx-note').value = tx.note || '';
+  el('modal-edit-tx').classList.add('show');
 }
 
-// ==================== RESET CUSTOMER PASSWORD ====================
-function showResetCustPasswordModal(phone) {
-  resetCustPhone = phone;
-  const c = DB.customers[phone];
-  el('reset-cust-name').textContent = `${c.fname} ${c.lname}`;
-  el('new-cust-password').value = '';
-  el('confirm-cust-password').value = '';
-  el('modal-reset-cust-password').classList.add('show');
-}
-function closeResetCustPasswordModal() { el('modal-reset-cust-password').classList.remove('show'); resetCustPhone = null; }
+function closeEditTxModal() { el('modal-edit-tx').classList.remove('show'); editingTxId = null; }
 
-function resetCustomerPassword() {
-  const newPass = el('new-cust-password').value;
-  const confirmPass = el('confirm-cust-password').value;
-  if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
-  if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; }
-  DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString();
+function saveEditedTx() {
+  const tx = DB.transactions.find(t => t.id === editingTxId);
+  if (!tx) return;
+  
+  const newAmount = parseNumber(el('edit-tx-amount').value);
+  const newCurrency = el('edit-tx-currency').value;
+  const newNote = el('edit-tx-note').value.trim();
+  
+  if (!newAmount) { alert('⚠️ أدخل المبلغ'); return; }
+  
+  const c = DB.customers[tx.phone];
+  // عكس الحركة القديمة
+  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount;
+  // تطبيق الحركة الجديدة
+  c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount;
+  
+  tx.amount = newAmount;
+  tx.currency = newCurrency;
+  tx.note = newNote;
+  
   save(DB);
-  alert(t('passChanged'));
-  closeResetCustPasswordModal();
-  renderCustomers();
+  closeEditTxModal();
+  renderAdminView();
+  alert(t('txEdited'));
 }
 
-// ==================== AUTH ====================
+function deleteTransaction(txId) {
+  if (!confirm(t('confirmDeleteTx'))) return;
+  
+  const txIndex = DB.transactions.findIndex(t => t.id === txId);
+  if (txIndex === -1) return;
+  
+  const tx = DB.transactions[txIndex];
+  const c = DB.customers[tx.phone];
+  // عكس الحركة
+  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount;
+  
+  DB.transactions.splice(txIndex, 1);
+  save(DB);
+  renderAdminView();
+  alert(t('txDeleted'));
+}
+
+// ==================== CUSTOMER VIEW ====================
+function renderCustomerView() {
+  const c = DB.customers[currentUser];
+  if (!c) return;
+  
+  el('cust-welcome-label').textContent = t('custWelcomeLabel') + ', ' + c.fname + ' ' + c.lname;
+  el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `
+    <div class="metric ${amt < 0 ? 'negative' : 'positive'}">
+      <div class="metric-label">${cur}</div>
+      <div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div>
+    </div>
+  `).join('');
+  
+  const debts = Object.entries(c.balance).filter(([, v]) => v < 0);
+  el('cust-debt-banner').innerHTML = debts.length ? `
+    <div class="debt-banner">
+      <div class="debt-banner-title">🔴 مديون:</div>
+      <div class="debt-items">${debts.map(([cur, amt]) => 
+        `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`
+      ).join('')}</div>
+    </div>
+  ` : '';
+  
+  const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse();
+  if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
+  
+  el('cust-txs').innerHTML = myTxs.map(tx => {
+    const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب';
+    return `
+      <div class="tx-item">
+        <div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div>
+        <div class="tx-details">
+          <div class="tx-name">${typeLabel}</div>
+          <div class="tx-note">${tx.note || '—'}</div>
+          <div class="tx-date">${tx.date}</div>
+        </div>
+        <div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==================== AUTH & PROFILE ====================
 function switchLoginTab(tab) {
   el('login-admin').style.display = tab === 'admin' ? 'block' : 'none';
   el('login-customer').style.display = tab === 'customer' ? 'block' : 'none';
@@ -1070,16 +1161,7 @@ function loginCustomer() {
 function logout() { currentUser = null; currentRole = null; showScreen('login'); }
 
 function renderAdminView() {
-  renderDailySummary(); renderCustomers(); renderAllTxs(); renderRates();
-}
-
-function renderCustomerView() {
-  const c = DB.customers[currentUser];
-  if (!c) return;
-  el('cust-welcome-label').textContent = t('custWelcomeLabel') + ', ' + c.fname + ' ' + c.lname;
-  el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `
-    <div class="metric"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>
-  `).join('');
+  renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderRates();
 }
 
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
@@ -1089,19 +1171,64 @@ function showTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el('panel-' + name).classList.add('active');
   const tabs = document.querySelectorAll('.tab');
-  const tabTexts = { 'daily': t('tabDaily'), 'customers': t('tabCustomers'), 'txs': t('tabTxs'), 'rates': t('tabRates'), 'new-customer': t('tabNew') };
+  const tabTexts = { 'daily': t('tabDaily'), 'customers': t('tabCustomers'), 'txs': t('tabTxs'), 'debts': t('tabDebts'), 'rates': t('tabRates'), 'new-customer': t('tabNew') };
   tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); });
   if (name === 'daily') renderDailySummary();
   if (name === 'customers') renderCustomers();
   if (name === 'txs') renderAllTxs();
+  if (name === 'debts') renderDebts();
   if (name === 'rates') renderRates();
 }
 
 function goToLogin() { showScreen('login'); }
 
+// ==================== FORGOT PASSWORD ====================
+function showForgotPasswordModal() { el('modal-forgot-password').classList.add('show'); }
+function closeForgotPasswordModal() { el('modal-forgot-password').classList.remove('show'); }
+function sendResetRequest() {
+  const phone = el('forgot-phone').value.trim();
+  if (!DB.customers[phone]) { alert(t('customerNotFound')); return; }
+  alert(t('requestSent')); closeForgotPasswordModal();
+}
+
+// ==================== RESET CUSTOMER PASSWORD ====================
+function showResetCustPasswordModal(phone) {
+  resetCustPhone = phone;
+  const c = DB.customers[phone];
+  el('reset-cust-name').textContent = `${c.fname} ${c.lname}`;
+  el('new-cust-password').value = '';
+  el('confirm-cust-password').value = '';
+  el('modal-reset-cust-password').classList.add('show');
+}
+function closeResetCustPasswordModal() { el('modal-reset-cust-password').classList.remove('show'); resetCustPhone = null; }
+function resetCustomerPassword() {
+  const newPass = el('new-cust-password').value;
+  const confirmPass = el('confirm-cust-password').value;
+  if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
+  if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; }
+  DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString();
+  save(DB); alert(t('passChanged')); closeResetCustPasswordModal(); renderCustomers();
+}
+
+// ==================== ADMIN PROFILE ====================
+function showAdminProfileModal() { el('modal-admin-profile').classList.add('show'); }
+function closeAdminProfileModal() { el('modal-admin-profile').classList.remove('show'); }
+function updateAdminProfile() {
+  const email = el('admin-email').value.trim();
+  const currentPass = el('current-password').value;
+  const newPass = el('new-password').value;
+  const confirmPass = el('confirm-password').value;
+  if (newPass) {
+    if (CryptoJS.SHA256(currentPass).toString() !== DB.admin.passwordHash) { alert(t('wrongPass')); return; }
+    if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
+    DB.admin.passwordHash = CryptoJS.SHA256(newPass).toString();
+  }
+  DB.admin.email = email;
+  save(DB); alert(t('saved')); closeAdminProfileModal();
+}
+
 // ==================== INSTALL ====================
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-
 function showInstallInstructions() {
   const instructions = el('install-instructions');
   const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
@@ -1116,6 +1243,14 @@ function showInstallInstructions() {
 }
 function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); }); } }
 function closeInstallModal() { el('install-modal').classList.remove('show'); }
+
+// ==================== EVENT LISTENERS ====================
+el('modal-tx')?.addEventListener('click', function(e) { if (e.target === this) closeTxModal(); });
+el('modal-edit-tx')?.addEventListener('click', function(e) { if (e.target === this) closeEditTxModal(); });
+el('modal-forgot-password')?.addEventListener('click', function(e) { if (e.target === this) closeForgotPasswordModal(); });
+el('modal-reset-cust-password')?.addEventListener('click', function(e) { if (e.target === this) closeResetCustPasswordModal(); });
+el('modal-admin-profile')?.addEventListener('click', function(e) { if (e.target === this) closeAdminProfileModal(); });
+el('install-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInstallModal(); });
 
 // ==================== INIT ====================
 window.addEventListener('load', () => {
