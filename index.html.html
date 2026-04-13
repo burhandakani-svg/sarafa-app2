@@ -53,6 +53,7 @@ input:focus,select:focus{border-color:var(--gold)}
 .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:#000;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;margin-bottom:8px}
 .btn:active{transform:scale(.98);opacity:.9}
 .btn-sm{padding:10px 14px;font-size:14px;width:auto;margin-bottom:0}
+.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold)}
 .install-btn{background:linear-gradient(135deg,#4CAF50,#2E7D32);color:white;border:none;padding:16px 24px;border-radius:50px;font-size:18px;font-weight:bold;cursor:pointer;margin:20px 0;width:100%;box-shadow:0 4px 15px rgba(76,175,80,0.3)}
 .alert{padding:12px 14px;border-radius:10px;font-size:14px;margin-bottom:14px;display:none}
 .alert.error{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red)}
@@ -120,6 +121,10 @@ input:focus,select:focus{border-color:var(--gold)}
 .total-label{color:#000;font-weight:700;font-size:16px}
 .total-value{color:#000;font-weight:900;font-size:20px;direction:ltr}
 .rate-input-small{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--gold);font-size:14px;font-weight:700;padding:8px;text-align:center;direction:ltr;margin-bottom:0}
+.admin-contact-card{background:linear-gradient(135deg,var(--gold-dark),var(--gold));border-radius:16px;padding:20px;margin-bottom:24px;text-align:center}
+.admin-name{color:#000;font-size:20px;font-weight:800;margin-bottom:8px}
+.admin-phone{color:#000;font-size:28px;font-weight:900;margin-bottom:16px;direction:ltr}
+.admin-label{color:rgba(0,0,0,0.7);font-size:14px;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -177,10 +182,11 @@ input:focus,select:focus{border-color:var(--gold)}
       </div>
       <div id="login-customer" style="display:none">
         <label id="phone-label">رقم الهاتف</label>
-        <input type="tel" id="cust-phone" placeholder="+964...">
+        <input type="tel" id="cust-phone" placeholder="+964..." value="">
         <label id="customer-password-label">كلمة السر</label>
         <input type="password" id="cust-pass" placeholder="••••••••">
         <button class="btn" onclick="loginCustomer()" id="customer-login-btn">دخول</button>
+        <button class="btn btn-outline" onclick="showForgotPasswordModal()" id="forgot-password-btn" style="margin-top:8px">🔑 نسيت كلمة السر؟</button>
       </div>
     </div>
     
@@ -369,24 +375,65 @@ input:focus,select:focus{border-color:var(--gold)}
     <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
   </div>
   <div class="content">
-    <div class="section-title" id="my-balance-title">💰 رصيدي</div>
-    <div class="metrics" id="cust-balances"></div>
-    <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;text-align:center">
-      <p style="color:var(--muted);margin-bottom:16px;font-size:14px" id="contact-admin-msg">للاستفسار عن رصيدك أو أي استفسار، تواصل مع المدير مباشرة</p>
+    <!-- بطاقة المدير (تظهر في الأعلى) -->
+    <div class="admin-contact-card">
+      <div class="admin-label" id="admin-label">👑 المدير / الصاحب</div>
+      <div class="admin-name" id="admin-name">برهان دكاني</div>
+      <div class="admin-phone" id="admin-phone">0750 123 4567</div>
       <a href="https://wa.me/9647501234567" target="_blank" style="text-decoration:none">
-        <button style="width:100%;padding:16px;background:linear-gradient(135deg,#128C7E,#25D366);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Tajawal',sans-serif">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          📞 07501234567 — واتساب
+        <button style="width:100%;padding:12px;background:#000;border:none;border-radius:10px;color:var(--gold);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Tajawal',sans-serif">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#C9A84C"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          واتساب المدير
         </button>
       </a>
-      <div style="margin-top:12px">
-        <a href="tel:07501234567" style="text-decoration:none">
-          <button style="width:100%;padding:12px;background:rgba(52,152,219,0.15);border:1px solid rgba(52,152,219,0.3);border-radius:12px;color:#3498DB;font-size:15px;font-weight:700;cursor:pointer;font-family:'Tajawal',sans-serif">
-            📲 اتصال مباشر: 07501234567
-          </button>
-        </a>
-      </div>
+      <a href="tel:07501234567" style="text-decoration:none">
+        <button style="width:100%;padding:10px;background:transparent;border:1px solid #000;border-radius:10px;color:#000;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;font-family:'Tajawal',sans-serif">
+          📞 اتصال مباشر
+        </button>
+      </a>
     </div>
+    
+    <div class="section-title" id="my-balance-title">💰 رصيدي</div>
+    <div class="metrics" id="cust-balances"></div>
+    <p style="color:var(--muted);text-align:center;margin-top:20px;font-size:13px" id="contact-admin-msg">للاستفسار أو تغيير كلمة السر، تواصل مع المدير</p>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL (للزبون) -->
+<div class="modal-overlay" id="modal-forgot-password">
+  <div class="modal">
+    <button class="modal-close" onclick="closeForgotPasswordModal()">×</button>
+    <div class="modal-title" id="forgot-title">🔑 استرجاع كلمة السر</div>
+    <div id="alert-forgot" class="alert info"></div>
+    <p style="margin-bottom:16px;color:var(--muted);text-align:center" id="forgot-msg">أدخل رقم هاتفك وسيتم إرسال طلب للمدير لإعادة تعيين كلمة السر</p>
+    <label id="forgot-phone-label">رقم الهاتف</label>
+    <input type="tel" id="forgot-phone" placeholder="+964..." dir="ltr">
+    <button class="btn" onclick="sendResetRequest()" id="send-request-btn">📧 إرسال الطلب</button>
+    <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
+    <p style="color:var(--muted);font-size:13px;text-align:center" id="or-contact">أو تواصل مباشرة مع المدير:</p>
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <a href="https://wa.me/9647501234567" target="_blank" style="flex:1;text-decoration:none">
+        <button style="width:100%;padding:12px;background:#25D366;border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">💬 واتساب</button>
+      </a>
+      <a href="tel:07501234567" style="flex:1;text-decoration:none">
+        <button style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">📞 اتصال</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- RESET CUSTOMER PASSWORD MODAL (للمدير) -->
+<div class="modal-overlay" id="modal-reset-cust-password">
+  <div class="modal">
+    <button class="modal-close" onclick="closeResetCustPasswordModal()">×</button>
+    <div class="modal-title" id="reset-cust-title">🔑 إعادة تعيين كلمة سر الزبون</div>
+    <div id="alert-reset-cust" class="alert success"></div>
+    <p style="margin-bottom:16px;color:var(--muted)"><span id="reset-cust-label">الزبون:</span> <span id="reset-cust-name" style="color:var(--text);font-weight:700"></span></p>
+    <label id="lbl-new-cust-pass">كلمة السر الجديدة</label>
+    <input type="password" id="new-cust-password" placeholder="••••••••">
+    <label id="lbl-confirm-cust-pass">تأكيد كلمة السر</label>
+    <input type="password" id="confirm-cust-password" placeholder="••••••••">
+    <button class="btn" onclick="resetCustomerPassword()" id="btn-reset-cust-pass">✅ تعيين كلمة السر الجديدة</button>
   </div>
 </div>
 
@@ -425,13 +472,12 @@ const translations = {
     splashTitle: 'صيرفة المستقبل', splashSub: 'Sayrafa Al-Mustaqbal',
     welcomeTitle: 'صيرفة المستقبل', welcomeSub: 'نظام إدارة الصرافة المتكامل',
     welcomeMsg: '👋 أهلاً بك في تطبيق الصيرفة',
-    installBtn: '📲 تثبيت التطبيق على الجهاز',
-    continueBtn: '➡️ متابعة للتطبيق',
+    installBtn: '📲 تثبيت التطبيق على الجهاز', continueBtn: '➡️ متابعة للتطبيق',
     loginTitle: 'صيرفة المستقبل', loginSub: 'نظام إدارة الصرافة المتكامل',
     adminTab: '👑 المدير', customerTab: '👤 الزبون',
     passwordLabel: 'كلمة السر', loginBtn: 'دخول',
     phoneLabel: 'رقم الهاتف', customerPasswordLabel: 'كلمة السر',
-    customerLoginBtn: 'دخول',
+    customerLoginBtn: 'دخول', forgotPasswordBtn: '🔑 نسيت كلمة السر؟',
     adminHeaderTitle: 'صيرفة المستقبل', adminPanelLabel: 'لوحة المدير',
     profileBtn: '👤 الملف', logoutBtn: '🚪 خروج',
     tabDaily: '📊 اليومية', tabCustomers: '👥 زبائن', tabTxs: '💸 حركات',
@@ -458,28 +504,35 @@ const translations = {
     registerBtn: '✅ تسجيل',
     custHeaderTitle: 'صيرفة المستقبل', custWelcomeLabel: 'مرحباً',
     custLogoutBtn: '🚪 خروج', myBalanceTitle: '💰 رصيدي',
-    contactAdminMsg: 'للاستفسار عن رصيدك أو أي استفسار، تواصل مع المدير مباشرة',
-    installTitle: '📲 كيفية تثبيت التطبيق', okBtn: 'حسناً، فهمت',
-    profileTitle: '👤 إعدادات الآدمين',
-    emailLabel: 'البريد الإلكتروني للاسترداد',
-    currentPassLabel: 'كلمة السر الحالية', newPassLabel: 'كلمة السر الجديدة',
-    confirmPassLabel: 'تأكيد كلمة السر الجديدة', saveProfileBtn: '💾 حفظ التغييرات',
+    adminLabel: '👑 المدير / الصاحب', adminName: 'برهان دكاني',
+    contactAdminMsg: 'للاستفسار أو تغيير كلمة السر، تواصل مع المدير',
+    forgotTitle: '🔑 استرجاع كلمة السر',
+    forgotMsg: 'أدخل رقم هاتفك وسيتم إرسال طلب للمدير لإعادة تعيين كلمة السر',
+    forgotPhoneLabel: 'رقم الهاتف', sendRequestBtn: '📧 إرسال الطلب',
+    orContact: 'أو تواصل مباشرة مع المدير:',
+    resetCustTitle: '🔑 إعادة تعيين كلمة سر الزبون',
+    resetCustLabel: 'الزبون:', lblNewCustPass: 'كلمة السر الجديدة',
+    lblConfirmCustPass: 'تأكيد كلمة السر', btnResetCustPass: '✅ تعيين كلمة السر الجديدة',
+    changePassBtn: '🔑 تغيير الرمز',
+    requestSent: '✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً',
+    customerNotFound: '❌ رقم الهاتف غير مسجل',
     wrongPass: '❌ كلمة السر خاطئة!', notFound: '❌ الزبون غير موجود!',
     noTxs: 'لا توجد حركات في هذا التاريخ', noCusts: 'لا يوجد زبائن',
     saved: '✅ تم الحفظ', fillAll: '⚠️ أكمل جميع الحقول!',
-    phoneExists: '⚠️ الهاتف مسجل مسبقاً!', registered: '✅ تم التسجيل!'
+    phoneExists: '⚠️ الهاتف مسجل مسبقاً!', registered: '✅ تم التسجيل!',
+    passMismatch: '❌ كلمة السر غير متطابقة',
+    passChanged: '✅ تم تغيير كلمة السر بنجاح'
   },
   ku: {
     splashTitle: 'صرافة ئایندە', splashSub: 'Sayrafa Al-Mustaqbal',
     welcomeTitle: 'صرافة ئایندە', welcomeSub: 'سیستەمی بەڕێوەبردنی دراو',
     welcomeMsg: '👋 بەخێربێیت بۆ ئەپی صرافة',
-    installBtn: '📲 دامەزراندنی ئەپ',
-    continueBtn: '➡️ بەردەوامبوون بۆ ئەپ',
+    installBtn: '📲 دامەزراندنی ئەپ', continueBtn: '➡️ بەردەوامبوون بۆ ئەپ',
     loginTitle: 'صرافة ئایندە', loginSub: 'سیستەمی بەڕێوەبردنی دراو',
     adminTab: '👑 بەڕێوەبەر', customerTab: '👤 کڕیار',
     passwordLabel: 'تێپەڕەوشە', loginBtn: 'چوونەژوورەوە',
     phoneLabel: 'ژمارەی تەلەفۆن', customerPasswordLabel: 'تێپەڕەوشە',
-    customerLoginBtn: 'چوونەژوورەوە',
+    customerLoginBtn: 'چوونەژوورەوە', forgotPasswordBtn: '🔑 تێپەڕەوشەت بیرچووە؟',
     adminHeaderTitle: 'صرافة ئایندە', adminPanelLabel: 'پانێلی بەڕێوەبەر',
     profileBtn: '👤 پڕۆفایل', logoutBtn: '🚪 چوونەدەرەوە',
     tabDaily: '📊 ڕۆژانە', tabCustomers: '👥 کڕیارەکان', tabTxs: '💸 جووڵەکان',
@@ -506,28 +559,35 @@ const translations = {
     registerBtn: '✅ تۆمارکردن',
     custHeaderTitle: 'صرافة ئایندە', custWelcomeLabel: 'بەخێربێیت',
     custLogoutBtn: '🚪 چوونەدەرەوە', myBalanceTitle: '💰 باڵانسەکەم',
-    contactAdminMsg: 'بۆ پرسیاری باڵانس، پەیوەندی بە بەڕێوەبەرەوە بکە',
-    installTitle: '📲 چۆنیەتی دامەزراندنی ئەپ', okBtn: 'باشە، تێگەیشتم',
-    profileTitle: '👤 ڕێکخستنەکانی بەڕێوەبەر',
-    emailLabel: 'ئیمەیڵی گەڕاندنەوە',
-    currentPassLabel: 'تێپەڕەوشەی ئێستا', newPassLabel: 'تێپەڕەوشەی نوێ',
-    confirmPassLabel: 'دووپاتکردنەوەی تێپەڕەوشە', saveProfileBtn: '💾 پاشەکەوت',
+    adminLabel: '👑 بەڕێوەبەر / خاوەن', adminName: 'بورهان دکانی',
+    contactAdminMsg: 'بۆ پرسیار یان گۆڕینی تێپەڕەوشە، پەیوەندی بە بەڕێوەبەرەوە بکە',
+    forgotTitle: '🔑 گەڕاندنەوەی تێپەڕەوشە',
+    forgotMsg: 'ژمارەی تەلەفۆنت بنووسە، داواکاری بۆ بەڕێوەبەر دەنێردرێت',
+    forgotPhoneLabel: 'ژمارەی تەلەفۆن', sendRequestBtn: '📧 ناردنی داواکاری',
+    orContact: 'یان ڕاستەوخۆ پەیوەندی بە بەڕێوەبەرەوە بکە:',
+    resetCustTitle: '🔑 ڕێکخستنەوەی تێپەڕەوشەی کڕیار',
+    resetCustLabel: 'کڕیار:', lblNewCustPass: 'تێپەڕەوشەی نوێ',
+    lblConfirmCustPass: 'دووپاتکردنەوەی تێپەڕەوشە', btnResetCustPass: '✅ دانانی تێپەڕەوشە',
+    changePassBtn: '🔑 گۆڕینی تێپەڕەوشە',
+    requestSent: '✅ داواکاریەکەت نێردرا. بەڕێوەبەر پەیوەندیت پێوە دەکات',
+    customerNotFound: '❌ ژمارەی تەلەفۆن تۆمارنەکراوە',
     wrongPass: '❌ تێپەڕەوشە هەڵەیە!', notFound: '❌ کڕیار نەدۆزرایەوە!',
     noTxs: 'هیچ جووڵەیەک نییە', noCusts: 'هیچ کڕیارێک نییە',
     saved: '✅ پاشەکەوت کرا', fillAll: '⚠️ هەموو خانەکان پڕبکەرەوە!',
-    phoneExists: '⚠️ تەلەفۆن پێشتر تۆمارکراوە!', registered: '✅ تۆمارکرا!'
+    phoneExists: '⚠️ تەلەفۆن پێشتر تۆمارکراوە!', registered: '✅ تۆمارکرا!',
+    passMismatch: '❌ تێپەڕەوشەکان یەک ناگرنەوە',
+    passChanged: '✅ تێپەڕەوشە بەسەرکەوتوویی گۆڕدرا'
   },
   tr: {
     splashTitle: 'Sarraf El-Mustakbal', splashSub: 'Sarraf El-Mustakbal',
     welcomeTitle: 'Sarraf El-Mustakbal', welcomeSub: 'Döviz Bürosu Yönetim Sistemi',
     welcomeMsg: '👋 Sarraf uygulamasına hoş geldiniz',
-    installBtn: '📲 Uygulamayı Yükle',
-    continueBtn: '➡️ Uygulamaya Devam Et',
+    installBtn: '📲 Uygulamayı Yükle', continueBtn: '➡️ Uygulamaya Devam Et',
     loginTitle: 'Sarraf El-Mustakbal', loginSub: 'Döviz Bürosu Yönetim Sistemi',
     adminTab: '👑 Admin', customerTab: '👤 Müşteri',
     passwordLabel: 'Şifre', loginBtn: 'Giriş',
     phoneLabel: 'Telefon', customerPasswordLabel: 'Şifre',
-    customerLoginBtn: 'Giriş',
+    customerLoginBtn: 'Giriş', forgotPasswordBtn: '🔑 Şifremi Unuttum?',
     adminHeaderTitle: 'Sarraf El-Mustakbal', adminPanelLabel: 'Admin Paneli',
     profileBtn: '👤 Profil', logoutBtn: '🚪 Çıkış',
     tabDaily: '📊 Günlük', tabCustomers: '👥 Müşteriler', tabTxs: '💸 İşlemler',
@@ -554,28 +614,35 @@ const translations = {
     registerBtn: '✅ Kaydet',
     custHeaderTitle: 'Sarraf El-Mustakbal', custWelcomeLabel: 'Hoş geldin',
     custLogoutBtn: '🚪 Çıkış', myBalanceTitle: '💰 Bakiyem',
-    contactAdminMsg: 'Bakiye için yöneticiyle iletişime geçin',
-    installTitle: '📲 Uygulama Nasıl Yüklenir', okBtn: 'Tamam, Anladım',
-    profileTitle: '👤 Admin Ayarları',
-    emailLabel: 'Kurtarma E-postası',
-    currentPassLabel: 'Mevcut Şifre', newPassLabel: 'Yeni Şifre',
-    confirmPassLabel: 'Yeni Şifreyi Onayla', saveProfileBtn: '💾 Değişiklikleri Kaydet',
+    adminLabel: '👑 Yönetici / Sahip', adminName: 'Burhan Dekani',
+    contactAdminMsg: 'Bakiye veya şifre değişikliği için yöneticiyle iletişime geçin',
+    forgotTitle: '🔑 Şifre Kurtarma',
+    forgotMsg: 'Telefon numaranızı girin, yöneticiye şifre sıfırlama talebi gönderilsin',
+    forgotPhoneLabel: 'Telefon Numarası', sendRequestBtn: '📧 Talep Gönder',
+    orContact: 'Veya doğrudan yöneticiyle iletişime geçin:',
+    resetCustTitle: '🔑 Müşteri Şifresini Sıfırla',
+    resetCustLabel: 'Müşteri:', lblNewCustPass: 'Yeni Şifre',
+    lblConfirmCustPass: 'Şifreyi Onayla', btnResetCustPass: '✅ Yeni Şifreyi Ayarla',
+    changePassBtn: '🔑 Şifre Değiştir',
+    requestSent: '✅ Talebiniz gönderildi. Yönetici sizinle iletişime geçecek',
+    customerNotFound: '❌ Telefon numarası kayıtlı değil',
     wrongPass: '❌ Yanlış şifre!', notFound: '❌ Müşteri bulunamadı!',
     noTxs: 'İşlem yok', noCusts: 'Müşteri yok',
     saved: '✅ Kaydedildi', fillAll: '⚠️ Tüm alanları doldurun!',
-    phoneExists: '⚠️ Telefon zaten kayıtlı!', registered: '✅ Kaydedildi!'
+    phoneExists: '⚠️ Telefon zaten kayıtlı!', registered: '✅ Kaydedildi!',
+    passMismatch: '❌ Şifreler eşleşmiyor',
+    passChanged: '✅ Şifre başarıyla değiştirildi'
   },
   en: {
     splashTitle: 'Sayrafa Al-Mustaqbal', splashSub: 'Sayrafa Al-Mustaqbal',
     welcomeTitle: 'Sayrafa Al-Mustaqbal', welcomeSub: 'Currency Exchange Management System',
     welcomeMsg: '👋 Welcome to Sarrafa App',
-    installBtn: '📲 Install Application',
-    continueBtn: '➡️ Continue to App',
+    installBtn: '📲 Install Application', continueBtn: '➡️ Continue to App',
     loginTitle: 'Sayrafa Al-Mustaqbal', loginSub: 'Currency Exchange Management System',
     adminTab: '👑 Admin', customerTab: '👤 Customer',
     passwordLabel: 'Password', loginBtn: 'Login',
     phoneLabel: 'Phone Number', customerPasswordLabel: 'Password',
-    customerLoginBtn: 'Login',
+    customerLoginBtn: 'Login', forgotPasswordBtn: '🔑 Forgot Password?',
     adminHeaderTitle: 'Sayrafa Al-Mustaqbal', adminPanelLabel: 'Admin Panel',
     profileBtn: '👤 Profile', logoutBtn: '🚪 Logout',
     tabDaily: '📊 Daily', tabCustomers: '👥 Customers', tabTxs: '💸 Transactions',
@@ -602,16 +669,24 @@ const translations = {
     registerBtn: '✅ Register',
     custHeaderTitle: 'Sayrafa Al-Mustaqbal', custWelcomeLabel: 'Welcome',
     custLogoutBtn: '🚪 Logout', myBalanceTitle: '💰 My Balance',
-    contactAdminMsg: 'Contact admin for balance inquiries',
-    installTitle: '📲 How to Install', okBtn: 'OK, Got it',
-    profileTitle: '👤 Admin Settings',
-    emailLabel: 'Recovery Email',
-    currentPassLabel: 'Current Password', newPassLabel: 'New Password',
-    confirmPassLabel: 'Confirm New Password', saveProfileBtn: '💾 Save Changes',
+    adminLabel: '👑 Manager / Owner', adminName: 'Burhan Dekani',
+    contactAdminMsg: 'For inquiries or password change, contact the manager',
+    forgotTitle: '🔑 Password Recovery',
+    forgotMsg: 'Enter your phone number to request password reset from manager',
+    forgotPhoneLabel: 'Phone Number', sendRequestBtn: '📧 Send Request',
+    orContact: 'Or contact manager directly:',
+    resetCustTitle: '🔑 Reset Customer Password',
+    resetCustLabel: 'Customer:', lblNewCustPass: 'New Password',
+    lblConfirmCustPass: 'Confirm Password', btnResetCustPass: '✅ Set New Password',
+    changePassBtn: '🔑 Change Password',
+    requestSent: '✅ Your request has been sent. Manager will contact you soon',
+    customerNotFound: '❌ Phone number not registered',
     wrongPass: '❌ Wrong password!', notFound: '❌ Customer not found!',
     noTxs: 'No transactions', noCusts: 'No customers',
     saved: '✅ Saved', fillAll: '⚠️ Fill all fields!',
-    phoneExists: '⚠️ Phone already registered!', registered: '✅ Registered!'
+    phoneExists: '⚠️ Phone already registered!', registered: '✅ Registered!',
+    passMismatch: '❌ Passwords do not match',
+    passChanged: '✅ Password changed successfully'
   }
 };
 
@@ -621,34 +696,23 @@ function t(key) { return translations[currentLang][key] || key; }
 
 function setLang(lang) {
   currentLang = lang;
-  
-  // تحديث اتجاه الصفحة
   document.body.style.direction = (lang === 'ar' || lang === 'ku') ? 'rtl' : 'ltr';
   document.documentElement.lang = lang;
   document.documentElement.dir = (lang === 'ar' || lang === 'ku') ? 'rtl' : 'ltr';
-  
-  // تحديث أزرار اللغة النشطة
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
-  
-  // تحديث جميع النصوص
+  document.querySelectorAll('.lang-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.lang === lang); });
   updateAllTexts();
+  if (currentRole === 'customer') renderCustomerView();
+  if (currentRole === 'admin') renderAdminView();
 }
 
 function updateAllTexts() {
-  // Splash
   if (el('splash-title')) el('splash-title').textContent = t('splashTitle');
   if (el('splash-sub')) el('splash-sub').textContent = t('splashSub');
-  
-  // Welcome
   if (el('welcome-title')) el('welcome-title').textContent = t('welcomeTitle');
   if (el('welcome-sub')) el('welcome-sub').textContent = t('welcomeSub');
   if (el('welcome-msg')) el('welcome-msg').textContent = t('welcomeMsg');
   if (el('install-btn')) el('install-btn').textContent = t('installBtn');
   if (el('continue-btn')) el('continue-btn').textContent = t('continueBtn');
-  
-  // Login
   if (el('login-title')) el('login-title').textContent = t('loginTitle');
   if (el('login-sub')) el('login-sub').textContent = t('loginSub');
   if (el('admin-tab')) el('admin-tab').textContent = t('adminTab');
@@ -658,21 +722,16 @@ function updateAllTexts() {
   if (el('phone-label')) el('phone-label').textContent = t('phoneLabel');
   if (el('customer-password-label')) el('customer-password-label').textContent = t('customerPasswordLabel');
   if (el('customer-login-btn')) el('customer-login-btn').textContent = t('customerLoginBtn');
-  
-  // Admin Header
+  if (el('forgot-password-btn')) el('forgot-password-btn').textContent = t('forgotPasswordBtn');
   if (el('admin-header-title')) el('admin-header-title').textContent = t('adminHeaderTitle');
   if (el('admin-panel-label')) el('admin-panel-label').textContent = t('adminPanelLabel');
   if (el('profile-btn')) el('profile-btn').innerHTML = t('profileBtn');
   if (el('logout-btn')) el('logout-btn').innerHTML = t('logoutBtn');
-  
-  // Tabs
   if (el('tab-daily')) el('tab-daily').textContent = t('tabDaily');
   if (el('tab-customers')) el('tab-customers').textContent = t('tabCustomers');
   if (el('tab-txs')) el('tab-txs').textContent = t('tabTxs');
   if (el('tab-rates')) el('tab-rates').textContent = t('tabRates');
   if (el('tab-new')) el('tab-new').textContent = t('tabNew');
-  
-  // Daily
   if (el('yesterday-btn')) el('yesterday-btn').textContent = t('yesterdayBtn');
   if (el('today-btn')) el('today-btn').textContent = t('todayBtn');
   if (el('tomorrow-btn')) el('tomorrow-btn').textContent = t('tomorrowBtn');
@@ -697,12 +756,8 @@ function updateAllTexts() {
   if (el('bank-value-label')) el('bank-value-label').textContent = t('bankValueLabel');
   if (el('total-funds-label')) el('total-funds-label').textContent = t('totalFundsLabel');
   if (el('daily-txs-title')) el('daily-txs-title').textContent = t('dailyTxsTitle');
-  
-  // Rates
   if (el('rates-title')) el('rates-title').textContent = t('ratesTitle');
   if (el('save-rates-btn')) el('save-rates-btn').textContent = t('saveRatesBtn');
-  
-  // New Customer
   if (el('new-cust-title')) el('new-cust-title').textContent = t('newCustTitle');
   if (el('fname-label')) el('fname-label').textContent = t('fnameLabel');
   if (el('lname-label')) el('lname-label').textContent = t('lnameLabel');
@@ -710,15 +765,23 @@ function updateAllTexts() {
   if (el('id-label')) el('id-label').textContent = t('idLabel');
   if (el('newpass-label')) el('newpass-label').textContent = t('newpassLabel');
   if (el('register-btn')) el('register-btn').textContent = t('registerBtn');
-  
-  // Customer Screen
   if (el('cust-header-title')) el('cust-header-title').textContent = t('custHeaderTitle');
   if (el('cust-welcome-label')) el('cust-welcome-label').textContent = t('custWelcomeLabel');
   if (el('cust-logout-btn')) el('cust-logout-btn').innerHTML = t('custLogoutBtn');
   if (el('my-balance-title')) el('my-balance-title').textContent = t('myBalanceTitle');
+  if (el('admin-label')) el('admin-label').textContent = t('adminLabel');
+  if (el('admin-name')) el('admin-name').textContent = t('adminName');
   if (el('contact-admin-msg')) el('contact-admin-msg').textContent = t('contactAdminMsg');
-  
-  // Modals
+  if (el('forgot-title')) el('forgot-title').textContent = t('forgotTitle');
+  if (el('forgot-msg')) el('forgot-msg').textContent = t('forgotMsg');
+  if (el('forgot-phone-label')) el('forgot-phone-label').textContent = t('forgotPhoneLabel');
+  if (el('send-request-btn')) el('send-request-btn').textContent = t('sendRequestBtn');
+  if (el('or-contact')) el('or-contact').textContent = t('orContact');
+  if (el('reset-cust-title')) el('reset-cust-title').textContent = t('resetCustTitle');
+  if (el('reset-cust-label')) el('reset-cust-label').textContent = t('resetCustLabel');
+  if (el('lbl-new-cust-pass')) el('lbl-new-cust-pass').textContent = t('lblNewCustPass');
+  if (el('lbl-confirm-cust-pass')) el('lbl-confirm-cust-pass').textContent = t('lblConfirmCustPass');
+  if (el('btn-reset-cust-pass')) el('btn-reset-cust-pass').textContent = t('btnResetCustPass');
   if (el('install-title')) el('install-title').textContent = t('installTitle');
   if (el('ok-btn')) el('ok-btn').textContent = t('okBtn');
   if (el('profile-title')) el('profile-title').textContent = t('profileTitle');
@@ -729,13 +792,14 @@ function updateAllTexts() {
   if (el('save-profile-btn')) el('save-profile-btn').textContent = t('saveProfileBtn');
 }
 
-// ==================== بقية الكود (نفس الكود السابق) ====================
+// ==================== CORE FUNCTIONS ====================
 const ENCRYPTION_KEY = "S@yr4f4#M$st4qb4l!2025*XK9@zQ7!#&^mP3rVnL8wE";
-const STORE = 'sarafa_office_v3';
+const STORE = 'sarafa_office_v4';
 const ADMIN_HASH = CryptoJS.SHA256('admin123').toString();
 
 let DB, currentUser = null, currentRole = null, selectedDailyDate = new Date().toISOString().split('T')[0];
 let deferredPrompt;
+let resetCustPhone = null;
 
 function initDB() {
   return {
@@ -763,10 +827,7 @@ function save(d) { localStorage.setItem(STORE, CryptoJS.AES.encrypt(JSON.stringi
 function fmt(n) { return Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
 function el(id) { return document.getElementById(id); }
 function parseNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
-function formatNumberInput(inp) {
-  let v = inp.value.replace(/[^0-9]/g, '');
-  if (v) inp.value = Number(v).toLocaleString('en-US');
-}
+function formatNumberInput(inp) { let v = inp.value.replace(/[^0-9]/g, ''); if (v) inp.value = Number(v).toLocaleString('en-US'); }
 
 DB = load();
 
@@ -797,8 +858,7 @@ function updateTotalOfficeFunds() {
   el('kork-value').textContent = fmt(korkValue) + ' IQD';
   el('bank-value').textContent = fmt(bank) + ' IQD';
   
-  const total = iqd + usdValue + korkValue + bank;
-  el('total-office-funds').textContent = fmt(total) + ' IQD';
+  el('total-office-funds').textContent = fmt(iqd + usdValue + korkValue + bank) + ' IQD';
 }
 
 function saveOfficeFunds() {
@@ -849,23 +909,13 @@ function renderDailySummary() {
 function renderDailyTransactions() {
   const todayTxs = DB.transactions.filter(tx => tx.date.startsWith(selectedDailyDate.split('-').reverse().join('/')));
   const container = el('daily-transactions');
-  
-  if (todayTxs.length === 0) {
-    container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`;
-    return;
-  }
-  
+  if (todayTxs.length === 0) { container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
   container.innerHTML = todayTxs.reverse().map(tx => `
     <div class="tx-item">
       <div class="tx-icon ${tx.type}">${tx.type === 'plus' ? '⬆️' : '⬇️'}</div>
-      <div class="tx-details">
-        <div class="tx-name">${tx.name}</div>
-        <div class="tx-note">${tx.note || '—'}</div>
-        <div class="tx-date">${tx.date}</div>
-      </div>
+      <div class="tx-details"><div class="tx-name">${tx.name}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div>
       <div class="tx-amount ${tx.type}">${tx.type === 'plus' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function changeDailyDate(offset) {
@@ -879,32 +929,24 @@ function renderCustomers() {
   const q = (el('search-cust')?.value || '').toLowerCase();
   const custs = Object.values(DB.customers).filter(c => (c.fname + ' ' + c.lname + ' ' + c.phone).toLowerCase().includes(q));
   const list = el('customers-list');
-  
   if (!custs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">👥</div>${t('noCusts')}</div>`; return; }
-  
   list.innerHTML = custs.map(c => `
     <div class="customer-card">
       <div class="cust-name">👤 ${c.fname} ${c.lname}</div>
       <div class="cust-info">${c.phone} | ID: ${c.id_no}</div>
-      <div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => 
-        `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`
-      ).join('')}</div>
-    </div>
-  `).join('');
+      <div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">${t('changePassBtn')}</button>
+      </div>
+    </div>`).join('');
 }
 
 function addCustomer() {
   const fname = el('new-fname').value.trim(), lname = el('new-lname').value.trim();
   const phone = el('new-tel').value.trim(), id_no = el('new-id').value.trim(), pass = el('new-pass').value;
-  
   if (!fname || !lname || !phone || !id_no || !pass) { alert(t('fillAll')); return; }
   if (DB.customers[phone]) { alert(t('phoneExists')); return; }
-  
-  DB.customers[phone] = {
-    fname, lname, phone, id_no,
-    pass: CryptoJS.SHA256(pass).toString(),
-    balance: { USD: 0, EUR: 0, TRY: 0, IQD: 0, GBP: 0, SAR: 0 }
-  };
+  DB.customers[phone] = { fname, lname, phone, id_no, pass: CryptoJS.SHA256(pass).toString(), balance: { USD: 0, EUR: 0, TRY: 0, IQD: 0, GBP: 0, SAR: 0 } };
   save(DB);
   el('new-fname').value = ''; el('new-lname').value = ''; el('new-tel').value = ''; el('new-id').value = ''; el('new-pass').value = '';
   alert(t('registered'));
@@ -919,15 +961,12 @@ function renderRates() {
         <input type="text" id="rate-${c}" value="${fmt(DB.rates[c] || 1)}" oninput="formatNumberInput(this)" style="width:130px;margin-bottom:0;text-align:center;font-weight:700;color:var(--gold)">
         <span style="color:var(--muted)">IQD</span>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function saveRates() {
   ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); });
-  save(DB);
-  alert(t('saved'));
-  renderDailySummary();
+  save(DB); alert(t('saved')); renderDailySummary();
 }
 
 function renderAllTxs() {
@@ -937,22 +976,15 @@ function renderAllTxs() {
   list.innerHTML = txs.map(tx => `
     <div class="tx-item">
       <div class="tx-icon ${tx.type}">${tx.type === 'plus' ? '⬆️' : '⬇️'}</div>
-      <div class="tx-details">
-        <div class="tx-name">${tx.name}</div>
-        <div class="tx-note">${tx.note || '—'}</div>
-        <div class="tx-date">${tx.date}</div>
-      </div>
+      <div class="tx-details"><div class="tx-name">${tx.name}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div>
       <div class="tx-amount ${tx.type}">${tx.type === 'plus' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function showAdminProfileModal() {
   const admin = DB.admin || { email: '' };
   el('admin-email').value = admin.email || '';
-  el('current-password').value = '';
-  el('new-password').value = '';
-  el('confirm-password').value = '';
+  el('current-password').value = ''; el('new-password').value = ''; el('confirm-password').value = '';
   el('modal-admin-profile').classList.add('show');
 }
 function closeAdminProfileModal() { el('modal-admin-profile').classList.remove('show'); }
@@ -965,7 +997,7 @@ function updateAdminProfile() {
   
   if (newPass) {
     if (CryptoJS.SHA256(currentPass).toString() !== DB.admin.passwordHash) { alert(t('wrongPass')); return; }
-    if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; }
+    if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
     DB.admin.passwordHash = CryptoJS.SHA256(newPass).toString();
   }
   DB.admin.email = email;
@@ -974,6 +1006,44 @@ function updateAdminProfile() {
   closeAdminProfileModal();
 }
 
+// ==================== FORGOT PASSWORD ====================
+function showForgotPasswordModal() {
+  el('forgot-phone').value = '';
+  el('modal-forgot-password').classList.add('show');
+}
+function closeForgotPasswordModal() { el('modal-forgot-password').classList.remove('show'); }
+
+function sendResetRequest() {
+  const phone = el('forgot-phone').value.trim();
+  if (!DB.customers[phone]) { alert(t('customerNotFound')); return; }
+  alert(t('requestSent'));
+  closeForgotPasswordModal();
+}
+
+// ==================== RESET CUSTOMER PASSWORD ====================
+function showResetCustPasswordModal(phone) {
+  resetCustPhone = phone;
+  const c = DB.customers[phone];
+  el('reset-cust-name').textContent = `${c.fname} ${c.lname}`;
+  el('new-cust-password').value = '';
+  el('confirm-cust-password').value = '';
+  el('modal-reset-cust-password').classList.add('show');
+}
+function closeResetCustPasswordModal() { el('modal-reset-cust-password').classList.remove('show'); resetCustPhone = null; }
+
+function resetCustomerPassword() {
+  const newPass = el('new-cust-password').value;
+  const confirmPass = el('confirm-cust-password').value;
+  if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
+  if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; }
+  DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString();
+  save(DB);
+  alert(t('passChanged'));
+  closeResetCustPasswordModal();
+  renderCustomers();
+}
+
+// ==================== AUTH ====================
 function switchLoginTab(tab) {
   el('login-admin').style.display = tab === 'admin' ? 'block' : 'none';
   el('login-customer').style.display = tab === 'customer' ? 'block' : 'none';
@@ -985,8 +1055,7 @@ function loginAdmin() {
   const admin = DB.admin || { passwordHash: ADMIN_HASH };
   if (CryptoJS.SHA256(pass).toString() === admin.passwordHash) {
     currentRole = 'admin'; currentUser = 'admin';
-    showScreen('admin');
-    renderDailySummary(); renderCustomers(); renderAllTxs(); renderRates();
+    showScreen('admin'); renderAdminView();
   } else { alert(t('wrongPass')); }
 }
 
@@ -995,15 +1064,23 @@ function loginCustomer() {
   if (!DB.customers[phone]) { alert(t('notFound')); return; }
   if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert(t('wrongPass')); return; }
   currentRole = 'customer'; currentUser = phone;
-  showScreen('customer');
-  const c = DB.customers[phone];
+  showScreen('customer'); renderCustomerView();
+}
+
+function logout() { currentUser = null; currentRole = null; showScreen('login'); }
+
+function renderAdminView() {
+  renderDailySummary(); renderCustomers(); renderAllTxs(); renderRates();
+}
+
+function renderCustomerView() {
+  const c = DB.customers[currentUser];
+  if (!c) return;
   el('cust-welcome-label').textContent = t('custWelcomeLabel') + ', ' + c.fname + ' ' + c.lname;
   el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `
     <div class="metric"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>
   `).join('');
 }
-
-function logout() { currentUser = null; currentRole = null; el('admin-pass').value = ''; el('cust-phone').value = ''; el('cust-pass').value = ''; showScreen('login'); }
 
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
 
@@ -1022,6 +1099,7 @@ function showTab(name) {
 
 function goToLogin() { showScreen('login'); }
 
+// ==================== INSTALL ====================
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
 function showInstallInstructions() {
@@ -1036,12 +1114,12 @@ function showInstallInstructions() {
   }
   el('install-modal').classList.add('show');
 }
-
 function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); }); } }
 function closeInstallModal() { el('install-modal').classList.remove('show'); }
 
+// ==================== INIT ====================
 window.addEventListener('load', () => {
-  setLang('ar'); // اللغة الافتراضية العربية
+  setLang('ar');
   setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 2000);
 });
 </script>
