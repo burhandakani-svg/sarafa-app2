@@ -36,10 +36,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min
 .btn-icon{background:rgba(201,168,76,.15);border:1px solid var(--border);color:var(--gold);padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer;margin-left:8px}
 .btn-logout{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);color:var(--red);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer}
 .btn-danger{background:rgba(231,76,60,.2);border:1px solid var(--red);color:var(--red);}
-.lang-bar{display:flex;gap:8px;padding:14px 20px 0;overflow-x:auto;scrollbar-width:none}
-.lang-bar::-webkit-scrollbar{display:none}
-.lang-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s}
-.lang-btn.active{background:var(--gold);border-color:var(--gold);color:#000;font-weight:700}
 .login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px}
 .login-logo{font-size:56px;margin-bottom:12px}
 .login-title{font-size:26px;font-weight:700;color:var(--gold);margin-bottom:4px}
@@ -73,8 +69,10 @@ input:focus,select:focus{border-color:var(--gold)}
 .metric-value{font-size:15px;font-weight:700;direction:ltr}
 .metric-value.neg{color:var(--red)}
 .metric-value.pos{color:var(--green)}
-.customer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.customer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+.customer-card:hover{background:var(--bg3)}
 .customer-card.has-debt{border-color:rgba(231,76,60,.6);border-width:2px}
+.customer-card.has-credit{border-color:rgba(46,204,113,.6);border-width:2px}
 .cust-name{font-size:16px;font-weight:700;margin-bottom:4px}
 .cust-info{font-size:12px;color:var(--muted);direction:ltr;margin-bottom:10px}
 .cust-balances{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -139,28 +137,43 @@ input:focus,select:focus{border-color:var(--gold)}
 .debt-total-row{background:rgba(231,76,60,.2);border-radius:8px;padding:12px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
 .debt-total-label{color:var(--red);font-weight:700;font-size:15px}
 .debt-total-value{color:var(--red);font-weight:900;font-size:18px;direction:ltr}
+.credit-summary{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:12px;padding:16px;margin-bottom:20px}
+.credit-summary-title{color:var(--green);font-weight:700;margin-bottom:12px;font-size:16px}
+.credit-summary-row{display:flex;justify-content:space-between;padding:6px 0}
+.credit-summary-label{color:var(--muted)}
+.credit-summary-value{font-weight:700;direction:ltr}
+.credit-summary-value.green{color:var(--green)}
+.credit-total-row{background:rgba(46,204,113,.2);border-radius:8px;padding:12px;margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.credit-total-label{color:var(--green);font-weight:700;font-size:15px}
+.credit-total-value{color:var(--green);font-weight:900;font-size:18px;direction:ltr}
 .debt-card{background:var(--card);border:1px solid rgba(231,76,60,.4);border-radius:12px;padding:16px;margin-bottom:12px}
-.debt-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.debt-card-name{font-size:16px;font-weight:700}
-.debt-card-phone{font-size:12px;color:var(--muted);direction:ltr}
-.debt-items-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
-.debt-item-card{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
-.debt-item-currency{font-size:14px;color:var(--gold);margin-bottom:4px}
+.credit-card{background:var(--card);border:1px solid rgba(46,204,113,.4);border-radius:12px;padding:16px;margin-bottom:12px}
+.debt-card-header, .credit-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.debt-card-name, .credit-card-name{font-size:16px;font-weight:700}
+.debt-card-phone, .credit-card-phone{font-size:12px;color:var(--muted);direction:ltr}
+.debt-items-grid, .credit-items-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+.debt-item-card, .credit-item-card{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
+.debt-item-currency, .credit-item-currency{font-size:14px;color:var(--gold);margin-bottom:4px}
 .debt-item-amount{font-size:18px;font-weight:700;color:var(--red);direction:ltr}
-.debt-item-iqd{font-size:11px;color:var(--muted);margin-top:2px;direction:ltr}
+.credit-item-amount{font-size:18px;font-weight:700;color:var(--green);direction:ltr}
+.debt-item-iqd, .credit-item-iqd{font-size:11px;color:var(--muted);margin-top:2px;direction:ltr}
 .how-to-use-box{background:var(--card);border:1px solid var(--blue);border-radius:16px;padding:20px;margin-bottom:20px}
 .how-to-use-title{color:var(--blue);font-weight:700;margin-bottom:12px;font-size:16px}
 .how-to-use-step{display:flex;gap:12px;margin-bottom:12px;align-items:center}
 .step-number{background:var(--blue);color:white;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
 .step-text{color:var(--text);font-size:13px}
+.calendar-shortcuts{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.calendar-shortcut{flex:1;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;cursor:pointer;text-align:center}
+.calendar-shortcut.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.full-balance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 </style>
 </head>
 <body>
 
 <div id="splash">
   <div class="splash-logo">🏦</div>
-  <div class="splash-title" id="splash-title">صيرفة المستقبل</div>
-  <div class="splash-sub" id="splash-sub">Sayrafa Al-Mustaqbal</div>
+  <div class="splash-title">صيرفة المستقبل</div>
+  <div class="splash-sub">Sayrafa Al-Mustaqbal</div>
   <div class="splash-bar"><div class="splash-fill"></div></div>
 </div>
 
@@ -168,15 +181,14 @@ input:focus,select:focus{border-color:var(--gold)}
 <div id="screen-welcome" class="screen active">
   <div class="login-wrap">
     <div class="login-logo">🏦</div>
-    <div class="login-title" id="welcome-title">صيرفة المستقبل</div>
-    <div class="login-sub" id="welcome-sub">نظام إدارة الصرافة المتكامل</div>
+    <div class="login-title">صيرفة المستقبل</div>
+    <div class="login-sub">نظام إدارة الصرافة المتكامل</div>
     
-    <!-- شرح كيفية دخول الزبون -->
     <div class="how-to-use-box">
       <div class="how-to-use-title">📱 كيف تستخدم التطبيق؟</div>
       <div class="how-to-use-step">
         <div class="step-number">1</div>
-        <div class="step-text">المدير: يسجل دخول بكلمة السر (admin123) ويدير كل شيء</div>
+        <div class="step-text">المدير: يسجل دخول بكلمة السر ويدير كل شيء (مرتبط بجهاز واحد)</div>
       </div>
       <div class="how-to-use-step">
         <div class="step-number">2</div>
@@ -189,16 +201,9 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
     
     <div class="card" style="text-align:center">
-      <button class="install-btn" onclick="showInstallInstructions()" id="install-btn">📲 تثبيت التطبيق على الجهاز</button>
+      <button class="install-btn" onclick="showInstallInstructions()">📲 تثبيت التطبيق على الجهاز</button>
       <div style="margin:20px 0;border-top:1px solid var(--border)"></div>
-      <button class="btn" onclick="goToLogin()" id="continue-btn">➡️ متابعة للتطبيق</button>
-    </div>
-    
-    <div class="lang-bar" style="margin-top:20px;justify-content:center">
-      <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">🇸🇦 عربي</button>
-      <button class="lang-btn" data-lang="ku" onclick="setLang('ku')">🏔️ کوردی</button>
-      <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">🇹🇷 Türkçe</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="btn" onclick="goToLogin()">➡️ متابعة للتطبيق</button>
     </div>
   </div>
 </div>
@@ -207,35 +212,28 @@ input:focus,select:focus{border-color:var(--gold)}
 <div id="screen-login" class="screen">
   <div class="login-wrap">
     <div class="login-logo">🏦</div>
-    <div class="login-title" id="login-title">صيرفة المستقبل</div>
-    <div class="login-sub" id="login-sub">نظام إدارة الصرافة المتكامل</div>
+    <div class="login-title">صيرفة المستقبل</div>
+    <div class="login-sub">نظام إدارة الصرافة المتكامل</div>
     
     <div class="card">
       <div class="toggle-row">
-        <button class="toggle-btn active" onclick="switchLoginTab('admin')" id="admin-tab">👑 المدير</button>
-        <button class="toggle-btn" onclick="switchLoginTab('customer')" id="customer-tab">👤 الزبون</button>
+        <button class="toggle-btn active" onclick="switchLoginTab('admin')">👑 المدير</button>
+        <button class="toggle-btn" onclick="switchLoginTab('customer')">👤 الزبون</button>
       </div>
       <div id="alert-login" class="alert error"></div>
       <div id="login-admin">
-        <label id="password-label">كلمة السر</label>
+        <label>كلمة السر</label>
         <input type="password" id="admin-pass" placeholder="••••••••">
-        <button class="btn" onclick="loginAdmin()" id="login-btn">دخول</button>
+        <button class="btn" onclick="loginAdmin()">دخول</button>
       </div>
       <div id="login-customer" style="display:none">
-        <label id="phone-label">رقم الهاتف</label>
+        <label>رقم الهاتف</label>
         <input type="tel" id="cust-phone" placeholder="+964..." value="">
-        <label id="customer-password-label">كلمة السر</label>
+        <label>كلمة السر</label>
         <input type="password" id="cust-pass" placeholder="••••••••">
-        <button class="btn" onclick="loginCustomer()" id="customer-login-btn">دخول</button>
-        <button class="btn btn-outline" onclick="showForgotPasswordModal()" id="forgot-password-btn" style="margin-top:8px">🔑 نسيت كلمة السر؟</button>
+        <button class="btn" onclick="loginCustomer()">دخول</button>
+        <button class="btn btn-outline" onclick="showForgotPasswordModal()" style="margin-top:8px">🔑 نسيت كلمة السر؟</button>
       </div>
-    </div>
-    
-    <div class="lang-bar" style="margin-top:20px;justify-content:center">
-      <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">🇸🇦 عربي</button>
-      <button class="lang-btn" data-lang="ku" onclick="setLang('ku')">🏔️ کوردی</button>
-      <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">🇹🇷 Türkçe</button>
-      <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
     </div>
   </div>
 </div>
@@ -244,122 +242,64 @@ input:focus,select:focus{border-color:var(--gold)}
 <div id="screen-admin" class="screen">
   <div class="header">
     <div>
-      <div class="header-logo">🏦 <span id="admin-header-title">صيرفة المستقبل</span></div>
-      <div class="header-sub" id="admin-panel-label">لوحة المدير</div>
+      <div class="header-logo">🏦 صيرفة المستقبل</div>
+      <div class="header-sub">لوحة المدير</div>
     </div>
     <div style="display:flex;gap:8px">
-      <button class="btn-icon" onclick="showAdminProfileModal()" id="profile-btn">👤 الملف</button>
-      <button class="btn-logout" onclick="logout()" id="logout-btn">🚪 خروج</button>
+      <button class="btn-icon" onclick="showAdminProfileModal()">👤 الملف</button>
+      <button class="btn-logout" onclick="logout()">🚪 خروج</button>
     </div>
-  </div>
-  
-  <div class="lang-bar">
-    <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">🇸🇦 عربي</button>
-    <button class="lang-btn" data-lang="ku" onclick="setLang('ku')">🏔️ کوردی</button>
-    <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">🇹🇷 Türkçe</button>
-    <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
   </div>
   
   <div class="tabs">
-    <button class="tab active" onclick="showTab('daily')" id="tab-daily">📊 اليومية</button>
-    <button class="tab" onclick="showTab('customers')" id="tab-customers">👥 زبائن</button>
-    <button class="tab" onclick="showTab('txs')" id="tab-txs">💸 حركات</button>
-    <button class="tab" onclick="showTab('debts')" id="tab-debts">🔴 ديون</button>
-    <button class="tab" onclick="showTab('rates')" id="tab-rates">💱 أسعار</button>
-    <button class="tab" onclick="showTab('new-customer')" id="tab-new">➕ جديد</button>
+    <button class="tab active" onclick="showTab('daily')">📊 اليومية</button>
+    <button class="tab" onclick="showTab('customers')">👥 زبائن</button>
+    <button class="tab" onclick="showTab('txs')">💸 حركات</button>
+    <button class="tab" onclick="showTab('debts')">🔴 ديون</button>
+    <button class="tab" onclick="showTab('credits')">🟢 دائنون</button>
+    <button class="tab" onclick="showTab('rates')">💱 أسعار</button>
+    <button class="tab" onclick="showTab('new-customer')">➕ جديد</button>
   </div>
 
   <!-- PANEL: اليومية -->
   <div id="panel-daily" class="tab-panel active">
     <div class="content">
-      <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button class="daily-date-btn" onclick="changeDailyDate(-1)" id="yesterday-btn">◀ أمس</button>
-        <button class="daily-date-btn active" onclick="changeDailyDate(0)" id="today-btn">📅 اليوم</button>
-        <button class="daily-date-btn" onclick="changeDailyDate(1)" id="tomorrow-btn">غداً ▶</button>
+      <div style="margin-bottom:16px">
+        <label style="color:var(--gold);margin-bottom:8px">📅 اختر التاريخ</label>
+        <input type="date" id="daily-date-picker" onchange="changeDailyDateFromPicker()" style="margin-bottom:8px;direction:ltr">
+        
+        <div class="calendar-shortcuts">
+          <button class="calendar-shortcut active" onclick="setDailyDateShortcut('today')">📅 اليوم</button>
+          <button class="calendar-shortcut" onclick="setDailyDateShortcut('yesterday')">◀ أمس</button>
+          <button class="calendar-shortcut" onclick="setDailyDateShortcut('monthStart')">📆 أول الشهر</button>
+          <button class="calendar-shortcut" onclick="setDailyDateShortcut('monthEnd')">📆 آخر الشهر</button>
+        </div>
       </div>
       
       <div class="daily-summary">
         <div class="daily-title" id="daily-date-title">📊 2026-04-13</div>
-        <div class="daily-row"><span class="daily-label" id="opening-label">🏦 الرصيد الافتتاحي</span><span class="daily-value" id="opening-balance">0 IQD</span></div>
-        <div class="daily-row"><span class="daily-label" id="current-label">💰 الرصيد الحالي</span><span class="daily-value" id="current-balance">0 IQD</span></div>
-        <div class="daily-row"><span class="daily-label" id="profit-label">📈 صافي الربح (IQD)</span><span class="daily-value profit" id="profit-value">+0 IQD</span></div>
+        <div class="daily-row"><span class="daily-label">🏦 الرصيد الافتتاحي</span><span class="daily-value" id="opening-balance">0 IQD</span></div>
+        <div class="daily-row"><span class="daily-label">💰 الرصيد الحالي</span><span class="daily-value" id="current-balance">0 IQD</span></div>
+        <div class="daily-row"><span class="daily-label">📈 صافي الربح (IQD)</span><span class="daily-value profit" id="profit-value">+0 IQD</span></div>
       </div>
       
       <div class="office-funds">
         <div class="funds-title">
-          <span id="funds-title">💼 موجودات الصيرفة</span>
-          <button onclick="saveOfficeFunds()" id="save-funds-btn">💾 حفظ</button>
+          <span>💼 موجودات الصيرفة</span>
+          <button onclick="saveOfficeFunds()">💾 حفظ</button>
         </div>
         
         <div class="funds-grid">
-          <div class="fund-block">
-            <div class="fund-block-title" id="iqd-title">💵 الدينار العراقي</div>
-            <div class="fund-item">
-              <div class="fund-label" id="amount-label">المبلغ (IQD)</div>
-              <input type="text" id="office-iqd" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-            </div>
-            <div class="fund-total">
-              <span class="fund-total-label" id="value-label">القيمة:</span>
-              <span class="fund-total-value" id="office-iqd-value">0 IQD</span>
-            </div>
-          </div>
-          
-          <div class="fund-block">
-            <div class="fund-block-title" id="usd-title">💵 الدولار الأمريكي</div>
-            <div class="fund-row">
-              <div class="fund-item">
-                <div class="fund-label" id="quantity-label">الكمية (USD)</div>
-                <input type="text" id="office-usd-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-              </div>
-              <div class="fund-item">
-                <div class="fund-label" id="rate-label">سعر الصرف</div>
-                <input type="text" id="office-usd-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-              </div>
-            </div>
-            <div class="fund-total">
-              <span class="fund-total-label" id="value-iqd-label">القيمة (IQD):</span>
-              <span class="fund-total-value" id="office-usd-value">0 IQD</span>
-            </div>
-          </div>
-          
-          <div class="fund-block">
-            <div class="fund-block-title" id="kork-title">💳 كارت كورك (دولار)</div>
-            <div class="fund-row">
-              <div class="fund-item">
-                <div class="fund-label" id="kork-quantity-label">الكمية (USD)</div>
-                <input type="text" id="kork-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-              </div>
-              <div class="fund-item">
-                <div class="fund-label" id="kork-rate-label">سعر الصرف</div>
-                <input type="text" id="kork-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-              </div>
-            </div>
-            <div class="fund-total">
-              <span class="fund-total-label" id="kork-value-label">القيمة (IQD):</span>
-              <span class="fund-total-value" id="kork-value">0 IQD</span>
-            </div>
-          </div>
-          
-          <div class="fund-block">
-            <div class="fund-block-title" id="bank-title">🏦 فلوس بالبنوك</div>
-            <div class="fund-item">
-              <div class="fund-label" id="bank-amount-label">المبلغ (IQD)</div>
-              <input type="text" id="bank-funds" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr">
-            </div>
-            <div class="fund-total">
-              <span class="fund-total-label" id="bank-value-label">القيمة:</span>
-              <span class="fund-total-value" id="bank-value">0 IQD</span>
-            </div>
-          </div>
+          <div class="fund-block"><div class="fund-block-title">💵 الدينار العراقي</div><div class="fund-item"><div class="fund-label">المبلغ (IQD)</div><input type="text" id="office-iqd" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-total"><span class="fund-total-label">القيمة:</span><span class="fund-total-value" id="office-iqd-value">0 IQD</span></div></div>
+          <div class="fund-block"><div class="fund-block-title">💵 الدولار الأمريكي</div><div class="fund-row"><div class="fund-item"><div class="fund-label">الكمية (USD)</div><input type="text" id="office-usd-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-item"><div class="fund-label">سعر الصرف</div><input type="text" id="office-usd-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div></div><div class="fund-total"><span class="fund-total-label">القيمة (IQD):</span><span class="fund-total-value" id="office-usd-value">0 IQD</span></div></div>
+          <div class="fund-block"><div class="fund-block-title">💳 كارت كورك (دولار)</div><div class="fund-row"><div class="fund-item"><div class="fund-label">الكمية (USD)</div><input type="text" id="kork-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-item"><div class="fund-label">سعر الصرف</div><input type="text" id="kork-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div></div><div class="fund-total"><span class="fund-total-label">القيمة (IQD):</span><span class="fund-total-value" id="kork-value">0 IQD</span></div></div>
+          <div class="fund-block"><div class="fund-block-title">🏦 فلوس بالبنوك</div><div class="fund-item"><div class="fund-label">المبلغ (IQD)</div><input type="text" id="bank-funds" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-total"><span class="fund-total-label">القيمة:</span><span class="fund-total-value" id="bank-value">0 IQD</span></div></div>
         </div>
         
-        <div class="total-row">
-          <span class="total-label" id="total-funds-label">📊 إجمالي الموجودات (IQD)</span>
-          <span class="total-value" id="total-office-funds">0 IQD</span>
-        </div>
+        <div class="total-row"><span class="total-label">📊 إجمالي الموجودات (IQD)</span><span class="total-value" id="total-office-funds">0 IQD</span></div>
       </div>
       
-      <div class="section-title" id="daily-txs-title">📋 حركات اليوم</div>
+      <div class="section-title">📋 حركات اليوم</div>
       <div id="daily-transactions"></div>
     </div>
   </div>
@@ -377,27 +317,33 @@ input:focus,select:focus{border-color:var(--gold)}
 
   <!-- PANEL: الحركات -->
   <div id="panel-txs" class="tab-panel">
+    <div class="content"><div class="section-title">💸 جميع الحركات</div><div id="all-txs-list"></div></div>
+  </div>
+
+  <!-- PANEL: الديون -->
+  <div id="panel-debts" class="tab-panel">
     <div class="content">
-      <div class="section-title">💸 جميع الحركات</div>
-      <div id="all-txs-list"></div>
+      <div class="section-title">🔴 الزبائن المدينون (اللي مطلوب منهم)</div>
+      <div id="debts-summary-container"></div>
+      <div id="debts-list"></div>
     </div>
   </div>
 
-  <!-- PANEL: الديون (محسّن) -->
-  <div id="panel-debts" class="tab-panel">
+  <!-- PANEL: الدائنون (جديد) -->
+  <div id="panel-credits" class="tab-panel">
     <div class="content">
-      <div class="section-title" id="debts-title">🔴 الزبائن المدينون</div>
-      <div id="debts-summary-container"></div>
-      <div id="debts-list"></div>
+      <div class="section-title">🟢 الزبائن الدائنون (اللي مطلوب لك)</div>
+      <div id="credits-summary-container"></div>
+      <div id="credits-list"></div>
     </div>
   </div>
 
   <!-- PANEL: الأسعار -->
   <div id="panel-rates" class="tab-panel">
     <div class="content">
-      <div class="section-title" id="rates-title">💱 أسعار الصرف (IQD)</div>
+      <div class="section-title">💱 أسعار الصرف (IQD)</div>
       <div id="rates-list"></div>
-      <button class="btn" onclick="saveRates()" id="save-rates-btn">💾 حفظ الأسعار</button>
+      <button class="btn" onclick="saveRates()">💾 حفظ الأسعار</button>
       <div id="alert-rates" class="alert success" style="margin-top:12px"></div>
     </div>
   </div>
@@ -405,14 +351,14 @@ input:focus,select:focus{border-color:var(--gold)}
   <!-- PANEL: زبون جديد -->
   <div id="panel-new-customer" class="tab-panel">
     <div class="content">
-      <div class="section-title" id="new-cust-title">➕ تسجيل زبون جديد</div>
+      <div class="section-title">➕ تسجيل زبون جديد</div>
       <div id="alert-new" class="alert error"></div>
-      <label id="fname-label">الاسم</label><input type="text" id="new-fname">
-      <label id="lname-label">اللقب</label><input type="text" id="new-lname">
-      <label id="tel-label">رقم الهاتف</label><input type="tel" id="new-tel" placeholder="+964...">
-      <label id="id-label">رقم الهوية</label><input type="text" id="new-id">
-      <label id="newpass-label">كلمة السر</label><input type="password" id="new-pass" placeholder="••••••••">
-      <button class="btn" onclick="addCustomer()" id="register-btn">✅ تسجيل</button>
+      <label>الاسم</label><input type="text" id="new-fname">
+      <label>اللقب</label><input type="text" id="new-lname">
+      <label>رقم الهاتف</label><input type="tel" id="new-tel" placeholder="+964...">
+      <label>رقم الهوية</label><input type="text" id="new-id">
+      <label>كلمة السر</label><input type="password" id="new-pass" placeholder="••••••••">
+      <button class="btn" onclick="addCustomer()">✅ تسجيل</button>
       <p style="color:var(--muted);font-size:12px;margin-top:12px;text-align:center">بعد التسجيل، الزبون يكدر يسجل دخول من جهازه برقم الهاتف وكلمة السر</p>
     </div>
   </div>
@@ -421,46 +367,62 @@ input:focus,select:focus{border-color:var(--gold)}
 <!-- CUSTOMER SCREEN -->
 <div id="screen-customer" class="screen">
   <div class="header">
-    <div>
-      <div class="header-logo">🏦 <span id="cust-header-title">صيرفة المستقبل</span></div>
-      <div class="header-sub" id="cust-welcome-label">مرحباً</div>
-    </div>
-    <button class="btn-logout" onclick="logout()" id="cust-logout-btn">🚪 خروج</button>
-  </div>
-  <div class="lang-bar">
-    <button class="lang-btn active" data-lang="ar" onclick="setLang('ar')">🇸🇦 عربي</button>
-    <button class="lang-btn" data-lang="ku" onclick="setLang('ku')">🏔️ کوردی</button>
-    <button class="lang-btn" data-lang="tr" onclick="setLang('tr')">🇹🇷 Türkçe</button>
-    <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 English</button>
+    <div><div class="header-logo">🏦 صيرفة المستقبل</div><div class="header-sub" id="cust-welcome-label">مرحباً</div></div>
+    <button class="btn-logout" onclick="logout()">🚪 خروج</button>
   </div>
   <div class="content">
-    <!-- بطاقة المدير -->
     <div class="admin-contact-card">
-      <div class="admin-label" id="admin-label">👑 المدير / الصاحب</div>
-      <div class="admin-name" id="admin-name">برهان دكاني</div>
-      <div class="admin-phone" id="admin-phone">0750 123 4567</div>
-      <a href="https://wa.me/9647501234567" target="_blank" style="text-decoration:none">
-        <button style="width:100%;padding:12px;background:#000;border:none;border-radius:10px;color:var(--gold);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Tajawal',sans-serif">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#C9A84C"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          واتساب المدير
-        </button>
-      </a>
-      <a href="tel:07501234567" style="text-decoration:none">
-        <button style="width:100%;padding:10px;background:transparent;border:1px solid #000;border-radius:10px;color:#000;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;font-family:'Tajawal',sans-serif">
-          📞 اتصال مباشر
-        </button>
-      </a>
+      <div class="admin-label">👑 المدير / الصاحب</div><div class="admin-name">برهان دكاني</div><div class="admin-phone">0750 123 4567</div>
+      <a href="https://wa.me/9647501234567" target="_blank" style="text-decoration:none"><button style="width:100%;padding:12px;background:#000;border:none;border-radius:10px;color:var(--gold);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="#C9A84C"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>واتساب المدير</button></a>
+      <a href="tel:07501234567" style="text-decoration:none"><button style="width:100%;padding:10px;background:transparent;border:1px solid #000;border-radius:10px;color:#000;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px">📞 اتصال مباشر</button></a>
+    </div>
+    <div class="section-title">💰 رصيدي</div><div class="metrics" id="cust-balances"></div>
+    <div id="cust-debt-banner"></div>
+    <div class="section-title" style="margin-top:20px">📋 حركاتي</div><div id="cust-txs"></div>
+    <p style="color:var(--muted);text-align:center;margin-top:20px;font-size:13px">للاستفسار أو تغيير كلمة السر، تواصل مع المدير</p>
+  </div>
+</div>
+
+<!-- CUSTOMER TRANSACTIONS MODAL (مع حساب كامل) -->
+<div class="modal-overlay" id="modal-customer-txs">
+  <div class="modal" style="max-width:550px">
+    <button class="modal-close" onclick="closeCustomerTxsModal()">×</button>
+    <div class="modal-title">📋 حساب الزبون الكامل</div>
+    <div id="customer-txs-name" style="color:var(--gold);margin-bottom:16px;font-weight:700"></div>
+    
+    <!-- الرصيد الكامل بكل العملات -->
+    <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="color:var(--gold);margin-bottom:12px;font-weight:700">💰 الأرصدة الحالية</div>
+      <div id="full-balance-display" class="full-balance-grid"></div>
     </div>
     
-    <div class="section-title" id="my-balance-title">💰 رصيدي</div>
-    <div class="metrics" id="cust-balances"></div>
+    <label>📅 من تاريخ</label><input type="date" id="txs-from-date" style="margin-bottom:8px;direction:ltr">
+    <label>📅 إلى تاريخ</label><input type="date" id="txs-to-date" style="margin-bottom:8px;direction:ltr">
     
-    <div id="cust-debt-banner"></div>
+    <div class="calendar-shortcuts">
+      <button class="calendar-shortcut active" onclick="setDateRangeShortcut('today')">اليوم</button>
+      <button class="calendar-shortcut" onclick="setDateRangeShortcut('thisMonth')">هذا الشهر</button>
+      <button class="calendar-shortcut" onclick="setDateRangeShortcut('last3Months')">آخر 3 أشهر</button>
+      <button class="calendar-shortcut" onclick="setDateRangeShortcut('all')">الكل</button>
+    </div>
     
-    <div class="section-title" id="my-history-title" style="margin-top:20px">📋 حركاتي</div>
-    <div id="cust-txs"></div>
-    
-    <p style="color:var(--muted);text-align:center;margin-top:20px;font-size:13px" id="contact-admin-msg">للاستفسار أو تغيير كلمة السر، تواصل مع المدير</p>
+    <button class="btn" onclick="applyDateRangeFilter()" style="margin-bottom:16px">🔍 عرض الحركات</button>
+    <div id="customer-txs-list" style="max-height:350px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- EDIT CUSTOMER MODAL (تعديل بيانات الزبون) -->
+<div class="modal-overlay" id="modal-edit-customer">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEditCustomerModal()">×</button>
+    <div class="modal-title">✏️ تعديل بيانات الزبون</div>
+    <div id="alert-edit-cust" class="alert error"></div>
+    <input type="hidden" id="edit-cust-original-phone">
+    <label>الاسم</label><input type="text" id="edit-cust-fname" style="direction:rtl">
+    <label>اللقب</label><input type="text" id="edit-cust-lname" style="direction:rtl">
+    <label>رقم الهاتف</label><input type="tel" id="edit-cust-phone" placeholder="+964..." dir="ltr">
+    <label>رقم الهوية</label><input type="text" id="edit-cust-id" dir="ltr">
+    <button class="btn" onclick="saveEditedCustomer()">💾 حفظ التعديلات</button>
   </div>
 </div>
 
@@ -468,26 +430,13 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="modal-overlay" id="modal-tx">
   <div class="modal">
     <button class="modal-close" onclick="closeTxModal()">×</button>
-    <div class="modal-title" id="modal-tx-title">معاملة جديدة</div>
-    <div id="alert-tx" class="alert error"></div>
-    <label id="lbl-tx-type">نوع المعاملة</label>
-    <select id="tx-type" onchange="updatePreview()">
-      <option value="deposit" id="opt-deposit">⬆️ إيداع (الزبون أعطاني)</option>
-      <option value="withdraw" id="opt-withdraw">⬇️ سحب (أنا أعطيت الزبون)</option>
-    </select>
-    <label id="lbl-tx-amount">المبلغ</label>
-    <input type="text" id="tx-amount" placeholder="0" oninput="formatNumberInput(this);updatePreview()" dir="ltr">
-    <label id="lbl-tx-currency">العملة</label>
-    <select id="tx-currency" onchange="updatePreview()">
-      <option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option>
-      <option value="IQD" selected>IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option>
-    </select>
-    <label id="lbl-tx-note">ملاحظة</label>
-    <input type="text" id="tx-note" placeholder="اختياري" style="direction:rtl">
-    <div id="tx-preview" style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;display:none">
-      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)" id="preview-label">بعد المعاملة:</span><span id="preview-value" style="font-weight:700;direction:ltr">0</span></div>
-    </div>
-    <button class="btn" onclick="confirmTx()" id="btn-confirm-tx">✅ تأكيد المعاملة</button>
+    <div class="modal-title">معاملة جديدة</div><div id="alert-tx" class="alert error"></div>
+    <label>نوع المعاملة</label><select id="tx-type" onchange="updatePreview()"><option value="deposit">⬆️ إيداع (الزبون أعطاني)</option><option value="withdraw">⬇️ سحب (أنا أعطيت الزبون)</option></select>
+    <label>المبلغ</label><input type="text" id="tx-amount" placeholder="0" oninput="formatNumberInput(this);updatePreview()" dir="ltr">
+    <label>العملة</label><select id="tx-currency" onchange="updatePreview()"><option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option><option value="IQD" selected>IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option></select>
+    <label>ملاحظة</label><input type="text" id="tx-note" placeholder="اختياري" style="direction:rtl">
+    <div id="tx-preview" style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px;display:none"><div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">بعد المعاملة:</span><span id="preview-value" style="font-weight:700;direction:ltr">0</span></div></div>
+    <button class="btn" onclick="confirmTx()">✅ تأكيد المعاملة</button>
   </div>
 </div>
 
@@ -495,19 +444,12 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="modal-overlay" id="modal-edit-tx">
   <div class="modal">
     <button class="modal-close" onclick="closeEditTxModal()">×</button>
-    <div class="modal-title" id="edit-tx-title">✏️ تعديل الحركة</div>
-    <div id="alert-edit-tx" class="alert error"></div>
+    <div class="modal-title">✏️ تعديل الحركة</div><div id="alert-edit-tx" class="alert error"></div>
     <input type="hidden" id="edit-tx-id">
-    <label id="lbl-edit-amount">المبلغ</label>
-    <input type="text" id="edit-tx-amount" placeholder="0" oninput="formatNumberInput(this)" dir="ltr">
-    <label id="lbl-edit-currency">العملة</label>
-    <select id="edit-tx-currency">
-      <option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option>
-      <option value="IQD">IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option>
-    </select>
-    <label id="lbl-edit-note">ملاحظة</label>
-    <input type="text" id="edit-tx-note" placeholder="اختياري" style="direction:rtl">
-    <button class="btn" onclick="saveEditedTx()" id="btn-save-edit">💾 حفظ التعديلات</button>
+    <label>المبلغ</label><input type="text" id="edit-tx-amount" placeholder="0" oninput="formatNumberInput(this)" dir="ltr">
+    <label>العملة</label><select id="edit-tx-currency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="TRY">TRY</option><option value="IQD">IQD</option><option value="GBP">GBP</option><option value="SAR">SAR</option></select>
+    <label>ملاحظة</label><input type="text" id="edit-tx-note" placeholder="اختياري" style="direction:rtl">
+    <button class="btn" onclick="saveEditedTx()">💾 حفظ التعديلات</button>
   </div>
 </div>
 
@@ -515,21 +457,15 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="modal-overlay" id="modal-forgot-password">
   <div class="modal">
     <button class="modal-close" onclick="closeForgotPasswordModal()">×</button>
-    <div class="modal-title" id="forgot-title">🔑 استرجاع كلمة السر</div>
-    <div id="alert-forgot" class="alert info"></div>
-    <p style="margin-bottom:16px;color:var(--muted);text-align:center" id="forgot-msg">أدخل رقم هاتفك وسيتم إرسال طلب للمدير</p>
-    <label id="forgot-phone-label">رقم الهاتف</label>
-    <input type="tel" id="forgot-phone" placeholder="+964..." dir="ltr">
-    <button class="btn" onclick="sendResetRequest()" id="send-request-btn">📧 إرسال الطلب</button>
+    <div class="modal-title">🔑 استرجاع كلمة السر</div><div id="alert-forgot" class="alert info"></div>
+    <p style="margin-bottom:16px;color:var(--muted);text-align:center">أدخل رقم هاتفك وسيتم إرسال طلب للمدير</p>
+    <label>رقم الهاتف</label><input type="tel" id="forgot-phone" placeholder="+964..." dir="ltr">
+    <button class="btn" onclick="sendResetRequest()">📧 إرسال الطلب</button>
     <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
-    <p style="color:var(--muted);font-size:13px;text-align:center" id="or-contact">أو تواصل مباشرة مع المدير:</p>
+    <p style="color:var(--muted);font-size:13px;text-align:center">أو تواصل مباشرة مع المدير:</p>
     <div style="display:flex;gap:10px;margin-top:12px">
-      <a href="https://wa.me/9647501234567" target="_blank" style="flex:1;text-decoration:none">
-        <button style="width:100%;padding:12px;background:#25D366;border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">💬 واتساب</button>
-      </a>
-      <a href="tel:07501234567" style="flex:1;text-decoration:none">
-        <button style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">📞 اتصال</button>
-      </a>
+      <a href="https://wa.me/9647501234567" target="_blank" style="flex:1;text-decoration:none"><button style="width:100%;padding:12px;background:#25D366;border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">💬 واتساب</button></a>
+      <a href="tel:07501234567" style="flex:1;text-decoration:none"><button style="width:100%;padding:12px;background:var(--blue);border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">📞 اتصال</button></a>
     </div>
   </div>
 </div>
@@ -538,250 +474,66 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="modal-overlay" id="modal-reset-cust-password">
   <div class="modal">
     <button class="modal-close" onclick="closeResetCustPasswordModal()">×</button>
-    <div class="modal-title" id="reset-cust-title">🔑 إعادة تعيين كلمة سر الزبون</div>
-    <div id="alert-reset-cust" class="alert success"></div>
-    <p style="margin-bottom:16px;color:var(--muted)"><span id="reset-cust-label">الزبون:</span> <span id="reset-cust-name" style="color:var(--text);font-weight:700"></span></p>
-    <label id="lbl-new-cust-pass">كلمة السر الجديدة</label>
-    <input type="password" id="new-cust-password" placeholder="••••••••">
-    <label id="lbl-confirm-cust-pass">تأكيد كلمة السر</label>
-    <input type="password" id="confirm-cust-password" placeholder="••••••••">
-    <button class="btn" onclick="resetCustomerPassword()" id="btn-reset-cust-pass">✅ تعيين كلمة السر الجديدة</button>
+    <div class="modal-title">🔑 إعادة تعيين كلمة سر الزبون</div><div id="alert-reset-cust" class="alert success"></div>
+    <p style="margin-bottom:16px;color:var(--muted)"><span>الزبون:</span> <span id="reset-cust-name" style="color:var(--text);font-weight:700"></span></p>
+    <label>كلمة السر الجديدة</label><input type="password" id="new-cust-password" placeholder="••••••••">
+    <label>تأكيد كلمة السر</label><input type="password" id="confirm-cust-password" placeholder="••••••••">
+    <button class="btn" onclick="resetCustomerPassword()">✅ تعيين كلمة السر الجديدة</button>
   </div>
 </div>
 
 <!-- INSTALL MODAL -->
 <div class="modal-overlay" id="install-modal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeInstallModal()">×</button>
-    <div class="modal-title" id="install-title">📲 كيفية تثبيت التطبيق</div>
-    <div id="install-instructions"></div>
-    <button class="btn" onclick="closeInstallModal()" id="ok-btn">حسناً، فهمت</button>
-  </div>
+  <div class="modal"><button class="modal-close" onclick="closeInstallModal()">×</button><div class="modal-title">📲 كيفية تثبيت التطبيق</div><div id="install-instructions"></div><button class="btn" onclick="closeInstallModal()">حسناً، فهمت</button></div>
 </div>
 
 <!-- ADMIN PROFILE MODAL -->
 <div class="modal-overlay" id="modal-admin-profile">
   <div class="modal">
     <button class="modal-close" onclick="closeAdminProfileModal()">×</button>
-    <div class="modal-title" id="profile-title">👤 إعدادات الآدمين</div>
-    <div id="alert-profile" class="alert success"></div>
-    <label id="email-label">البريد الإلكتروني للاسترداد</label>
-    <input type="email" id="admin-email" placeholder="admin@example.com" dir="ltr">
-    <label id="current-pass-label">كلمة السر الحالية</label>
-    <input type="password" id="current-password" placeholder="••••••••">
-    <label id="new-pass-label">كلمة السر الجديدة</label>
-    <input type="password" id="new-password" placeholder="••••••••">
-    <label id="confirm-pass-label">تأكيد كلمة السر الجديدة</label>
-    <input type="password" id="confirm-password" placeholder="••••••••">
-    <button class="btn" onclick="updateAdminProfile()" id="save-profile-btn">💾 حفظ التغييرات</button>
+    <div class="modal-title">👤 إعدادات الآدمين</div><div id="alert-profile" class="alert success"></div>
+    <label>البريد الإلكتروني للاسترداد</label><input type="email" id="admin-email" placeholder="admin@example.com" dir="ltr">
+    <label>كلمة السر الحالية</label><input type="password" id="current-password" placeholder="••••••••">
+    <label>كلمة السر الجديدة</label><input type="password" id="new-password" placeholder="••••••••">
+    <label>تأكيد كلمة السر الجديدة</label><input type="password" id="confirm-password" placeholder="••••••••">
+    <button class="btn" onclick="updateAdminProfile()">💾 حفظ التغييرات</button>
+    <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
+    <p style="color:var(--muted);font-size:12px;text-align:center">⚠️ حساب المدير مرتبط بهذا الجهاز فقط. لا يمكن الدخول من جهاز آخر.</p>
   </div>
 </div>
 
 <script>
-// ==================== TRANSLATIONS ====================
-const translations = {
-  ar: {
-    splashTitle: 'صيرفة المستقبل', splashSub: 'Sayrafa Al-Mustaqbal',
-    welcomeTitle: 'صيرفة المستقبل', welcomeSub: 'نظام إدارة الصرافة المتكامل',
-    installBtn: '📲 تثبيت التطبيق على الجهاز', continueBtn: '➡️ متابعة للتطبيق',
-    loginTitle: 'صيرفة المستقبل', loginSub: 'نظام إدارة الصرافة المتكامل',
-    adminTab: '👑 المدير', customerTab: '👤 الزبون',
-    passwordLabel: 'كلمة السر', loginBtn: 'دخول',
-    phoneLabel: 'رقم الهاتف', customerPasswordLabel: 'كلمة السر',
-    customerLoginBtn: 'دخول', forgotPasswordBtn: '🔑 نسيت كلمة السر؟',
-    adminHeaderTitle: 'صيرفة المستقبل', adminPanelLabel: 'لوحة المدير',
-    profileBtn: '👤 الملف', logoutBtn: '🚪 خروج',
-    tabDaily: '📊 اليومية', tabCustomers: '👥 زبائن', tabTxs: '💸 حركات',
-    tabDebts: '🔴 ديون', tabRates: '💱 أسعار', tabNew: '➕ جديد',
-    yesterdayBtn: '◀ أمس', todayBtn: '📅 اليوم', tomorrowBtn: 'غداً ▶',
-    openingLabel: '🏦 الرصيد الافتتاحي', currentLabel: '💰 الرصيد الحالي',
-    profitLabel: '📈 صافي الربح (IQD)',
-    fundsTitle: '💼 موجودات الصيرفة', saveFundsBtn: '💾 حفظ',
-    iqdTitle: '💵 الدينار العراقي', amountLabel: 'المبلغ (IQD)', valueLabel: 'القيمة:',
-    usdTitle: '💵 الدولار الأمريكي', quantityLabel: 'الكمية (USD)',
-    rateLabel: 'سعر الصرف', valueIqdLabel: 'القيمة (IQD):',
-    korkTitle: '💳 كارت كورك (دولار)', korkQuantityLabel: 'الكمية (USD)',
-    korkRateLabel: 'سعر الصرف', korkValueLabel: 'القيمة (IQD):',
-    bankTitle: '🏦 فلوس بالبنوك', bankAmountLabel: 'المبلغ (IQD)', bankValueLabel: 'القيمة:',
-    totalFundsLabel: '📊 إجمالي الموجودات (IQD)',
-    dailyTxsTitle: '📋 حركات اليوم',
-    debtsTitle: '🔴 الزبائن المدينون', noDebts: '✅ لا يوجد زبائن مدينون',
-    totalDebtIQD: 'مجموع الديون بالدينار', totalDebtUSD: 'مجموع الديون بالدولار',
-    totalDebtAll: 'المجموع الكلي للديون (IQD)',
-    debtCount: 'عدد المدينين',
-    ratesTitle: '💱 أسعار الصرف (IQD)', saveRatesBtn: '💾 حفظ الأسعار',
-    newCustTitle: '➕ تسجيل زبون جديد',
-    fnameLabel: 'الاسم', lnameLabel: 'اللقب', telLabel: 'رقم الهاتف',
-    idLabel: 'رقم الهوية', newpassLabel: 'كلمة السر', registerBtn: '✅ تسجيل',
-    custHeaderTitle: 'صيرفة المستقبل', custWelcomeLabel: 'مرحباً',
-    custLogoutBtn: '🚪 خروج', myBalanceTitle: '💰 رصيدي',
-    myHistoryTitle: '📋 حركاتي',
-    adminLabel: '👑 المدير / الصاحب', adminName: 'برهان دكاني',
-    contactAdminMsg: 'للاستفسار أو تغيير كلمة السر، تواصل مع المدير',
-    modalTxTitle: '💸 معاملة جديدة', txType: 'نوع المعاملة',
-    deposit: '⬆️ إيداع (الزبون أعطاني)', withdraw: '⬇️ سحب (أنا أعطيت الزبون)',
-    amount: 'المبلغ', currency: 'العملة', note: 'ملاحظة',
-    confirmTx: '✅ تأكيد المعاملة', previewLabel: 'بعد المعاملة:',
-    editTxTitle: '✏️ تعديل الحركة', saveEdit: '💾 حفظ التعديلات',
-    forgotTitle: '🔑 استرجاع كلمة السر',
-    forgotMsg: 'أدخل رقم هاتفك وسيتم إرسال طلب للمدير',
-    forgotPhoneLabel: 'رقم الهاتف', sendRequestBtn: '📧 إرسال الطلب',
-    orContact: 'أو تواصل مباشرة مع المدير:',
-    resetCustTitle: '🔑 إعادة تعيين كلمة سر الزبون', resetCustLabel: 'الزبون:',
-    lblNewCustPass: 'كلمة السر الجديدة', lblConfirmCustPass: 'تأكيد كلمة السر',
-    btnResetCustPass: '✅ تعيين كلمة السر الجديدة', changePassBtn: '🔑 تغيير الرمز',
-    deleteCustBtn: '🗑️ حذف', editBtn: '✏️ تعديل', deleteBtn: '🗑️ حذف',
-    requestSent: '✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً',
-    customerNotFound: '❌ رقم الهاتف غير مسجل',
-    wrongPass: '❌ كلمة السر خاطئة!', notFound: '❌ الزبون غير موجود!',
-    noTxs: 'لا توجد حركات', noCusts: 'لا يوجد زبائن',
-    saved: '✅ تم الحفظ', fillAll: '⚠️ أكمل جميع الحقول!',
-    phoneExists: '⚠️ الهاتف مسجل مسبقاً!', registered: '✅ تم التسجيل!',
-    passMismatch: '❌ كلمة السر غير متطابقة', passChanged: '✅ تم تغيير كلمة السر بنجاح',
-    confirmDeleteCust: 'هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!',
-    confirmDeleteTx: 'هل أنت متأكد من حذف هذه الحركة؟',
-    txDeleted: '✅ تم حذف الحركة بنجاح',
-    txEdited: '✅ تم تعديل الحركة بنجاح',
-    custDeleted: '✅ تم حذف الزبون بنجاح',
-    txCompleted: '✅ تمت المعاملة بنجاح',
-    installTitle: '📲 كيفية تثبيت التطبيق', okBtn: 'حسناً، فهمت',
-    profileTitle: '👤 إعدادات الآدمين',
-    emailLabel: 'البريد الإلكتروني للاسترداد',
-    currentPassLabel: 'كلمة السر الحالية', newPassLabel: 'كلمة السر الجديدة',
-    confirmPassLabel: 'تأكيد كلمة السر الجديدة', saveProfileBtn: '💾 حفظ التغييرات'
-  }
-};
-
-let currentLang = 'ar';
-function t(key) { return translations[currentLang][key] || key; }
-
-function setLang(lang) {
-  currentLang = lang;
-  document.body.style.direction = (lang === 'ar' || lang === 'ku') ? 'rtl' : 'ltr';
-  document.documentElement.lang = lang;
-  document.querySelectorAll('.lang-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.lang === lang); });
-  updateAllTexts();
-  if (currentRole === 'customer') renderCustomerView();
-  if (currentRole === 'admin') renderAdminView();
-}
-
-function updateAllTexts() {
-  if (el('splash-title')) el('splash-title').textContent = t('splashTitle');
-  if (el('splash-sub')) el('splash-sub').textContent = t('splashSub');
-  if (el('welcome-title')) el('welcome-title').textContent = t('welcomeTitle');
-  if (el('welcome-sub')) el('welcome-sub').textContent = t('welcomeSub');
-  if (el('install-btn')) el('install-btn').textContent = t('installBtn');
-  if (el('continue-btn')) el('continue-btn').textContent = t('continueBtn');
-  if (el('login-title')) el('login-title').textContent = t('loginTitle');
-  if (el('login-sub')) el('login-sub').textContent = t('loginSub');
-  if (el('admin-tab')) el('admin-tab').textContent = t('adminTab');
-  if (el('customer-tab')) el('customer-tab').textContent = t('customerTab');
-  if (el('password-label')) el('password-label').textContent = t('passwordLabel');
-  if (el('login-btn')) el('login-btn').textContent = t('loginBtn');
-  if (el('phone-label')) el('phone-label').textContent = t('phoneLabel');
-  if (el('customer-password-label')) el('customer-password-label').textContent = t('customerPasswordLabel');
-  if (el('customer-login-btn')) el('customer-login-btn').textContent = t('customerLoginBtn');
-  if (el('forgot-password-btn')) el('forgot-password-btn').textContent = t('forgotPasswordBtn');
-  if (el('admin-header-title')) el('admin-header-title').textContent = t('adminHeaderTitle');
-  if (el('admin-panel-label')) el('admin-panel-label').textContent = t('adminPanelLabel');
-  if (el('profile-btn')) el('profile-btn').innerHTML = t('profileBtn');
-  if (el('logout-btn')) el('logout-btn').innerHTML = t('logoutBtn');
-  if (el('tab-daily')) el('tab-daily').textContent = t('tabDaily');
-  if (el('tab-customers')) el('tab-customers').textContent = t('tabCustomers');
-  if (el('tab-txs')) el('tab-txs').textContent = t('tabTxs');
-  if (el('tab-debts')) el('tab-debts').textContent = t('tabDebts');
-  if (el('tab-rates')) el('tab-rates').textContent = t('tabRates');
-  if (el('tab-new')) el('tab-new').textContent = t('tabNew');
-  if (el('yesterday-btn')) el('yesterday-btn').textContent = t('yesterdayBtn');
-  if (el('today-btn')) el('today-btn').textContent = t('todayBtn');
-  if (el('tomorrow-btn')) el('tomorrow-btn').textContent = t('tomorrowBtn');
-  if (el('opening-label')) el('opening-label').textContent = t('openingLabel');
-  if (el('current-label')) el('current-label').textContent = t('currentLabel');
-  if (el('profit-label')) el('profit-label').textContent = t('profitLabel');
-  if (el('funds-title')) el('funds-title').textContent = t('fundsTitle');
-  if (el('save-funds-btn')) el('save-funds-btn').textContent = t('saveFundsBtn');
-  if (el('iqd-title')) el('iqd-title').textContent = t('iqdTitle');
-  if (el('amount-label')) el('amount-label').textContent = t('amountLabel');
-  if (el('value-label')) el('value-label').textContent = t('valueLabel');
-  if (el('usd-title')) el('usd-title').textContent = t('usdTitle');
-  if (el('quantity-label')) el('quantity-label').textContent = t('quantityLabel');
-  if (el('rate-label')) el('rate-label').textContent = t('rateLabel');
-  if (el('value-iqd-label')) el('value-iqd-label').textContent = t('valueIqdLabel');
-  if (el('kork-title')) el('kork-title').textContent = t('korkTitle');
-  if (el('kork-quantity-label')) el('kork-quantity-label').textContent = t('korkQuantityLabel');
-  if (el('kork-rate-label')) el('kork-rate-label').textContent = t('korkRateLabel');
-  if (el('kork-value-label')) el('kork-value-label').textContent = t('korkValueLabel');
-  if (el('bank-title')) el('bank-title').textContent = t('bankTitle');
-  if (el('bank-amount-label')) el('bank-amount-label').textContent = t('bankAmountLabel');
-  if (el('bank-value-label')) el('bank-value-label').textContent = t('bankValueLabel');
-  if (el('total-funds-label')) el('total-funds-label').textContent = t('totalFundsLabel');
-  if (el('daily-txs-title')) el('daily-txs-title').textContent = t('dailyTxsTitle');
-  if (el('debts-title')) el('debts-title').textContent = t('debtsTitle');
-  if (el('rates-title')) el('rates-title').textContent = t('ratesTitle');
-  if (el('save-rates-btn')) el('save-rates-btn').textContent = t('saveRatesBtn');
-  if (el('new-cust-title')) el('new-cust-title').textContent = t('newCustTitle');
-  if (el('fname-label')) el('fname-label').textContent = t('fnameLabel');
-  if (el('lname-label')) el('lname-label').textContent = t('lnameLabel');
-  if (el('tel-label')) el('tel-label').textContent = t('telLabel');
-  if (el('id-label')) el('id-label').textContent = t('idLabel');
-  if (el('newpass-label')) el('newpass-label').textContent = t('newpassLabel');
-  if (el('register-btn')) el('register-btn').textContent = t('registerBtn');
-  if (el('cust-header-title')) el('cust-header-title').textContent = t('custHeaderTitle');
-  if (el('cust-welcome-label')) el('cust-welcome-label').textContent = t('custWelcomeLabel');
-  if (el('cust-logout-btn')) el('cust-logout-btn').innerHTML = t('custLogoutBtn');
-  if (el('my-balance-title')) el('my-balance-title').textContent = t('myBalanceTitle');
-  if (el('my-history-title')) el('my-history-title').textContent = t('myHistoryTitle');
-  if (el('admin-label')) el('admin-label').textContent = t('adminLabel');
-  if (el('admin-name')) el('admin-name').textContent = t('adminName');
-  if (el('contact-admin-msg')) el('contact-admin-msg').textContent = t('contactAdminMsg');
-  if (el('modal-tx-title')) el('modal-tx-title').textContent = t('modalTxTitle');
-  if (el('lbl-tx-type')) el('lbl-tx-type').textContent = t('txType');
-  if (el('opt-deposit')) el('opt-deposit').textContent = t('deposit');
-  if (el('opt-withdraw')) el('opt-withdraw').textContent = t('withdraw');
-  if (el('lbl-tx-amount')) el('lbl-tx-amount').textContent = t('amount');
-  if (el('lbl-tx-currency')) el('lbl-tx-currency').textContent = t('currency');
-  if (el('lbl-tx-note')) el('lbl-tx-note').textContent = t('note');
-  if (el('btn-confirm-tx')) el('btn-confirm-tx').textContent = t('confirmTx');
-  if (el('preview-label')) el('preview-label').textContent = t('previewLabel');
-  if (el('edit-tx-title')) el('edit-tx-title').textContent = t('editTxTitle');
-  if (el('btn-save-edit')) el('btn-save-edit').textContent = t('saveEdit');
-  if (el('forgot-title')) el('forgot-title').textContent = t('forgotTitle');
-  if (el('forgot-msg')) el('forgot-msg').textContent = t('forgotMsg');
-  if (el('forgot-phone-label')) el('forgot-phone-label').textContent = t('forgotPhoneLabel');
-  if (el('send-request-btn')) el('send-request-btn').textContent = t('sendRequestBtn');
-  if (el('or-contact')) el('or-contact').textContent = t('orContact');
-  if (el('reset-cust-title')) el('reset-cust-title').textContent = t('resetCustTitle');
-  if (el('reset-cust-label')) el('reset-cust-label').textContent = t('resetCustLabel');
-  if (el('lbl-new-cust-pass')) el('lbl-new-cust-pass').textContent = t('lblNewCustPass');
-  if (el('lbl-confirm-cust-pass')) el('lbl-confirm-cust-pass').textContent = t('lblConfirmCustPass');
-  if (el('btn-reset-cust-pass')) el('btn-reset-cust-pass').textContent = t('btnResetCustPass');
-  if (el('install-title')) el('install-title').textContent = t('installTitle');
-  if (el('ok-btn')) el('ok-btn').textContent = t('okBtn');
-  if (el('profile-title')) el('profile-title').textContent = t('profileTitle');
-  if (el('email-label')) el('email-label').textContent = t('emailLabel');
-  if (el('current-pass-label')) el('current-pass-label').textContent = t('currentPassLabel');
-  if (el('new-pass-label')) el('new-pass-label').textContent = t('newPassLabel');
-  if (el('confirm-pass-label')) el('confirm-pass-label').textContent = t('confirmPassLabel');
-  if (el('save-profile-btn')) el('save-profile-btn').textContent = t('saveProfileBtn');
-}
-
 // ==================== CORE FUNCTIONS ====================
 const ENCRYPTION_KEY = "S@yr4f4#M$st4qb4l!2025*XK9@zQ7!#&^mP3rVnL8wE";
-const STORE = 'sarafa_pro_v2';
-const ADMIN_HASH = CryptoJS.SHA256('admin123').toString();
+const STORE = 'sarafa_final_v2';
+const DEFAULT_ADMIN_PASS = 'admin123';
+let ADMIN_HASH = CryptoJS.SHA256(DEFAULT_ADMIN_PASS).toString();
+
+// توليد معرف فريد للجهاز
+function getDeviceId() {
+  let deviceId = localStorage.getItem('device_id');
+  if (!deviceId) {
+    deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36);
+    localStorage.setItem('device_id', deviceId);
+  }
+  return deviceId;
+}
 
 let DB, currentUser = null, currentRole = null, selectedDailyDate = new Date().toISOString().split('T')[0];
 let deferredPrompt;
 let resetCustPhone = null;
 let selectedCustomerForTx = null;
 let editingTxId = null;
+let viewingCustomerPhone = null;
+let dateRangeFilter = { from: '', to: '' };
+let editingCustomerPhone = null;
 
 function initDB() {
   return {
     customers: {},
     transactions: [],
     rates: { USD: 1450, EUR: 1550, TRY: 50, IQD: 1, GBP: 1800, SAR: 385 },
-    admin: { email: '', passwordHash: ADMIN_HASH },
+    admin: { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() },
     dailyLedger: {},
     officeFunds: { iqd: 0, usd: { amount: 0, rate: 1450 }, kork: { amount: 0, rate: 1450 }, bank: 0 }
   };
@@ -792,7 +544,9 @@ function load() {
     const encrypted = localStorage.getItem(STORE);
     if (encrypted) {
       const bytes = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
-      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      if (!data.admin) data.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
+      return data;
     }
   } catch(e) {}
   return initDB();
@@ -805,6 +559,8 @@ function parseNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
 function formatNumberInput(inp) { let v = inp.value.replace(/[^0-9]/g, ''); if (v) inp.value = Number(v).toLocaleString('en-US'); }
 
 DB = load();
+ADMIN_HASH = DB.admin?.passwordHash || CryptoJS.SHA256(DEFAULT_ADMIN_PASS).toString();
+if (el('daily-date-picker')) el('daily-date-picker').value = selectedDailyDate;
 
 function loadOfficeFunds() {
   const funds = DB.officeFunds || { iqd: 0, usd: { amount: 0, rate: 1450 }, kork: { amount: 0, rate: 1450 }, bank: 0 };
@@ -824,7 +580,6 @@ function updateTotalOfficeFunds() {
   const korkAmount = parseNumber(el('kork-amount').value);
   const korkRate = parseNumber(el('kork-rate').value);
   const bank = parseNumber(el('bank-funds').value);
-  
   el('office-iqd-value').textContent = fmt(iqd) + ' IQD';
   el('office-usd-value').textContent = fmt(usdAmount * usdRate) + ' IQD';
   el('kork-value').textContent = fmt(korkAmount * korkRate) + ' IQD';
@@ -832,27 +587,13 @@ function updateTotalOfficeFunds() {
   el('total-office-funds').textContent = fmt(iqd + (usdAmount * usdRate) + (korkAmount * korkRate) + bank) + ' IQD';
 }
 
-function saveOfficeFunds() {
-  DB.officeFunds = {
-    iqd: parseNumber(el('office-iqd').value),
-    usd: { amount: parseNumber(el('office-usd-amount').value), rate: parseNumber(el('office-usd-rate').value) },
-    kork: { amount: parseNumber(el('kork-amount').value), rate: parseNumber(el('kork-rate').value) },
-    bank: parseNumber(el('bank-funds').value)
-  };
-  save(DB); alert(t('saved'));
-}
+function saveOfficeFunds() { DB.officeFunds = { iqd: parseNumber(el('office-iqd').value), usd: { amount: parseNumber(el('office-usd-amount').value), rate: parseNumber(el('office-usd-rate').value) }, kork: { amount: parseNumber(el('kork-amount').value), rate: parseNumber(el('kork-rate').value) }, bank: parseNumber(el('bank-funds').value) }; save(DB); alert('✅ تم الحفظ'); }
 
-function updateDailyLedger() {
-  if (!DB.dailyLedger[selectedDailyDate]) {
-    DB.dailyLedger[selectedDailyDate] = { openingBalance: calculateTotalBalance(), closingBalance: 0, profit: 0 };
-  }
-}
+function updateDailyLedger() { if (!DB.dailyLedger[selectedDailyDate]) DB.dailyLedger[selectedDailyDate] = { openingBalance: calculateTotalBalance(), closingBalance: 0, profit: 0 }; }
 
 function calculateTotalBalance() {
   let total = 0;
-  Object.values(DB.customers).forEach(c => {
-    Object.entries(c.balance).forEach(([cur, amt]) => { total += amt * (DB.rates[cur] || 1); });
-  });
+  Object.values(DB.customers).forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { total += amt * (DB.rates[cur] || 1); }); });
   return total;
 }
 
@@ -863,15 +604,13 @@ function renderDailySummary() {
   const profit = currentBalance - daily.openingBalance;
   daily.closingBalance = currentBalance; daily.profit = profit;
   save(DB);
-  
   el('daily-date-title').textContent = '📊 ' + selectedDailyDate;
+  if (el('daily-date-picker')) el('daily-date-picker').value = selectedDailyDate;
   el('opening-balance').textContent = fmt(daily.openingBalance) + ' IQD';
   el('current-balance').textContent = fmt(currentBalance) + ' IQD';
-  
   const profitEl = el('profit-value');
   profitEl.textContent = (profit >= 0 ? '+' : '') + fmt(profit) + ' IQD';
   profitEl.className = 'daily-value ' + (profit >= 0 ? 'profit' : 'loss');
-  
   renderDailyTransactions();
   loadOfficeFunds();
 }
@@ -879,371 +618,259 @@ function renderDailySummary() {
 function renderDailyTransactions() {
   const todayTxs = DB.transactions.filter(tx => tx.date.startsWith(selectedDailyDate.split('-').reverse().join('/')));
   const container = el('daily-transactions');
-  if (todayTxs.length === 0) { container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
+  if (todayTxs.length === 0) { container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات في هذا التاريخ</div>`; return; }
   container.innerHTML = todayTxs.reverse().map(tx => renderTxItem(tx)).join('');
 }
 
 function renderTxItem(tx) {
   const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب';
-  return `
-    <div class="tx-item">
-      <div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div>
-      <div class="tx-details">
-        <div class="tx-name">${tx.customerName} - ${typeLabel}</div>
-        <div class="tx-note">${tx.note || '—'}</div>
-        <div class="tx-date">${tx.date}</div>
-        ${currentRole === 'admin' ? `
-          <div class="tx-actions">
-            <button class="btn-edit" onclick="editTransaction('${tx.id}')">✏️ تعديل</button>
-            <button class="btn-delete" onclick="deleteTransaction('${tx.id}')">🗑️ حذف</button>
-          </div>
-        ` : ''}
-      </div>
-      <div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-    </div>
-  `;
+  return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${tx.customerName} - ${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div>${currentRole === 'admin' ? `<div class="tx-actions"><button class="btn-edit" onclick="editTransaction('${tx.id}')">✏️</button><button class="btn-delete" onclick="deleteTransaction('${tx.id}')">🗑️</button></div>` : ''}</div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`;
 }
 
-function changeDailyDate(offset) {
-  const date = new Date(selectedDailyDate);
-  date.setDate(date.getDate() + offset);
-  selectedDailyDate = date.toISOString().split('T')[0];
-  renderDailySummary();
+function changeDailyDate(offset) { const date = new Date(selectedDailyDate); date.setDate(date.getDate() + offset); selectedDailyDate = date.toISOString().split('T')[0]; renderDailySummary(); updateShortcutsActive(); }
+function changeDailyDateFromPicker() { selectedDailyDate = el('daily-date-picker').value; renderDailySummary(); updateShortcutsActive(); }
+
+function setDailyDateShortcut(type) {
+  const today = new Date(); let targetDate = new Date();
+  if (type === 'today') targetDate = today;
+  else if (type === 'yesterday') { targetDate.setDate(today.getDate() - 1); }
+  else if (type === 'monthStart') { targetDate = new Date(today.getFullYear(), today.getMonth(), 1); }
+  else if (type === 'monthEnd') { targetDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); }
+  selectedDailyDate = targetDate.toISOString().split('T')[0];
+  renderDailySummary(); updateShortcutsActive();
+}
+
+function updateShortcutsActive() {
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  const monthEnd = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
+  document.querySelectorAll('.calendar-shortcut').forEach(btn => btn.classList.remove('active'));
+  if (selectedDailyDate === today) document.querySelector('[onclick*="today"]')?.classList.add('active');
+  else if (selectedDailyDate === yesterday) document.querySelector('[onclick*="yesterday"]')?.classList.add('active');
+  else if (selectedDailyDate === monthStart) document.querySelector('[onclick*="monthStart"]')?.classList.add('active');
+  else if (selectedDailyDate === monthEnd) document.querySelector('[onclick*="monthEnd"]')?.classList.add('active');
 }
 
 function renderCustomers() {
   const q = (el('search-cust')?.value || '').toLowerCase();
   const custs = Object.values(DB.customers).filter(c => (c.fname + ' ' + c.lname + ' ' + c.phone).toLowerCase().includes(q));
   const list = el('customers-list');
-  if (!custs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">👥</div>${t('noCusts')}</div>`; return; }
+  if (!custs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">👥</div>لا يوجد زبائن</div>`; return; }
   list.innerHTML = custs.map(c => {
     const hasDebt = Object.values(c.balance).some(v => v < 0);
-    return `
-      <div class="customer-card ${hasDebt ? 'has-debt' : ''}">
-        <div class="cust-name">👤 ${c.fname} ${c.lname} ${hasDebt ? '<span style="color:var(--red);font-size:12px">● مديون</span>' : ''}</div>
-        <div class="cust-info">${c.phone} | ID: ${c.id_no}</div>
-        <div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div>
-        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-          <button class="btn btn-sm" onclick="openTxModal('${c.phone}')">💸 معاملة</button>
-          <button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">${t('changePassBtn')}</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.phone}')">${t('deleteCustBtn')}</button>
-        </div>
-      </div>
-    `;
+    const hasCredit = Object.values(c.balance).some(v => v > 0);
+    let cardClass = 'customer-card';
+    if (hasDebt) cardClass += ' has-debt';
+    if (hasCredit) cardClass += ' has-credit';
+    return `<div class="${cardClass}" onclick="showCustomerTransactions('${c.phone}')"><div class="cust-name">👤 ${c.fname} ${c.lname} ${hasDebt ? '<span style="color:var(--red);font-size:12px">● مديون</span>' : ''} ${hasCredit ? '<span style="color:var(--green);font-size:12px">● دائن</span>' : ''}</div><div class="cust-info">${c.phone} | ID: ${c.id_no}</div><div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap" onclick="event.stopPropagation()"><button class="btn btn-sm" onclick="openTxModal('${c.phone}')">💸 معاملة</button><button class="btn btn-sm btn-outline" onclick="showEditCustomerModal('${c.phone}')">✏️ تعديل</button><button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">🔑 تغيير الرمز</button><button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.phone}')">🗑️ حذف</button></div></div>`;
   }).join('');
 }
 
-function deleteCustomer(phone) {
-  if (!confirm(t('confirmDeleteCust'))) return;
-  delete DB.customers[phone];
-  save(DB); alert(t('custDeleted')); renderCustomers(); renderDebts();
+// تعديل بيانات الزبون
+function showEditCustomerModal(phone) {
+  editingCustomerPhone = phone;
+  const c = DB.customers[phone];
+  el('edit-cust-original-phone').value = phone;
+  el('edit-cust-fname').value = c.fname;
+  el('edit-cust-lname').value = c.lname;
+  el('edit-cust-phone').value = c.phone;
+  el('edit-cust-id').value = c.id_no;
+  el('modal-edit-customer').classList.add('show');
 }
+function closeEditCustomerModal() { el('modal-edit-customer').classList.remove('show'); editingCustomerPhone = null; }
+
+function saveEditedCustomer() {
+  const originalPhone = el('edit-cust-original-phone').value;
+  const fname = el('edit-cust-fname').value.trim();
+  const lname = el('edit-cust-lname').value.trim();
+  const newPhone = el('edit-cust-phone').value.trim();
+  const id_no = el('edit-cust-id').value.trim();
+  
+  if (!fname || !lname || !newPhone || !id_no) { alert('⚠️ أكمل جميع الحقول!'); return; }
+  
+  const c = DB.customers[originalPhone];
+  if (originalPhone !== newPhone && DB.customers[newPhone]) { alert('⚠️ رقم الهاتف مستخدم من قبل زبون آخر!'); return; }
+  
+  // تحديث البيانات
+  c.fname = fname;
+  c.lname = lname;
+  c.id_no = id_no;
+  
+  if (originalPhone !== newPhone) {
+    DB.customers[newPhone] = c;
+    delete DB.customers[originalPhone];
+    // تحديث رقم الهاتف في الحركات
+    DB.transactions.forEach(tx => { if (tx.phone === originalPhone) tx.phone = newPhone; });
+  }
+  
+  save(DB);
+  alert('✅ تم تحديث بيانات الزبون بنجاح');
+  closeEditCustomerModal();
+  renderCustomers();
+}
+
+function showCustomerTransactions(phone) {
+  viewingCustomerPhone = phone;
+  const c = DB.customers[phone];
+  el('customer-txs-name').textContent = `${c.fname} ${c.lname} (${c.phone})`;
+  
+  // عرض الأرصدة الكاملة
+  const balanceHtml = Object.entries(c.balance).map(([cur, amt]) => {
+    const iqdValue = amt * (DB.rates[cur] || 1);
+    return `<div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center"><div style="color:var(--gold);font-size:14px">${cur}</div><div style="font-weight:700;color:${amt < 0 ? 'var(--red)' : 'var(--green)'};direction:ltr">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div><div style="font-size:11px;color:var(--muted);direction:ltr">= ${fmt(iqdValue)} IQD</div></div>`;
+  }).join('');
+  el('full-balance-display').innerHTML = balanceHtml;
+  
+  const today = new Date();
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  el('txs-from-date').value = monthStart.toISOString().split('T')[0];
+  el('txs-to-date').value = today.toISOString().split('T')[0];
+  dateRangeFilter = { from: el('txs-from-date').value, to: el('txs-to-date').value };
+  updateRangeShortcutsActive('thisMonth');
+  renderCustomerTxsList();
+  el('modal-customer-txs').classList.add('show');
+}
+
+function closeCustomerTxsModal() { el('modal-customer-txs').classList.remove('show'); viewingCustomerPhone = null; }
+
+function setDateRangeShortcut(type) {
+  const today = new Date(); let from = '', to = '';
+  if (type === 'today') { from = to = today.toISOString().split('T')[0]; }
+  else if (type === 'thisMonth') { from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]; to = today.toISOString().split('T')[0]; }
+  else if (type === 'last3Months') { from = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()).toISOString().split('T')[0]; to = today.toISOString().split('T')[0]; }
+  else if (type === 'all') { from = '2000-01-01'; to = today.toISOString().split('T')[0]; }
+  el('txs-from-date').value = from; el('txs-to-date').value = to;
+  updateRangeShortcutsActive(type);
+}
+
+function updateRangeShortcutsActive(type) {
+  document.querySelectorAll('#modal-customer-txs .calendar-shortcut').forEach(btn => btn.classList.remove('active'));
+  if (type === 'today') document.querySelector('[onclick*="today"]')?.classList.add('active');
+  else if (type === 'thisMonth') document.querySelector('[onclick*="thisMonth"]')?.classList.add('active');
+  else if (type === 'last3Months') document.querySelector('[onclick*="last3Months"]')?.classList.add('active');
+  else if (type === 'all') document.querySelector('[onclick*="all"]')?.classList.add('active');
+}
+
+function applyDateRangeFilter() { dateRangeFilter = { from: el('txs-from-date').value, to: el('txs-to-date').value }; renderCustomerTxsList(); }
+
+function renderCustomerTxsList() {
+  if (!viewingCustomerPhone) return;
+  const fromDate = dateRangeFilter.from, toDate = dateRangeFilter.to;
+  let txs = DB.transactions.filter(tx => tx.phone === viewingCustomerPhone);
+  if (fromDate && toDate) txs = txs.filter(tx => { const txDate = tx.date.split(' ')[0].split('/').reverse().join('-'); return txDate >= fromDate && txDate <= toDate; });
+  txs = txs.reverse();
+  const container = el('customer-txs-list');
+  if (!txs.length) { container.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; }
+  container.innerHTML = txs.map(tx => renderTxItem(tx)).join('');
+}
+
+function deleteCustomer(phone) { if (!confirm('هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!')) return; delete DB.customers[phone]; save(DB); alert('✅ تم حذف الزبون بنجاح'); renderCustomers(); renderDebts(); renderCredits(); }
 
 function addCustomer() {
   const fname = el('new-fname').value.trim(), lname = el('new-lname').value.trim();
   const phone = el('new-tel').value.trim(), id_no = el('new-id').value.trim(), pass = el('new-pass').value;
-  if (!fname || !lname || !phone || !id_no || !pass) { alert(t('fillAll')); return; }
-  if (DB.customers[phone]) { alert(t('phoneExists')); return; }
+  if (!fname || !lname || !phone || !id_no || !pass) { alert('⚠️ أكمل جميع الحقول!'); return; }
+  if (DB.customers[phone]) { alert('⚠️ الهاتف مسجل مسبقاً!'); return; }
   DB.customers[phone] = { fname, lname, phone, id_no, pass: CryptoJS.SHA256(pass).toString(), balance: { USD: 0, EUR: 0, TRY: 0, IQD: 0, GBP: 0, SAR: 0 } };
   save(DB);
   el('new-fname').value = ''; el('new-lname').value = ''; el('new-tel').value = ''; el('new-id').value = ''; el('new-pass').value = '';
-  alert(t('registered')); showTab('customers');
+  alert('✅ تم التسجيل!'); showTab('customers');
 }
 
 function renderDebts() {
   const debtors = Object.values(DB.customers).filter(c => Object.values(c.balance).some(v => v < 0));
-  const list = el('debts-list');
-  const summaryContainer = el('debts-summary-container');
-  
-  let totalDebtIQD = 0;
-  let totalDebtUSD = 0;
-  
-  debtors.forEach(c => {
-    Object.entries(c.balance).forEach(([cur, amt]) => {
-      if (amt < 0) {
-        if (cur === 'IQD') totalDebtIQD += Math.abs(amt);
-        else if (cur === 'USD') totalDebtUSD += Math.abs(amt);
-      }
-    });
-  });
-  
+  const list = el('debts-list'), summaryContainer = el('debts-summary-container');
+  let totalDebtIQD = 0, totalDebtUSD = 0;
+  debtors.forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { if (amt < 0) { if (cur === 'IQD') totalDebtIQD += Math.abs(amt); else if (cur === 'USD') totalDebtUSD += Math.abs(amt); } }); });
   const usdRate = DB.rates.USD || 1450;
   const totalDebtAll = totalDebtIQD + (totalDebtUSD * usdRate);
-  
-  summaryContainer.innerHTML = debtors.length > 0 ? `
-    <div class="debt-summary">
-      <div class="debt-summary-title">📊 ملخص الديون</div>
-      <div class="debt-summary-row">
-        <span class="debt-summary-label">${t('debtCount')}</span>
-        <span class="debt-summary-value red">${debtors.length}</span>
-      </div>
-      <div class="debt-summary-row">
-        <span class="debt-summary-label">${t('totalDebtIQD')}</span>
-        <span class="debt-summary-value red">${fmt(totalDebtIQD)} IQD</span>
-      </div>
-      <div class="debt-summary-row">
-        <span class="debt-summary-label">${t('totalDebtUSD')}</span>
-        <span class="debt-summary-value red">${fmt(totalDebtUSD)} USD</span>
-      </div>
-      <div class="debt-total-row">
-        <span class="debt-total-label">${t('totalDebtAll')}</span>
-        <span class="debt-total-value">${fmt(totalDebtAll)} IQD</span>
-      </div>
-    </div>
-  ` : '';
-  
-  if (!debtors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>${t('noDebts')}</div>`; return; }
-  
+  summaryContainer.innerHTML = debtors.length > 0 ? `<div class="debt-summary"><div class="debt-summary-title">📊 ملخص الديون</div><div class="debt-summary-row"><span class="debt-summary-label">عدد المدينين</span><span class="debt-summary-value red">${debtors.length}</span></div><div class="debt-summary-row"><span class="debt-summary-label">مجموع الديون بالدينار</span><span class="debt-summary-value red">${fmt(totalDebtIQD)} IQD</span></div><div class="debt-summary-row"><span class="debt-summary-label">مجموع الديون بالدولار</span><span class="debt-summary-value red">${fmt(totalDebtUSD)} USD</span></div><div class="debt-total-row"><span class="debt-total-label">المجموع الكلي للديون (IQD)</span><span class="debt-total-value">${fmt(totalDebtAll)} IQD</span></div></div>` : '';
+  if (!debtors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>✅ لا يوجد زبائن مدينون</div>`; return; }
   list.innerHTML = debtors.map(c => {
     const debts = Object.entries(c.balance).filter(([, v]) => v < 0);
-    return `
-      <div class="debt-card">
-        <div class="debt-card-header">
-          <span class="debt-card-name">👤 ${c.fname} ${c.lname}</span>
-          <span class="debt-card-phone">${c.phone}</span>
-        </div>
-        <div class="debt-items-grid">
-          ${debts.map(([cur, amt]) => {
-            const iqdValue = cur === 'IQD' ? Math.abs(amt) : Math.abs(amt) * usdRate;
-            return `
-              <div class="debt-item-card">
-                <div class="debt-item-currency">${cur}</div>
-                <div class="debt-item-amount">${fmt(Math.abs(amt))}</div>
-                <div class="debt-item-iqd">= ${fmt(iqdValue)} IQD</div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
+    return `<div class="debt-card"><div class="debt-card-header"><span class="debt-card-name">👤 ${c.fname} ${c.lname}</span><span class="debt-card-phone">${c.phone}</span></div><div class="debt-items-grid">${debts.map(([cur, amt]) => { const iqdValue = cur === 'IQD' ? Math.abs(amt) : Math.abs(amt) * usdRate; return `<div class="debt-item-card"><div class="debt-item-currency">${cur}</div><div class="debt-item-amount">${fmt(Math.abs(amt))}</div><div class="debt-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`; }).join('')}</div></div>`;
+  }).join('');
+}
+
+function renderCredits() {
+  const creditors = Object.values(DB.customers).filter(c => Object.values(c.balance).some(v => v > 0));
+  const list = el('credits-list'), summaryContainer = el('credits-summary-container');
+  let totalCreditIQD = 0, totalCreditUSD = 0;
+  creditors.forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { if (amt > 0) { if (cur === 'IQD') totalCreditIQD += amt; else if (cur === 'USD') totalCreditUSD += amt; } }); });
+  const usdRate = DB.rates.USD || 1450;
+  const totalCreditAll = totalCreditIQD + (totalCreditUSD * usdRate);
+  summaryContainer.innerHTML = creditors.length > 0 ? `<div class="credit-summary"><div class="credit-summary-title">📊 ملخص الدائنين</div><div class="credit-summary-row"><span class="credit-summary-label">عدد الدائنين</span><span class="credit-summary-value green">${creditors.length}</span></div><div class="credit-summary-row"><span class="credit-summary-label">مجموع الدائنين بالدينار</span><span class="credit-summary-value green">${fmt(totalCreditIQD)} IQD</span></div><div class="credit-summary-row"><span class="credit-summary-label">مجموع الدائنين بالدولار</span><span class="credit-summary-value green">${fmt(totalCreditUSD)} USD</span></div><div class="credit-total-row"><span class="credit-total-label">المجموع الكلي للدائنين (IQD)</span><span class="credit-total-value">${fmt(totalCreditAll)} IQD</span></div></div>` : '';
+  if (!creditors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>✅ لا يوجد زبائن دائنون</div>`; return; }
+  list.innerHTML = creditors.map(c => {
+    const credits = Object.entries(c.balance).filter(([, v]) => v > 0);
+    return `<div class="credit-card"><div class="credit-card-header"><span class="credit-card-name">👤 ${c.fname} ${c.lname}</span><span class="credit-card-phone">${c.phone}</span></div><div class="credit-items-grid">${credits.map(([cur, amt]) => { const iqdValue = cur === 'IQD' ? amt : amt * usdRate; return `<div class="credit-item-card"><div class="credit-item-currency">${cur}</div><div class="credit-item-amount">${fmt(amt)}</div><div class="credit-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`; }).join('')}</div></div>`;
   }).join('');
 }
 
 function renderRates() {
-  el('rates-list').innerHTML = ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].map(c => `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
-      <span style="font-weight:600">1 ${c} =</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <input type="text" id="rate-${c}" value="${fmt(DB.rates[c] || 1)}" oninput="formatNumberInput(this)" style="width:130px;margin-bottom:0;text-align:center;font-weight:700;color:var(--gold)">
-        <span style="color:var(--muted)">IQD</span>
-      </div>
-    </div>`).join('');
+  el('rates-list').innerHTML = ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].map(c => `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between"><span style="font-weight:600">1 ${c} =</span><div style="display:flex;align-items:center;gap:8px"><input type="text" id="rate-${c}" value="${fmt(DB.rates[c] || 1)}" oninput="formatNumberInput(this)" style="width:130px;margin-bottom:0;text-align:center;font-weight:700;color:var(--gold)"><span style="color:var(--muted)">IQD</span></div></div>`).join('');
 }
 
-function saveRates() {
-  ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); });
-  save(DB); alert(t('saved')); renderDailySummary(); renderDebts();
-}
+function saveRates() { ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); }); save(DB); alert('✅ تم حفظ الأسعار!'); renderDailySummary(); renderDebts(); renderCredits(); }
 
-function renderAllTxs() {
-  const txs = [...DB.transactions].reverse();
-  const list = el('all-txs-list');
-  if (!txs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
-  list.innerHTML = txs.map(tx => renderTxItem(tx)).join('');
-}
+function renderAllTxs() { const txs = [...DB.transactions].reverse(); const list = el('all-txs-list'); if (!txs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } list.innerHTML = txs.map(tx => renderTxItem(tx)).join(''); }
 
 // ==================== TRANSACTIONS ====================
-function openTxModal(phone) {
-  selectedCustomerForTx = phone;
-  el('tx-amount').value = ''; el('tx-note').value = '';
-  el('tx-type').value = 'deposit'; el('tx-currency').value = 'USD';
-  el('tx-preview').style.display = 'none';
-  el('modal-tx').classList.add('show');
-}
+function openTxModal(phone) { selectedCustomerForTx = phone; el('tx-amount').value = ''; el('tx-note').value = ''; el('tx-type').value = 'deposit'; el('tx-currency').value = 'USD'; el('tx-preview').style.display = 'none'; el('modal-tx').classList.add('show'); }
 function closeTxModal() { el('modal-tx').classList.remove('show'); selectedCustomerForTx = null; }
+function updatePreview() { const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value; if (!amount) { el('tx-preview').style.display = 'none'; return; } const c = DB.customers[selectedCustomerForTx]; const current = c.balance[currency] || 0; const after = type === 'deposit' ? current + amount : current - amount; el('tx-preview').style.display = 'block'; el('preview-value').textContent = (after < 0 ? '-' : '') + fmt(Math.abs(after)) + ' ' + currency; el('preview-value').style.color = after < 0 ? 'var(--red)' : 'var(--green)'; }
+function confirmTx() { const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value, note = el('tx-note').value.trim(); if (!amount) { alert('⚠️ أدخل المبلغ'); return; } const c = DB.customers[selectedCustomerForTx]; const current = c.balance[currency] || 0; c.balance[currency] = type === 'deposit' ? current + amount : current - amount; const now = new Date(); DB.transactions.push({ id: Date.now() + '-' + Math.random().toString(36), phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname, type: type, amount: amount, currency: currency, note: note, date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) }); save(DB); closeTxModal(); renderAdminView(); alert('✅ تمت المعاملة بنجاح'); }
 
-function updatePreview() {
-  const amount = parseNumber(el('tx-amount').value);
-  const currency = el('tx-currency').value;
-  const type = el('tx-type').value;
-  if (!amount) { el('tx-preview').style.display = 'none'; return; }
-  
-  const c = DB.customers[selectedCustomerForTx];
-  const current = c.balance[currency] || 0;
-  const after = type === 'deposit' ? current + amount : current - amount;
-  
-  el('tx-preview').style.display = 'block';
-  el('preview-value').textContent = (after < 0 ? '-' : '') + fmt(Math.abs(after)) + ' ' + currency;
-  el('preview-value').style.color = after < 0 ? 'var(--red)' : 'var(--green)';
-}
-
-function confirmTx() {
-  const amount = parseNumber(el('tx-amount').value);
-  const currency = el('tx-currency').value;
-  const type = el('tx-type').value;
-  const note = el('tx-note').value.trim();
-  if (!amount) { alert('⚠️ أدخل المبلغ'); return; }
-  
-  const c = DB.customers[selectedCustomerForTx];
-  const current = c.balance[currency] || 0;
-  c.balance[currency] = type === 'deposit' ? current + amount : current - amount;
-  
-  const now = new Date();
-  DB.transactions.push({
-    id: Date.now() + '-' + Math.random().toString(36),
-    phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname,
-    type: type, amount: amount, currency: currency, note: note,
-    date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'})
-  });
-  
-  save(DB); closeTxModal(); renderAdminView(); alert(t('txCompleted'));
-}
-
-function editTransaction(txId) {
-  const tx = DB.transactions.find(t => t.id === txId);
-  if (!tx) return;
-  editingTxId = txId;
-  el('edit-tx-id').value = txId;
-  el('edit-tx-amount').value = fmt(tx.amount);
-  el('edit-tx-currency').value = tx.currency;
-  el('edit-tx-note').value = tx.note || '';
-  el('modal-edit-tx').classList.add('show');
-}
+function editTransaction(txId) { const tx = DB.transactions.find(t => t.id === txId); if (!tx) return; editingTxId = txId; el('edit-tx-id').value = txId; el('edit-tx-amount').value = fmt(tx.amount); el('edit-tx-currency').value = tx.currency; el('edit-tx-note').value = tx.note || ''; el('modal-edit-tx').classList.add('show'); }
 function closeEditTxModal() { el('modal-edit-tx').classList.remove('show'); editingTxId = null; }
-
-function saveEditedTx() {
-  const tx = DB.transactions.find(t => t.id === editingTxId);
-  if (!tx) return;
-  
-  const newAmount = parseNumber(el('edit-tx-amount').value);
-  const newCurrency = el('edit-tx-currency').value;
-  const newNote = el('edit-tx-note').value.trim();
-  if (!newAmount) { alert('⚠️ أدخل المبلغ'); return; }
-  
-  const c = DB.customers[tx.phone];
-  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount;
-  c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount;
-  
-  tx.amount = newAmount; tx.currency = newCurrency; tx.note = newNote;
-  save(DB); closeEditTxModal(); renderAdminView(); alert(t('txEdited'));
-}
-
-function deleteTransaction(txId) {
-  if (!confirm(t('confirmDeleteTx'))) return;
-  const txIndex = DB.transactions.findIndex(t => t.id === txId);
-  if (txIndex === -1) return;
-  const tx = DB.transactions[txIndex];
-  const c = DB.customers[tx.phone];
-  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount;
-  DB.transactions.splice(txIndex, 1);
-  save(DB); renderAdminView(); alert(t('txDeleted'));
-}
+function saveEditedTx() { const tx = DB.transactions.find(t => t.id === editingTxId); if (!tx) return; const newAmount = parseNumber(el('edit-tx-amount').value), newCurrency = el('edit-tx-currency').value, newNote = el('edit-tx-note').value.trim(); if (!newAmount) { alert('⚠️ أدخل المبلغ'); return; } const c = DB.customers[tx.phone]; c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount; tx.amount = newAmount; tx.currency = newCurrency; tx.note = newNote; save(DB); closeEditTxModal(); renderAdminView(); alert('✅ تم تعديل الحركة بنجاح'); }
+function deleteTransaction(txId) { if (!confirm('هل أنت متأكد من حذف هذه الحركة؟')) return; const txIndex = DB.transactions.findIndex(t => t.id === txId); if (txIndex === -1) return; const tx = DB.transactions[txIndex]; const c = DB.customers[tx.phone]; c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; DB.transactions.splice(txIndex, 1); save(DB); renderAdminView(); alert('✅ تم حذف الحركة بنجاح'); }
 
 // ==================== CUSTOMER VIEW ====================
-function renderCustomerView() {
-  const c = DB.customers[currentUser];
-  if (!c) return;
-  
-  el('cust-welcome-label').textContent = t('custWelcomeLabel') + ', ' + c.fname + ' ' + c.lname;
-  el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `
-    <div class="metric ${amt < 0 ? 'negative' : 'positive'}">
-      <div class="metric-label">${cur}</div>
-      <div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div>
-    </div>
-  `).join('');
-  
-  const debts = Object.entries(c.balance).filter(([, v]) => v < 0);
-  el('cust-debt-banner').innerHTML = debts.length ? `
-    <div class="debt-banner">
-      <div class="debt-banner-title">🔴 مديون:</div>
-      <div class="debt-items">${debts.map(([cur, amt]) => 
-        `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`
-      ).join('')}</div>
-    </div>
-  ` : '';
-  
-  const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse();
-  if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>${t('noTxs')}</div>`; return; }
-  
-  el('cust-txs').innerHTML = myTxs.map(tx => {
-    const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب';
-    return `
-      <div class="tx-item">
-        <div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div>
-        <div class="tx-details">
-          <div class="tx-name">${typeLabel}</div>
-          <div class="tx-note">${tx.note || '—'}</div>
-          <div class="tx-date">${tx.date}</div>
-        </div>
-        <div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div>
-      </div>
-    `;
-  }).join('');
-}
+function renderCustomerView() { const c = DB.customers[currentUser]; if (!c) return; el('cust-welcome-label').textContent = 'مرحباً, ' + c.fname + ' ' + c.lname; el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `<div class="metric ${amt < 0 ? 'negative' : 'positive'}"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>`).join(''); const debts = Object.entries(c.balance).filter(([, v]) => v < 0); el('cust-debt-banner').innerHTML = debts.length ? `<div class="debt-banner"><div class="debt-banner-title">🔴 مديون:</div><div class="debt-items">${debts.map(([cur, amt]) => `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div></div>` : ''; const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse(); if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } el('cust-txs').innerHTML = myTxs.map(tx => { const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب'; return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`; }).join(''); }
 
 // ==================== AUTH & PROFILE ====================
-function switchLoginTab(tab) {
-  el('login-admin').style.display = tab === 'admin' ? 'block' : 'none';
-  el('login-customer').style.display = tab === 'customer' ? 'block' : 'none';
-  document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer')));
-}
+function switchLoginTab(tab) { el('login-admin').style.display = tab === 'admin' ? 'block' : 'none'; el('login-customer').style.display = tab === 'customer' ? 'block' : 'none'; document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer'))); }
 
 function loginAdmin() {
   const pass = el('admin-pass').value;
-  if (CryptoJS.SHA256(pass).toString() === (DB.admin?.passwordHash || ADMIN_HASH)) {
+  const admin = DB.admin || { passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
+  const currentDeviceId = getDeviceId();
+  
+  // التحقق من الجهاز
+  if (admin.deviceId && admin.deviceId !== currentDeviceId) {
+    alert('❌ لا يمكن الدخول من هذا الجهاز! حساب المدير مرتبط بجهاز واحد فقط.');
+    return;
+  }
+  
+  if (CryptoJS.SHA256(pass).toString() === admin.passwordHash) {
+    // حفظ معرف الجهاز إذا لم يكن موجوداً
+    if (!admin.deviceId) {
+      admin.deviceId = currentDeviceId;
+      save(DB);
+    }
     currentRole = 'admin'; currentUser = 'admin';
     showScreen('admin'); renderAdminView();
-  } else { alert(t('wrongPass')); }
+  } else { alert('❌ كلمة السر خاطئة!'); }
 }
 
-function loginCustomer() {
-  const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value;
-  if (!DB.customers[phone]) { alert(t('notFound')); return; }
-  if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert(t('wrongPass')); return; }
-  currentRole = 'customer'; currentUser = phone;
-  showScreen('customer'); renderCustomerView();
-}
-
+function loginCustomer() { const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; if (!DB.customers[phone]) { alert('❌ الزبون غير موجود!'); return; } if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert('❌ كلمة السر خاطئة!'); return; } currentRole = 'customer'; currentUser = phone; showScreen('customer'); renderCustomerView(); }
 function logout() { currentUser = null; currentRole = null; showScreen('login'); }
-
-function renderAdminView() {
-  renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderRates();
-}
-
+function renderAdminView() { renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderCredits(); renderRates(); }
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
-
-function showTab(name) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el('panel-' + name).classList.add('active');
-  const tabs = document.querySelectorAll('.tab');
-  const tabTexts = { 'daily': t('tabDaily'), 'customers': t('tabCustomers'), 'txs': t('tabTxs'), 'debts': t('tabDebts'), 'rates': t('tabRates'), 'new-customer': t('tabNew') };
-  tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); });
-  if (name === 'daily') renderDailySummary();
-  if (name === 'customers') renderCustomers();
-  if (name === 'txs') renderAllTxs();
-  if (name === 'debts') renderDebts();
-  if (name === 'rates') renderRates();
-}
-
+function showTab(name) { document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el('panel-' + name).classList.add('active'); const tabs = document.querySelectorAll('.tab'); const tabTexts = { 'daily': 'اليومية', 'customers': 'زبائن', 'txs': 'حركات', 'debts': 'ديون', 'credits': 'دائنون', 'rates': 'أسعار', 'new-customer': 'جديد' }; tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); }); if (name === 'daily') renderDailySummary(); if (name === 'customers') renderCustomers(); if (name === 'txs') renderAllTxs(); if (name === 'debts') renderDebts(); if (name === 'credits') renderCredits(); if (name === 'rates') renderRates(); }
 function goToLogin() { showScreen('login'); }
 
 // ==================== FORGOT PASSWORD ====================
 function showForgotPasswordModal() { el('modal-forgot-password').classList.add('show'); }
 function closeForgotPasswordModal() { el('modal-forgot-password').classList.remove('show'); }
-function sendResetRequest() {
-  const phone = el('forgot-phone').value.trim();
-  if (!DB.customers[phone]) { alert(t('customerNotFound')); return; }
-  alert(t('requestSent')); closeForgotPasswordModal();
-}
+function sendResetRequest() { const phone = el('forgot-phone').value.trim(); if (!DB.customers[phone]) { alert('❌ رقم الهاتف غير مسجل'); return; } alert('✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً'); closeForgotPasswordModal(); }
 
 // ==================== RESET CUSTOMER PASSWORD ====================
-function showResetCustPasswordModal(phone) {
-  resetCustPhone = phone;
-  const c = DB.customers[phone];
-  el('reset-cust-name').textContent = `${c.fname} ${c.lname}`;
-  el('new-cust-password').value = ''; el('confirm-cust-password').value = '';
-  el('modal-reset-cust-password').classList.add('show');
-}
+function showResetCustPasswordModal(phone) { resetCustPhone = phone; const c = DB.customers[phone]; el('reset-cust-name').textContent = `${c.fname} ${c.lname}`; el('new-cust-password').value = ''; el('confirm-cust-password').value = ''; el('modal-reset-cust-password').classList.add('show'); }
 function closeResetCustPasswordModal() { el('modal-reset-cust-password').classList.remove('show'); resetCustPhone = null; }
-function resetCustomerPassword() {
-  const newPass = el('new-cust-password').value;
-  const confirmPass = el('confirm-cust-password').value;
-  if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
-  if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; }
-  DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString();
-  save(DB); alert(t('passChanged')); closeResetCustPasswordModal(); renderCustomers();
-}
+function resetCustomerPassword() { const newPass = el('new-cust-password').value, confirmPass = el('confirm-cust-password').value; if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; } if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; } DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString(); save(DB); alert('✅ تم تغيير كلمة السر بنجاح'); closeResetCustPasswordModal(); renderCustomers(); }
 
 // ==================== ADMIN PROFILE ====================
 function showAdminProfileModal() { el('modal-admin-profile').classList.add('show'); }
@@ -1254,46 +881,34 @@ function updateAdminProfile() {
   const newPass = el('new-password').value;
   const confirmPass = el('confirm-password').value;
   if (newPass) {
-    if (CryptoJS.SHA256(currentPass).toString() !== (DB.admin?.passwordHash || ADMIN_HASH)) { alert(t('wrongPass')); return; }
-    if (newPass !== confirmPass) { alert(t('passMismatch')); return; }
-    if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH };
+    if (CryptoJS.SHA256(currentPass).toString() !== (DB.admin?.passwordHash || ADMIN_HASH)) { alert('❌ كلمة السر الحالية غير صحيحة'); return; }
+    if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; }
+    if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
     DB.admin.passwordHash = CryptoJS.SHA256(newPass).toString();
   }
-  if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH };
+  if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
   DB.admin.email = email;
-  save(DB); alert(t('saved')); closeAdminProfileModal();
+  save(DB); alert('✅ تم حفظ التغييرات'); closeAdminProfileModal();
 }
 
 // ==================== INSTALL ====================
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-function showInstallInstructions() {
-  const instructions = el('install-instructions');
-  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  if (deferredPrompt) {
-    instructions.innerHTML = `<p style="margin-bottom:16px;text-align:center">✅ جهازك يدعم التثبيت المباشر</p><button class="install-btn" onclick="installPWA()" style="font-size:16px">📱 تثبيت الآن</button>`;
-  } else if (isIOS) {
-    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong> في الأسفل</p><p>2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p>3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`;
-  } else {
-    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px;margin-bottom:16px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong> في الأعلى</p><p>2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`;
-  }
-  el('install-modal').classList.add('show');
-}
+function showInstallInstructions() { const instructions = el('install-instructions'); const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent); if (deferredPrompt) { instructions.innerHTML = `<p style="margin-bottom:16px;text-align:center">✅ جهازك يدعم التثبيت المباشر</p><button class="install-btn" onclick="installPWA()" style="font-size:16px">📱 تثبيت الآن</button>`; } else if (isIOS) { instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p>3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`; } else { instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`; } el('install-modal').classList.add('show'); }
 function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); }); } }
 function closeInstallModal() { el('install-modal').classList.remove('show'); }
 
 // ==================== EVENT LISTENERS ====================
 el('modal-tx')?.addEventListener('click', function(e) { if (e.target === this) closeTxModal(); });
 el('modal-edit-tx')?.addEventListener('click', function(e) { if (e.target === this) closeEditTxModal(); });
+el('modal-customer-txs')?.addEventListener('click', function(e) { if (e.target === this) closeCustomerTxsModal(); });
+el('modal-edit-customer')?.addEventListener('click', function(e) { if (e.target === this) closeEditCustomerModal(); });
 el('modal-forgot-password')?.addEventListener('click', function(e) { if (e.target === this) closeForgotPasswordModal(); });
 el('modal-reset-cust-password')?.addEventListener('click', function(e) { if (e.target === this) closeResetCustPasswordModal(); });
 el('modal-admin-profile')?.addEventListener('click', function(e) { if (e.target === this) closeAdminProfileModal(); });
 el('install-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInstallModal(); });
 
 // ==================== INIT ====================
-window.addEventListener('load', () => {
-  setLang('ar');
-  setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 2000);
-});
+window.addEventListener('load', () => { setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 2000); });
 </script>
 </body>
 </html>
