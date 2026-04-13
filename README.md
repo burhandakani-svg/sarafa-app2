@@ -187,7 +187,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="how-to-use-title">📱 كيف تستخدم التطبيق؟</div>
       <div class="how-to-use-step">
         <div class="step-number">1</div>
-        <div class="step-text">المدير: يسجل دخول بكلمة السر (admin123) - مرتبط بجهاز واحد للأمان</div>
+        <div class="step-text">المدير: يسجل دخول بكلمة السر (.......) - مرتبط بجهاز واحد للأمان</div>
       </div>
       <div class="how-to-use-step">
         <div class="step-number">2</div>
