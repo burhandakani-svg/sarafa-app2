@@ -188,7 +188,7 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="how-to-use-title">📱 كيف تستخدم التطبيق؟</div>
       <div class="how-to-use-step">
         <div class="step-number">1</div>
-        <div class="step-text">المدير: يسجل دخول بكلمة السر - مرتبط بجهاز واحد للأمان</div>
+        <div class="step-text">المدير: يسجل دخول بكلمة السر ويدير كل شيء (مرتبط بجهاز واحد)</div>
       </div>
       <div class="how-to-use-step">
         <div class="step-number">2</div>
@@ -196,7 +196,7 @@ input:focus,select:focus{border-color:var(--gold)}
       </div>
       <div class="how-to-use-step">
         <div class="step-number">3</div>
-        <div class="step-text">الزبون يكدر يفتح التطبيق من أي جهاز ومن أي مكان</div>
+        <div class="step-text">كل زبون يكدر يفتح التطبيق من جهازه الخاص ويسجل دخول</div>
       </div>
     </div>
     
@@ -225,7 +225,6 @@ input:focus,select:focus{border-color:var(--gold)}
         <label>كلمة السر</label>
         <input type="password" id="admin-pass" placeholder="••••••••">
         <button class="btn" onclick="loginAdmin()">دخول</button>
-        <p style="color:var(--muted);font-size:12px;margin-top:8px;text-align:center">⚠️ حساب المدير مرتبط بجهاز واحد فقط</p>
       </div>
       <div id="login-customer" style="display:none">
         <label>رقم الهاتف</label>
@@ -234,7 +233,6 @@ input:focus,select:focus{border-color:var(--gold)}
         <input type="password" id="cust-pass" placeholder="••••••••">
         <button class="btn" onclick="loginCustomer()">دخول</button>
         <button class="btn btn-outline" onclick="showForgotPasswordModal()" style="margin-top:8px">🔑 نسيت كلمة السر؟</button>
-        <p style="color:var(--muted);font-size:12px;margin-top:8px;text-align:center">✅ الزبون يكدر يدخل من أي جهاز</p>
       </div>
     </div>
   </div>
@@ -331,7 +329,7 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
-  <!-- PANEL: الدائنون -->
+  <!-- PANEL: الدائنون (جديد) -->
   <div id="panel-credits" class="tab-panel">
     <div class="content">
       <div class="section-title">🟢 الزبائن الدائنون (اللي مطلوب لك)</div>
@@ -385,13 +383,14 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- CUSTOMER TRANSACTIONS MODAL -->
+<!-- CUSTOMER TRANSACTIONS MODAL (مع حساب كامل) -->
 <div class="modal-overlay" id="modal-customer-txs">
   <div class="modal" style="max-width:550px">
     <button class="modal-close" onclick="closeCustomerTxsModal()">×</button>
     <div class="modal-title">📋 حساب الزبون الكامل</div>
     <div id="customer-txs-name" style="color:var(--gold);margin-bottom:16px;font-weight:700"></div>
     
+    <!-- الرصيد الكامل بكل العملات -->
     <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px">
       <div style="color:var(--gold);margin-bottom:12px;font-weight:700">💰 الأرصدة الحالية</div>
       <div id="full-balance-display" class="full-balance-grid"></div>
@@ -412,7 +411,7 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- EDIT CUSTOMER MODAL -->
+<!-- EDIT CUSTOMER MODAL (تعديل بيانات الزبون) -->
 <div class="modal-overlay" id="modal-edit-customer">
   <div class="modal">
     <button class="modal-close" onclick="closeEditCustomerModal()">×</button>
@@ -506,7 +505,7 @@ input:focus,select:focus{border-color:var(--gold)}
 <script>
 // ==================== CORE FUNCTIONS ====================
 const ENCRYPTION_KEY = "S@yr4f4#M$st4qb4l!2025*XK9@zQ7!#&^mP3rVnL8wE";
-const STORE = 'sarafa_final_v4';
+const STORE = 'sarafa_final_v2';
 const DEFAULT_ADMIN_PASS = 'admin123';
 let ADMIN_HASH = CryptoJS.SHA256(DEFAULT_ADMIN_PASS).toString();
 
@@ -534,7 +533,7 @@ function initDB() {
     customers: {},
     transactions: [],
     rates: { USD: 1450, EUR: 1550, TRY: 50, IQD: 1, GBP: 1800, SAR: 385 },
-    admin: { email: '', passwordHash: ADMIN_HASH, deviceId: null }, // null = لم يتم ربطه بعد
+    admin: { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() },
     dailyLedger: {},
     officeFunds: { iqd: 0, usd: { amount: 0, rate: 1450 }, kork: { amount: 0, rate: 1450 }, bank: 0 }
   };
@@ -546,7 +545,7 @@ function load() {
     if (encrypted) {
       const bytes = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY);
       const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-      if (!data.admin) data.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: null };
+      if (!data.admin) data.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
       return data;
     }
   } catch(e) {}
@@ -668,6 +667,7 @@ function renderCustomers() {
   }).join('');
 }
 
+// تعديل بيانات الزبون
 function showEditCustomerModal(phone) {
   editingCustomerPhone = phone;
   const c = DB.customers[phone];
@@ -692,11 +692,15 @@ function saveEditedCustomer() {
   const c = DB.customers[originalPhone];
   if (originalPhone !== newPhone && DB.customers[newPhone]) { alert('⚠️ رقم الهاتف مستخدم من قبل زبون آخر!'); return; }
   
-  c.fname = fname; c.lname = lname; c.id_no = id_no;
+  // تحديث البيانات
+  c.fname = fname;
+  c.lname = lname;
+  c.id_no = id_no;
   
   if (originalPhone !== newPhone) {
     DB.customers[newPhone] = c;
     delete DB.customers[originalPhone];
+    // تحديث رقم الهاتف في الحركات
     DB.transactions.forEach(tx => { if (tx.phone === originalPhone) tx.phone = newPhone; });
   }
   
@@ -711,6 +715,7 @@ function showCustomerTransactions(phone) {
   const c = DB.customers[phone];
   el('customer-txs-name').textContent = `${c.fname} ${c.lname} (${c.phone})`;
   
+  // عرض الأرصدة الكاملة
   const balanceHtml = Object.entries(c.balance).map(([cur, amt]) => {
     const iqdValue = amt * (DB.rates[cur] || 1);
     return `<div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center"><div style="color:var(--gold);font-size:14px">${cur}</div><div style="font-weight:700;color:${amt < 0 ? 'var(--red)' : 'var(--green)'};direction:ltr">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div><div style="font-size:11px;color:var(--muted);direction:ltr">= ${fmt(iqdValue)} IQD</div></div>`;
@@ -828,58 +833,29 @@ function renderCustomerView() { const c = DB.customers[currentUser]; if (!c) ret
 // ==================== AUTH & PROFILE ====================
 function switchLoginTab(tab) { el('login-admin').style.display = tab === 'admin' ? 'block' : 'none'; el('login-customer').style.display = tab === 'customer' ? 'block' : 'none'; document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer'))); }
 
-// ✅✅✅ تسجيل دخول المدير - مرتبط بجهاز واحد ✅✅✅
 function loginAdmin() {
   const pass = el('admin-pass').value;
-  const admin = DB.admin || { email: '', passwordHash: ADMIN_HASH, deviceId: null };
+  const admin = DB.admin || { passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
   const currentDeviceId = getDeviceId();
   
-  // التحقق من كلمة السر أولاً (مشفرة)
-  if (CryptoJS.SHA256(pass).toString() !== admin.passwordHash) {
-    alert('❌ كلمة السر خاطئة!');
+  // التحقق من الجهاز
+  if (admin.deviceId && admin.deviceId !== currentDeviceId) {
+    alert('❌ لا يمكن الدخول من هذا الجهاز! حساب المدير مرتبط بجهاز واحد فقط.');
     return;
   }
   
-  // إذا كانت كلمة السر صحيحة، نتحقق من الجهاز
-  // إذا كان الجهاز غير مرتبط (null)، نربطه بأول جهاز يسجل دخول
-  if (admin.deviceId === null || admin.deviceId === undefined) {
-    admin.deviceId = currentDeviceId;
-    if (!DB.admin) DB.admin = admin;
-    save(DB);
-    alert('✅ تم ربط حساب المدير بهذا الجهاز. لن تتمكن من الدخول من أي جهاز آخر.');
-  }
-  
-  // التحقق من تطابق الجهاز
-  if (admin.deviceId !== currentDeviceId) {
-    alert('❌ لا يمكن الدخول من هذا الجهاز!\n\nحساب المدير مرتبط بجهاز واحد فقط للأمان.\nالزبائن فقط يمكنهم الدخول من أي جهاز.');
-    return;
-  }
-  
-  // كل شيء صحيح، تسجيل الدخول
-  currentRole = 'admin'; 
-  currentUser = 'admin';
-  showScreen('admin'); 
-  renderAdminView();
+  if (CryptoJS.SHA256(pass).toString() === admin.passwordHash) {
+    // حفظ معرف الجهاز إذا لم يكن موجوداً
+    if (!admin.deviceId) {
+      admin.deviceId = currentDeviceId;
+      save(DB);
+    }
+    currentRole = 'admin'; currentUser = 'admin';
+    showScreen('admin'); renderAdminView();
+  } else { alert('❌ كلمة السر خاطئة!'); }
 }
 
-// ✅✅✅ تسجيل دخول الزبون - بدون أي ربط بالجهاز ✅✅✅
-function loginCustomer() { 
-  const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; 
-  if (!DB.customers[phone]) { 
-    alert('❌ الزبون غير موجود!'); 
-    return; 
-  } 
-  if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { 
-    alert('❌ كلمة السر خاطئة!'); 
-    return; 
-  } 
-  // ✅ الزبون يدخل مباشرة - بدون أي فحص للجهاز
-  currentRole = 'customer'; 
-  currentUser = phone;
-  showScreen('customer'); 
-  renderCustomerView();
-}
-
+function loginCustomer() { const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; if (!DB.customers[phone]) { alert('❌ الزبون غير موجود!'); return; } if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert('❌ كلمة السر خاطئة!'); return; } currentRole = 'customer'; currentUser = phone; showScreen('customer'); renderCustomerView(); }
 function logout() { currentUser = null; currentRole = null; showScreen('login'); }
 function renderAdminView() { renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderCredits(); renderRates(); }
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
