@@ -906,6 +906,139 @@ el('modal-forgot-password')?.addEventListener('click', function(e) { if (e.targe
 el('modal-reset-cust-password')?.addEventListener('click', function(e) { if (e.target === this) closeResetCustPasswordModal(); });
 el('modal-admin-profile')?.addEventListener('click', function(e) { if (e.target === this) closeAdminProfileModal(); });
 el('install-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInstallModal(); });
+// ====================   النسخ الاحتياطي====================
+  <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
+<p style="color:var(--gold);font-weight:700;margin-bottom:10px">📦 إدارة البيانات (النسخ الاحتياطي)</p>
+<div style="display:flex;gap:10px">
+  <button class="btn btn-sm" onclick="exportData()" style="flex:1;background:#27ae60;color:white">📤 تصدير نسخة</button>
+  <button class="btn btn-sm btn-outline" onclick="el('importFile').click()" style="flex:1">📥 استيراد نسخة</button>
+  <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+</div>
+// ====================    تقارير ====================
+<button class="tab" onclick="showTab('reports')">📊 تقارير</button>
+
+  // ==================== تقرير الحركات الإجمالي  ====================
+<div id="panel-reports" class="tab-panel">
+  <div class="content">
+    <div class="section-title">📊 تقرير الحركات الإجمالي</div>
+    <div class="card" style="margin-bottom:15px">
+      <label>من تاريخ</label><input type="date" id="rep-from" class="fund-input" style="margin-bottom:10px">
+      <label>إلى تاريخ</label><input type="date" id="rep-to" class="fund-input">
+      <button class="btn" onclick="generateReport()">توليد التقرير</button>
+    </div>
+    <div id="report-results"></div>
+  </div>
+</div>
+
+  // ==================== 1. طباعة الوصل (Thermal Print Style) ====================
+function printReceipt(txId) {
+    const tx = DB.transactions.find(t => t.id === txId);
+    if (!tx) return;
+    
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html dir="rtl">
+        <head>
+            <title>وصل صيرفة المستقبل</title>
+            <style>
+                body { font-family: 'Tajawal', sans-serif; padding: 20px; text-align: center; color: #333; }
+                .receipt-box { border: 1px dashed #000; padding: 15px; width: 300px; margin: auto; }
+                .header { font-weight: bold; font-size: 20px; margin-bottom: 5px; }
+                .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                .row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 14px; }
+                .footer { font-size: 12px; margin-top: 20px; }
+            </style>
+        </head>
+        <body onload="window.print();window.close()">
+            <div class="receipt-box">
+                <div class="header">🏦 صيرفة المستقبل</div>
+                <div>إدارة: برهان دكاني</div>
+                <div class="divider"></div>
+                <div class="row"><span>التاريخ:</span> <span>${tx.date}</span></div>
+                <div class="row"><span>الزبون:</span> <span>${tx.customerName}</span></div>
+                <div class="row"><span>النوع:</span> <span>${tx.type === 'deposit' ? 'إيداع (له)' : 'سحب (عليه)'}</span></div>
+                <div class="divider"></div>
+                <div style="font-size: 22px; font-weight: bold; margin: 10px 0;">
+                    ${fmt(tx.amount)} ${tx.currency}
+                </div>
+                <div class="row"><span>ملاحظات:</span> <span>${tx.note || '—'}</span></div>
+                <div class="divider"></div>
+                <div class="footer">شكراً لتعاملكم معنا</div>
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+// تعديل دالة renderTxItem لإضافة زر الطباعة
+const originalRenderTxItem = renderTxItem;
+renderTxItem = function(tx) {
+    let html = originalRenderTxItem(tx);
+    const printBtn = `<button class="btn-edit" onclick="printReceipt('${tx.id}')" style="background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); margin-right:5px">🖨️ وصل</button>`;
+    return html.replace('</div><div class="tx-amount', printBtn + '</div><div class="tx-amount');
+};
+
+// ==================== 2. النسخ الاحتياطي ====================
+function exportData() {
+    const dataStr = localStorage.getItem(STORE);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Sayrafa_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const content = e.target.result;
+            // تجربة فك التشفير للتأكد من صحة الملف
+            CryptoJS.AES.decrypt(content, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+            localStorage.setItem(STORE, content);
+            alert('✅ تم استيراد البيانات بنجاح! سيتم إعادة تحميل التطبيق.');
+            location.reload();
+        } catch (err) {
+            alert('❌ فشل الاستيراد: الملف غير صحيح أو تالف.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ==================== 3. التقارير ====================
+function generateReport() {
+    const from = el('rep-from').value;
+    const to = el('rep-to').value;
+    if (!from || !to) return alert('يرجى اختيار الفترة الزمنية');
+
+    const filtered = DB.transactions.filter(tx => {
+        const txDate = tx.date.split(' ')[0].split('/').reverse().join('-');
+        return txDate >= from && txDate <= to;
+    });
+
+    const report = {};
+    filtered.forEach(tx => {
+        if (!report[tx.currency]) report[tx.currency] = { in: 0, out: 0 };
+        if (tx.type === 'deposit') report[tx.currency].in += tx.amount;
+        else report[tx.currency].out += tx.amount;
+    });
+
+    let html = `<h3>من ${from} إلى ${to}</h3>`;
+    for (const [cur, val] of Object.entries(report)) {
+        html += `
+        <div class="fund-block" style="margin-top:10px">
+            <div class="fund-block-title">${cur}</div>
+            <div class="daily-row"><span class="daily-label">إجمالي الإيداع (+)</span><span class="daily-value" style="color:var(--green)">${fmt(val.in)}</span></div>
+            <div class="daily-row"><span class="daily-label">إجمالي السحب (-)</span><span class="daily-value" style="color:var(--red)">${fmt(val.out)}</span></div>
+            <div class="daily-row" style="border-top:1px solid var(--gold)"><span class="daily-label">الصافي</span><span class="daily-value">${fmt(val.in - val.out)}</span></div>
+        </div>`;
+    }
+    el('report-results').innerHTML = html || '<p>لا توجد حركات لهذه الفترة</p>';
+}
 
 // ==================== INIT ====================
 window.addEventListener('load', () => { setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 2000); });
