@@ -259,6 +259,7 @@ input:focus,select:focus{border-color:var(--gold)}
     <button class="tab" onclick="showTab('credits')">🟢 دائنون</button>
     <button class="tab" onclick="showTab('rates')">💱 أسعار</button>
     <button class="tab" onclick="showTab('new-customer')">➕ جديد</button>
+    <button class="tab" onclick="showTab('reports')">📊 تقارير</button>
   </div>
 
   <!-- PANEL: اليومية -->
@@ -360,6 +361,19 @@ input:focus,select:focus{border-color:var(--gold)}
       <label>كلمة السر</label><input type="password" id="new-pass" placeholder="••••••••">
       <button class="btn" onclick="addCustomer()">✅ تسجيل</button>
       <p style="color:var(--muted);font-size:12px;margin-top:12px;text-align:center">بعد التسجيل، الزبون يكدر يسجل دخول من جهازه برقم الهاتف وكلمة السر</p>
+    </div>
+  </div>
+
+  <!-- PANEL: تقارير -->
+  <div id="panel-reports" class="tab-panel">
+    <div class="content">
+      <div class="section-title">📊 تقرير الحركات الإجمالي</div>
+      <div class="card" style="margin-bottom:15px">
+        <label>من تاريخ</label><input type="date" id="rep-from" class="fund-input" style="margin-bottom:10px">
+        <label>إلى تاريخ</label><input type="date" id="rep-to" class="fund-input">
+        <button class="btn" onclick="generateReport()">توليد التقرير</button>
+      </div>
+      <div id="report-results"></div>
     </div>
   </div>
 </div>
@@ -498,7 +512,13 @@ input:focus,select:focus{border-color:var(--gold)}
     <label>تأكيد كلمة السر الجديدة</label><input type="password" id="confirm-password" placeholder="••••••••">
     <button class="btn" onclick="updateAdminProfile()">💾 حفظ التغييرات</button>
     <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
-    <p style="color:var(--muted);font-size:12px;text-align:center">⚠️ حساب المدير مرتبط بهذا الجهاز فقط. لا يمكن الدخول من جهاز آخر.</p>
+    <p style="color:var(--gold);font-weight:700;margin-bottom:10px">📦 إدارة البيانات (النسخ الاحتياطي)</p>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-sm" onclick="exportData()" style="flex:1;background:#27ae60;color:white">📤 تصدير نسخة</button>
+      <button class="btn btn-sm btn-outline" onclick="el('importFile').click()" style="flex:1">📥 استيراد نسخة</button>
+      <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+    </div>
+    <p style="color:var(--muted);font-size:12px;text-align:center;margin-top:12px">⚠️ حساب المدير مرتبط بهذا الجهاز فقط. لا يمكن الدخول من جهاز آخر.</p>
   </div>
 </div>
 
@@ -509,7 +529,6 @@ const STORE = 'sarafa_final_v2';
 const DEFAULT_ADMIN_PASS = 'admin123';
 let ADMIN_HASH = CryptoJS.SHA256(DEFAULT_ADMIN_PASS).toString();
 
-// توليد معرف فريد للجهاز
 function getDeviceId() {
   let deviceId = localStorage.getItem('device_id');
   if (!deviceId) {
@@ -552,8 +571,21 @@ function load() {
   return initDB();
 }
 
-function save(d) { localStorage.setItem(STORE, CryptoJS.AES.encrypt(JSON.stringify(d), ENCRYPTION_KEY).toString()); }
-function fmt(n) { return Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+function save(d) { 
+  const encrypted = CryptoJS.AES.encrypt(JSON.stringify(d), ENCRYPTION_KEY).toString();
+  localStorage.setItem(STORE, encrypted); 
+}
+
+const fmtCache = new Map();
+function fmt(n) { 
+  if (n === 0) return '0';
+  const key = n;
+  if (fmtCache.has(key)) return fmtCache.get(key);
+  const result = Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  fmtCache.set(key, result);
+  return result;
+}
+
 function el(id) { return document.getElementById(id); }
 function parseNumber(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
 function formatNumberInput(inp) { let v = inp.value.replace(/[^0-9]/g, ''); if (v) inp.value = Number(v).toLocaleString('en-US'); }
@@ -587,17 +619,34 @@ function updateTotalOfficeFunds() {
   el('total-office-funds').textContent = fmt(iqd + (usdAmount * usdRate) + (korkAmount * korkRate) + bank) + ' IQD';
 }
 
-function saveOfficeFunds() { DB.officeFunds = { iqd: parseNumber(el('office-iqd').value), usd: { amount: parseNumber(el('office-usd-amount').value), rate: parseNumber(el('office-usd-rate').value) }, kork: { amount: parseNumber(el('kork-amount').value), rate: parseNumber(el('kork-rate').value) }, bank: parseNumber(el('bank-funds').value) }; save(DB); alert('✅ تم الحفظ'); }
+function saveOfficeFunds() { 
+  DB.officeFunds = { 
+    iqd: parseNumber(el('office-iqd').value), 
+    usd: { amount: parseNumber(el('office-usd-amount').value), rate: parseNumber(el('office-usd-rate').value) }, 
+    kork: { amount: parseNumber(el('kork-amount').value), rate: parseNumber(el('kork-rate').value) }, 
+    bank: parseNumber(el('bank-funds').value) 
+  }; 
+  save(DB); 
+  alert('✅ تم الحفظ'); 
+}
 
-function updateDailyLedger() { if (!DB.dailyLedger[selectedDailyDate]) DB.dailyLedger[selectedDailyDate] = { openingBalance: calculateTotalBalance(), closingBalance: 0, profit: 0 }; }
+function updateDailyLedger() { 
+  if (!DB.dailyLedger[selectedDailyDate]) DB.dailyLedger[selectedDailyDate] = { openingBalance: calculateTotalBalance(), closingBalance: 0, profit: 0 }; 
+}
 
+let totalBalanceCache = null;
 function calculateTotalBalance() {
+  if (totalBalanceCache !== null) return totalBalanceCache;
   let total = 0;
-  Object.values(DB.customers).forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { total += amt * (DB.rates[cur] || 1); }); });
+  Object.values(DB.customers).forEach(c => { 
+    Object.entries(c.balance).forEach(([cur, amt]) => { total += amt * (DB.rates[cur] || 1); }); 
+  });
+  totalBalanceCache = total;
   return total;
 }
 
 function renderDailySummary() {
+  totalBalanceCache = null;
   updateDailyLedger();
   const daily = DB.dailyLedger[selectedDailyDate] || { openingBalance: 0, closingBalance: 0, profit: 0 };
   const currentBalance = calculateTotalBalance();
@@ -624,11 +673,38 @@ function renderDailyTransactions() {
 
 function renderTxItem(tx) {
   const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب';
-  return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${tx.customerName} - ${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div>${currentRole === 'admin' ? `<div class="tx-actions"><button class="btn-edit" onclick="editTransaction('${tx.id}')">✏️</button><button class="btn-delete" onclick="deleteTransaction('${tx.id}')">🗑️</button></div>` : ''}</div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`;
+  const printBtn = currentRole === 'admin' ? `<button class="btn-edit" onclick="printReceipt('${tx.id}')" style="background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); margin-right:5px">🖨️ وصل</button>` : '';
+  return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${tx.customerName} - ${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div>${currentRole === 'admin' ? `<div class="tx-actions"><button class="btn-edit" onclick="editTransaction('${tx.id}')">✏️</button><button class="btn-delete" onclick="deleteTransaction('${tx.id}')">🗑️</button>${printBtn}</div>` : ''}</div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`;
 }
 
-function changeDailyDate(offset) { const date = new Date(selectedDailyDate); date.setDate(date.getDate() + offset); selectedDailyDate = date.toISOString().split('T')[0]; renderDailySummary(); updateShortcutsActive(); }
-function changeDailyDateFromPicker() { selectedDailyDate = el('daily-date-picker').value; renderDailySummary(); updateShortcutsActive(); }
+function printReceipt(txId) {
+  const tx = DB.transactions.find(t => t.id === txId);
+  if (!tx) return;
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html dir="rtl">
+    <head><title>وصل صيرفة المستقبل</title>
+    <style>body{font-family:'Tajawal',sans-serif;padding:20px;text-align:center;color:#333}.receipt-box{border:1px dashed #000;padding:15px;width:300px;margin:auto}.header{font-weight:bold;font-size:20px;margin-bottom:5px}.divider{border-top:1px dashed #000;margin:10px 0}.row{display:flex;justify-content:space-between;margin:5px 0;font-size:14px}.footer{font-size:12px;margin-top:20px}</style>
+    </head>
+    <body onload="window.print();window.close()">
+      <div class="receipt-box">
+        <div class="header">🏦 صيرفة المستقبل</div><div>إدارة: برهان دكاني</div><div class="divider"></div>
+        <div class="row"><span>التاريخ:</span><span>${tx.date}</span></div>
+        <div class="row"><span>الزبون:</span><span>${tx.customerName}</span></div>
+        <div class="row"><span>النوع:</span><span>${tx.type==='deposit'?'إيداع (له)':'سحب (عليه)'}</span></div>
+        <div class="divider"></div>
+        <div style="font-size:22px;font-weight:bold;margin:10px 0">${fmt(tx.amount)} ${tx.currency}</div>
+        <div class="row"><span>ملاحظات:</span><span>${tx.note||'—'}</span></div>
+        <div class="divider"></div>
+        <div class="footer">شكراً لتعاملكم معنا</div>
+      </div>
+    </body></html>
+  `);
+  printWindow.document.close();
+}
+
+function changeDailyDate(offset) { const date = new Date(selectedDailyDate); date.setDate(date.getDate() + offset); selectedDailyDate = date.toISOString().split('T')[0]; totalBalanceCache = null; renderDailySummary(); updateShortcutsActive(); }
+function changeDailyDateFromPicker() { selectedDailyDate = el('daily-date-picker').value; totalBalanceCache = null; renderDailySummary(); updateShortcutsActive(); }
 
 function setDailyDateShortcut(type) {
   const today = new Date(); let targetDate = new Date();
@@ -637,6 +713,7 @@ function setDailyDateShortcut(type) {
   else if (type === 'monthStart') { targetDate = new Date(today.getFullYear(), today.getMonth(), 1); }
   else if (type === 'monthEnd') { targetDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); }
   selectedDailyDate = targetDate.toISOString().split('T')[0];
+  totalBalanceCache = null;
   renderDailySummary(); updateShortcutsActive();
 }
 
@@ -657,17 +734,22 @@ function renderCustomers() {
   const custs = Object.values(DB.customers).filter(c => (c.fname + ' ' + c.lname + ' ' + c.phone).toLowerCase().includes(q));
   const list = el('customers-list');
   if (!custs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">👥</div>لا يوجد زبائن</div>`; return; }
-  list.innerHTML = custs.map(c => {
+  let html = '';
+  for (const c of custs) {
     const hasDebt = Object.values(c.balance).some(v => v < 0);
     const hasCredit = Object.values(c.balance).some(v => v > 0);
     let cardClass = 'customer-card';
     if (hasDebt) cardClass += ' has-debt';
     if (hasCredit) cardClass += ' has-credit';
-    return `<div class="${cardClass}" onclick="showCustomerTransactions('${c.phone}')"><div class="cust-name">👤 ${c.fname} ${c.lname} ${hasDebt ? '<span style="color:var(--red);font-size:12px">● مديون</span>' : ''} ${hasCredit ? '<span style="color:var(--green);font-size:12px">● دائن</span>' : ''}</div><div class="cust-info">${c.phone} | ID: ${c.id_no}</div><div class="cust-balances">${Object.entries(c.balance).map(([cur, amt]) => `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap" onclick="event.stopPropagation()"><button class="btn btn-sm" onclick="openTxModal('${c.phone}')">💸 معاملة</button><button class="btn btn-sm btn-outline" onclick="showEditCustomerModal('${c.phone}')">✏️ تعديل</button><button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">🔑 تغيير الرمز</button><button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.phone}')">🗑️ حذف</button></div></div>`;
-  }).join('');
+    let balancesHtml = '';
+    for (const [cur, amt] of Object.entries(c.balance)) {
+      balancesHtml += `<span class="bal-badge ${amt < 0 ? 'neg' : amt > 0 ? 'pos' : ''}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))} ${cur}</span>`;
+    }
+    html += `<div class="${cardClass}" onclick="showCustomerTransactions('${c.phone}')"><div class="cust-name">👤 ${c.fname} ${c.lname} ${hasDebt ? '<span style="color:var(--red);font-size:12px">● مديون</span>' : ''} ${hasCredit ? '<span style="color:var(--green);font-size:12px">● دائن</span>' : ''}</div><div class="cust-info">${c.phone} | ID: ${c.id_no}</div><div class="cust-balances">${balancesHtml}</div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap" onclick="event.stopPropagation()"><button class="btn btn-sm" onclick="openTxModal('${c.phone}')">💸 معاملة</button><button class="btn btn-sm btn-outline" onclick="showEditCustomerModal('${c.phone}')">✏️ تعديل</button><button class="btn btn-sm btn-outline" onclick="showResetCustPasswordModal('${c.phone}')">🔑 تغيير الرمز</button><button class="btn btn-sm btn-danger" onclick="deleteCustomer('${c.phone}')">🗑️ حذف</button></div></div>`;
+  }
+  list.innerHTML = html;
 }
 
-// تعديل بيانات الزبون
 function showEditCustomerModal(phone) {
   editingCustomerPhone = phone;
   const c = DB.customers[phone];
@@ -692,7 +774,6 @@ function saveEditedCustomer() {
   const c = DB.customers[originalPhone];
   if (originalPhone !== newPhone && DB.customers[newPhone]) { alert('⚠️ رقم الهاتف مستخدم من قبل زبون آخر!'); return; }
   
-  // تحديث البيانات
   c.fname = fname;
   c.lname = lname;
   c.id_no = id_no;
@@ -700,11 +781,11 @@ function saveEditedCustomer() {
   if (originalPhone !== newPhone) {
     DB.customers[newPhone] = c;
     delete DB.customers[originalPhone];
-    // تحديث رقم الهاتف في الحركات
-    DB.transactions.forEach(tx => { if (tx.phone === originalPhone) tx.phone = newPhone; });
+    for (const tx of DB.transactions) { if (tx.phone === originalPhone) tx.phone = newPhone; }
   }
   
   save(DB);
+  totalBalanceCache = null;
   alert('✅ تم تحديث بيانات الزبون بنجاح');
   closeEditCustomerModal();
   renderCustomers();
@@ -715,11 +796,11 @@ function showCustomerTransactions(phone) {
   const c = DB.customers[phone];
   el('customer-txs-name').textContent = `${c.fname} ${c.lname} (${c.phone})`;
   
-  // عرض الأرصدة الكاملة
-  const balanceHtml = Object.entries(c.balance).map(([cur, amt]) => {
+  let balanceHtml = '';
+  for (const [cur, amt] of Object.entries(c.balance)) {
     const iqdValue = amt * (DB.rates[cur] || 1);
-    return `<div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center"><div style="color:var(--gold);font-size:14px">${cur}</div><div style="font-weight:700;color:${amt < 0 ? 'var(--red)' : 'var(--green)'};direction:ltr">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div><div style="font-size:11px;color:var(--muted);direction:ltr">= ${fmt(iqdValue)} IQD</div></div>`;
-  }).join('');
+    balanceHtml += `<div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center"><div style="color:var(--gold);font-size:14px">${cur}</div><div style="font-weight:700;color:${amt < 0 ? 'var(--red)' : 'var(--green)'};direction:ltr">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div><div style="font-size:11px;color:var(--muted);direction:ltr">= ${fmt(iqdValue)} IQD</div></div>`;
+  }
   el('full-balance-display').innerHTML = balanceHtml;
   
   const today = new Date();
@@ -765,7 +846,14 @@ function renderCustomerTxsList() {
   container.innerHTML = txs.map(tx => renderTxItem(tx)).join('');
 }
 
-function deleteCustomer(phone) { if (!confirm('هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!')) return; delete DB.customers[phone]; save(DB); alert('✅ تم حذف الزبون بنجاح'); renderCustomers(); renderDebts(); renderCredits(); }
+function deleteCustomer(phone) { 
+  if (!confirm('هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!')) return; 
+  delete DB.customers[phone]; 
+  save(DB); 
+  totalBalanceCache = null;
+  alert('✅ تم حذف الزبون بنجاح'); 
+  renderCustomers(); renderDebts(); renderCredits(); 
+}
 
 function addCustomer() {
   const fname = el('new-fname').value.trim(), lname = el('new-lname').value.trim();
@@ -774,6 +862,7 @@ function addCustomer() {
   if (DB.customers[phone]) { alert('⚠️ الهاتف مسجل مسبقاً!'); return; }
   DB.customers[phone] = { fname, lname, phone, id_no, pass: CryptoJS.SHA256(pass).toString(), balance: { USD: 0, EUR: 0, TRY: 0, IQD: 0, GBP: 0, SAR: 0 } };
   save(DB);
+  totalBalanceCache = null;
   el('new-fname').value = ''; el('new-lname').value = ''; el('new-tel').value = ''; el('new-id').value = ''; el('new-pass').value = '';
   alert('✅ تم التسجيل!'); showTab('customers');
 }
@@ -782,95 +871,265 @@ function renderDebts() {
   const debtors = Object.values(DB.customers).filter(c => Object.values(c.balance).some(v => v < 0));
   const list = el('debts-list'), summaryContainer = el('debts-summary-container');
   let totalDebtIQD = 0, totalDebtUSD = 0;
-  debtors.forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { if (amt < 0) { if (cur === 'IQD') totalDebtIQD += Math.abs(amt); else if (cur === 'USD') totalDebtUSD += Math.abs(amt); } }); });
+  for (const c of debtors) {
+    for (const [cur, amt] of Object.entries(c.balance)) {
+      if (amt < 0) { if (cur === 'IQD') totalDebtIQD += Math.abs(amt); else if (cur === 'USD') totalDebtUSD += Math.abs(amt); }
+    }
+  }
   const usdRate = DB.rates.USD || 1450;
   const totalDebtAll = totalDebtIQD + (totalDebtUSD * usdRate);
   summaryContainer.innerHTML = debtors.length > 0 ? `<div class="debt-summary"><div class="debt-summary-title">📊 ملخص الديون</div><div class="debt-summary-row"><span class="debt-summary-label">عدد المدينين</span><span class="debt-summary-value red">${debtors.length}</span></div><div class="debt-summary-row"><span class="debt-summary-label">مجموع الديون بالدينار</span><span class="debt-summary-value red">${fmt(totalDebtIQD)} IQD</span></div><div class="debt-summary-row"><span class="debt-summary-label">مجموع الديون بالدولار</span><span class="debt-summary-value red">${fmt(totalDebtUSD)} USD</span></div><div class="debt-total-row"><span class="debt-total-label">المجموع الكلي للديون (IQD)</span><span class="debt-total-value">${fmt(totalDebtAll)} IQD</span></div></div>` : '';
   if (!debtors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>✅ لا يوجد زبائن مدينون</div>`; return; }
-  list.innerHTML = debtors.map(c => {
+  let html = '';
+  for (const c of debtors) {
     const debts = Object.entries(c.balance).filter(([, v]) => v < 0);
-    return `<div class="debt-card"><div class="debt-card-header"><span class="debt-card-name">👤 ${c.fname} ${c.lname}</span><span class="debt-card-phone">${c.phone}</span></div><div class="debt-items-grid">${debts.map(([cur, amt]) => { const iqdValue = cur === 'IQD' ? Math.abs(amt) : Math.abs(amt) * usdRate; return `<div class="debt-item-card"><div class="debt-item-currency">${cur}</div><div class="debt-item-amount">${fmt(Math.abs(amt))}</div><div class="debt-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`; }).join('')}</div></div>`;
-  }).join('');
+    let itemsHtml = '';
+    for (const [cur, amt] of debts) {
+      const iqdValue = cur === 'IQD' ? Math.abs(amt) : Math.abs(amt) * usdRate;
+      itemsHtml += `<div class="debt-item-card"><div class="debt-item-currency">${cur}</div><div class="debt-item-amount">${fmt(Math.abs(amt))}</div><div class="debt-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`;
+    }
+    html += `<div class="debt-card"><div class="debt-card-header"><span class="debt-card-name">👤 ${c.fname} ${c.lname}</span><span class="debt-card-phone">${c.phone}</span></div><div class="debt-items-grid">${itemsHtml}</div></div>`;
+  }
+  list.innerHTML = html;
 }
 
 function renderCredits() {
   const creditors = Object.values(DB.customers).filter(c => Object.values(c.balance).some(v => v > 0));
   const list = el('credits-list'), summaryContainer = el('credits-summary-container');
   let totalCreditIQD = 0, totalCreditUSD = 0;
-  creditors.forEach(c => { Object.entries(c.balance).forEach(([cur, amt]) => { if (amt > 0) { if (cur === 'IQD') totalCreditIQD += amt; else if (cur === 'USD') totalCreditUSD += amt; } }); });
+  for (const c of creditors) {
+    for (const [cur, amt] of Object.entries(c.balance)) {
+      if (amt > 0) { if (cur === 'IQD') totalCreditIQD += amt; else if (cur === 'USD') totalCreditUSD += amt; }
+    }
+  }
   const usdRate = DB.rates.USD || 1450;
   const totalCreditAll = totalCreditIQD + (totalCreditUSD * usdRate);
   summaryContainer.innerHTML = creditors.length > 0 ? `<div class="credit-summary"><div class="credit-summary-title">📊 ملخص الدائنين</div><div class="credit-summary-row"><span class="credit-summary-label">عدد الدائنين</span><span class="credit-summary-value green">${creditors.length}</span></div><div class="credit-summary-row"><span class="credit-summary-label">مجموع الدائنين بالدينار</span><span class="credit-summary-value green">${fmt(totalCreditIQD)} IQD</span></div><div class="credit-summary-row"><span class="credit-summary-label">مجموع الدائنين بالدولار</span><span class="credit-summary-value green">${fmt(totalCreditUSD)} USD</span></div><div class="credit-total-row"><span class="credit-total-label">المجموع الكلي للدائنين (IQD)</span><span class="credit-total-value">${fmt(totalCreditAll)} IQD</span></div></div>` : '';
   if (!creditors.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>✅ لا يوجد زبائن دائنون</div>`; return; }
-  list.innerHTML = creditors.map(c => {
+  let html = '';
+  for (const c of creditors) {
     const credits = Object.entries(c.balance).filter(([, v]) => v > 0);
-    return `<div class="credit-card"><div class="credit-card-header"><span class="credit-card-name">👤 ${c.fname} ${c.lname}</span><span class="credit-card-phone">${c.phone}</span></div><div class="credit-items-grid">${credits.map(([cur, amt]) => { const iqdValue = cur === 'IQD' ? amt : amt * usdRate; return `<div class="credit-item-card"><div class="credit-item-currency">${cur}</div><div class="credit-item-amount">${fmt(amt)}</div><div class="credit-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`; }).join('')}</div></div>`;
-  }).join('');
+    let itemsHtml = '';
+    for (const [cur, amt] of credits) {
+      const iqdValue = cur === 'IQD' ? amt : amt * usdRate;
+      itemsHtml += `<div class="credit-item-card"><div class="credit-item-currency">${cur}</div><div class="credit-item-amount">${fmt(amt)}</div><div class="credit-item-iqd">= ${fmt(iqdValue)} IQD</div></div>`;
+    }
+    html += `<div class="credit-card"><div class="credit-card-header"><span class="credit-card-name">👤 ${c.fname} ${c.lname}</span><span class="credit-card-phone">${c.phone}</span></div><div class="credit-items-grid">${itemsHtml}</div></div>`;
+  }
+  list.innerHTML = html;
 }
 
 function renderRates() {
-  el('rates-list').innerHTML = ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].map(c => `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between"><span style="font-weight:600">1 ${c} =</span><div style="display:flex;align-items:center;gap:8px"><input type="text" id="rate-${c}" value="${fmt(DB.rates[c] || 1)}" oninput="formatNumberInput(this)" style="width:130px;margin-bottom:0;text-align:center;font-weight:700;color:var(--gold)"><span style="color:var(--muted)">IQD</span></div></div>`).join('');
+  const currencies = ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'];
+  let html = '';
+  for (const c of currencies) {
+    html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between"><span style="font-weight:600">1 ${c} =</span><div style="display:flex;align-items:center;gap:8px"><input type="text" id="rate-${c}" value="${fmt(DB.rates[c] || 1)}" oninput="formatNumberInput(this)" style="width:130px;margin-bottom:0;text-align:center;font-weight:700;color:var(--gold)"><span style="color:var(--muted)">IQD</span></div></div>`;
+  }
+  el('rates-list').innerHTML = html;
 }
 
-function saveRates() { ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); }); save(DB); alert('✅ تم حفظ الأسعار!'); renderDailySummary(); renderDebts(); renderCredits(); }
+function saveRates() { 
+  ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); }); 
+  save(DB); 
+  totalBalanceCache = null;
+  alert('✅ تم حفظ الأسعار!'); 
+  renderDailySummary(); renderDebts(); renderCredits(); 
+}
 
-function renderAllTxs() { const txs = [...DB.transactions].reverse(); const list = el('all-txs-list'); if (!txs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } list.innerHTML = txs.map(tx => renderTxItem(tx)).join(''); }
+function renderAllTxs() { 
+  const txs = [...DB.transactions].reverse(); 
+  const list = el('all-txs-list'); 
+  if (!txs.length) { list.innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } 
+  list.innerHTML = txs.map(tx => renderTxItem(tx)).join(''); 
+}
 
 // ==================== TRANSACTIONS ====================
-function openTxModal(phone) { selectedCustomerForTx = phone; el('tx-amount').value = ''; el('tx-note').value = ''; el('tx-type').value = 'deposit'; el('tx-currency').value = 'USD'; el('tx-preview').style.display = 'none'; el('modal-tx').classList.add('show'); }
+function openTxModal(phone) { 
+  selectedCustomerForTx = phone; 
+  el('tx-amount').value = ''; 
+  el('tx-note').value = ''; 
+  el('tx-type').value = 'deposit'; 
+  el('tx-currency').value = 'USD'; 
+  el('tx-preview').style.display = 'none'; 
+  el('modal-tx').classList.add('show'); 
+}
 function closeTxModal() { el('modal-tx').classList.remove('show'); selectedCustomerForTx = null; }
-function updatePreview() { const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value; if (!amount) { el('tx-preview').style.display = 'none'; return; } const c = DB.customers[selectedCustomerForTx]; const current = c.balance[currency] || 0; const after = type === 'deposit' ? current + amount : current - amount; el('tx-preview').style.display = 'block'; el('preview-value').textContent = (after < 0 ? '-' : '') + fmt(Math.abs(after)) + ' ' + currency; el('preview-value').style.color = after < 0 ? 'var(--red)' : 'var(--green)'; }
-function confirmTx() { const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value, note = el('tx-note').value.trim(); if (!amount) { alert('⚠️ أدخل المبلغ'); return; } const c = DB.customers[selectedCustomerForTx]; const current = c.balance[currency] || 0; c.balance[currency] = type === 'deposit' ? current + amount : current - amount; const now = new Date(); DB.transactions.push({ id: Date.now() + '-' + Math.random().toString(36), phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname, type: type, amount: amount, currency: currency, note: note, date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) }); save(DB); closeTxModal(); renderAdminView(); alert('✅ تمت المعاملة بنجاح'); }
+function updatePreview() { 
+  const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value; 
+  if (!amount) { el('tx-preview').style.display = 'none'; return; } 
+  const c = DB.customers[selectedCustomerForTx]; 
+  const current = c.balance[currency] || 0; 
+  const after = type === 'deposit' ? current + amount : current - amount; 
+  el('tx-preview').style.display = 'block'; 
+  el('preview-value').textContent = (after < 0 ? '-' : '') + fmt(Math.abs(after)) + ' ' + currency; 
+  el('preview-value').style.color = after < 0 ? 'var(--red)' : 'var(--green)'; 
+}
+function confirmTx() { 
+  const amount = parseNumber(el('tx-amount').value), currency = el('tx-currency').value, type = el('tx-type').value, note = el('tx-note').value.trim(); 
+  if (!amount) { alert('⚠️ أدخل المبلغ'); return; } 
+  const c = DB.customers[selectedCustomerForTx]; 
+  const current = c.balance[currency] || 0; 
+  c.balance[currency] = type === 'deposit' ? current + amount : current - amount; 
+  const now = new Date(); 
+  DB.transactions.push({ id: Date.now() + '-' + Math.random().toString(36), phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname, type: type, amount: amount, currency: currency, note: note, date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) }); 
+  save(DB); 
+  totalBalanceCache = null;
+  closeTxModal(); 
+  renderAdminView(); 
+  alert('✅ تمت المعاملة بنجاح'); 
+}
 
-function editTransaction(txId) { const tx = DB.transactions.find(t => t.id === txId); if (!tx) return; editingTxId = txId; el('edit-tx-id').value = txId; el('edit-tx-amount').value = fmt(tx.amount); el('edit-tx-currency').value = tx.currency; el('edit-tx-note').value = tx.note || ''; el('modal-edit-tx').classList.add('show'); }
+function editTransaction(txId) { 
+  const tx = DB.transactions.find(t => t.id === txId); 
+  if (!tx) return; 
+  editingTxId = txId; 
+  el('edit-tx-id').value = txId; 
+  el('edit-tx-amount').value = fmt(tx.amount); 
+  el('edit-tx-currency').value = tx.currency; 
+  el('edit-tx-note').value = tx.note || ''; 
+  el('modal-edit-tx').classList.add('show'); 
+}
 function closeEditTxModal() { el('modal-edit-tx').classList.remove('show'); editingTxId = null; }
-function saveEditedTx() { const tx = DB.transactions.find(t => t.id === editingTxId); if (!tx) return; const newAmount = parseNumber(el('edit-tx-amount').value), newCurrency = el('edit-tx-currency').value, newNote = el('edit-tx-note').value.trim(); if (!newAmount) { alert('⚠️ أدخل المبلغ'); return; } const c = DB.customers[tx.phone]; c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount; tx.amount = newAmount; tx.currency = newCurrency; tx.note = newNote; save(DB); closeEditTxModal(); renderAdminView(); alert('✅ تم تعديل الحركة بنجاح'); }
-function deleteTransaction(txId) { if (!confirm('هل أنت متأكد من حذف هذه الحركة؟')) return; const txIndex = DB.transactions.findIndex(t => t.id === txId); if (txIndex === -1) return; const tx = DB.transactions[txIndex]; const c = DB.customers[tx.phone]; c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; DB.transactions.splice(txIndex, 1); save(DB); renderAdminView(); alert('✅ تم حذف الحركة بنجاح'); }
+function saveEditedTx() { 
+  const tx = DB.transactions.find(t => t.id === editingTxId); 
+  if (!tx) return; 
+  const newAmount = parseNumber(el('edit-tx-amount').value), newCurrency = el('edit-tx-currency').value, newNote = el('edit-tx-note').value.trim(); 
+  if (!newAmount) { alert('⚠️ أدخل المبلغ'); return; } 
+  const c = DB.customers[tx.phone]; 
+  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; 
+  c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount; 
+  tx.amount = newAmount; tx.currency = newCurrency; tx.note = newNote; 
+  save(DB); 
+  totalBalanceCache = null;
+  closeEditTxModal(); 
+  renderAdminView(); 
+  alert('✅ تم تعديل الحركة بنجاح'); 
+}
+function deleteTransaction(txId) { 
+  if (!confirm('هل أنت متأكد من حذف هذه الحركة؟')) return; 
+  const txIndex = DB.transactions.findIndex(t => t.id === txId); 
+  if (txIndex === -1) return; 
+  const tx = DB.transactions[txIndex]; 
+  const c = DB.customers[tx.phone]; 
+  c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; 
+  DB.transactions.splice(txIndex, 1); 
+  save(DB); 
+  totalBalanceCache = null;
+  renderAdminView(); 
+  alert('✅ تم حذف الحركة بنجاح'); 
+}
 
 // ==================== CUSTOMER VIEW ====================
-function renderCustomerView() { const c = DB.customers[currentUser]; if (!c) return; el('cust-welcome-label').textContent = 'مرحباً, ' + c.fname + ' ' + c.lname; el('cust-balances').innerHTML = Object.entries(c.balance).map(([cur, amt]) => `<div class="metric ${amt < 0 ? 'negative' : 'positive'}"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>`).join(''); const debts = Object.entries(c.balance).filter(([, v]) => v < 0); el('cust-debt-banner').innerHTML = debts.length ? `<div class="debt-banner"><div class="debt-banner-title">🔴 مديون:</div><div class="debt-items">${debts.map(([cur, amt]) => `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`).join('')}</div></div>` : ''; const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse(); if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } el('cust-txs').innerHTML = myTxs.map(tx => { const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب'; return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`; }).join(''); }
+function renderCustomerView() { 
+  const c = DB.customers[currentUser]; 
+  if (!c) return; 
+  el('cust-welcome-label').textContent = 'مرحباً, ' + c.fname + ' ' + c.lname; 
+  let balancesHtml = '';
+  for (const [cur, amt] of Object.entries(c.balance)) {
+    balancesHtml += `<div class="metric ${amt < 0 ? 'negative' : 'positive'}"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>`;
+  }
+  el('cust-balances').innerHTML = balancesHtml;
+  const debts = Object.entries(c.balance).filter(([, v]) => v < 0); 
+  let debtHtml = '';
+  if (debts.length) {
+    debtHtml = `<div class="debt-banner"><div class="debt-banner-title">🔴 مديون:</div><div class="debt-items">`;
+    for (const [cur, amt] of debts) {
+      debtHtml += `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`;
+    }
+    debtHtml += `</div></div>`;
+  }
+  el('cust-debt-banner').innerHTML = debtHtml;
+  const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse(); 
+  if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } 
+  el('cust-txs').innerHTML = myTxs.map(tx => { 
+    const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب'; 
+    return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`; 
+  }).join(''); 
+}
 
 // ==================== AUTH & PROFILE ====================
-function switchLoginTab(tab) { el('login-admin').style.display = tab === 'admin' ? 'block' : 'none'; el('login-customer').style.display = tab === 'customer' ? 'block' : 'none'; document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer'))); }
+function switchLoginTab(tab) { 
+  el('login-admin').style.display = tab === 'admin' ? 'block' : 'none'; 
+  el('login-customer').style.display = tab === 'customer' ? 'block' : 'none'; 
+  document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer'))); 
+}
 
 function loginAdmin() {
   const pass = el('admin-pass').value;
   const admin = DB.admin || { passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
   const currentDeviceId = getDeviceId();
   
-  // التحقق من الجهاز
   if (admin.deviceId && admin.deviceId !== currentDeviceId) {
     alert('❌ لا يمكن الدخول من هذا الجهاز! حساب المدير مرتبط بجهاز واحد فقط.');
     return;
   }
   
   if (CryptoJS.SHA256(pass).toString() === admin.passwordHash) {
-    // حفظ معرف الجهاز إذا لم يكن موجوداً
     if (!admin.deviceId) {
       admin.deviceId = currentDeviceId;
       save(DB);
     }
     currentRole = 'admin'; currentUser = 'admin';
+    totalBalanceCache = null;
     showScreen('admin'); renderAdminView();
   } else { alert('❌ كلمة السر خاطئة!'); }
 }
 
-function loginCustomer() { const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; if (!DB.customers[phone]) { alert('❌ الزبون غير موجود!'); return; } if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert('❌ كلمة السر خاطئة!'); return; } currentRole = 'customer'; currentUser = phone; showScreen('customer'); renderCustomerView(); }
-function logout() { currentUser = null; currentRole = null; showScreen('login'); }
+function loginCustomer() { 
+  const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; 
+  if (!DB.customers[phone]) { alert('❌ الزبون غير موجود!'); return; } 
+  if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert('❌ كلمة السر خاطئة!'); return; } 
+  currentRole = 'customer'; currentUser = phone; 
+  showScreen('customer'); renderCustomerView(); 
+}
+function logout() { currentUser = null; currentRole = null; totalBalanceCache = null; showScreen('login'); }
 function renderAdminView() { renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderCredits(); renderRates(); }
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
-function showTab(name) { document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); el('panel-' + name).classList.add('active'); const tabs = document.querySelectorAll('.tab'); const tabTexts = { 'daily': 'اليومية', 'customers': 'زبائن', 'txs': 'حركات', 'debts': 'ديون', 'credits': 'دائنون', 'rates': 'أسعار', 'new-customer': 'جديد' }; tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); }); if (name === 'daily') renderDailySummary(); if (name === 'customers') renderCustomers(); if (name === 'txs') renderAllTxs(); if (name === 'debts') renderDebts(); if (name === 'credits') renderCredits(); if (name === 'rates') renderRates(); }
+function showTab(name) { 
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); 
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); 
+  el('panel-' + name).classList.add('active'); 
+  const tabs = document.querySelectorAll('.tab'); 
+  const tabTexts = { 'daily': 'اليومية', 'customers': 'زبائن', 'txs': 'حركات', 'debts': 'ديون', 'credits': 'دائنون', 'rates': 'أسعار', 'new-customer': 'جديد', 'reports': 'تقارير' }; 
+  tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); }); 
+  if (name === 'daily') renderDailySummary(); 
+  if (name === 'customers') renderCustomers(); 
+  if (name === 'txs') renderAllTxs(); 
+  if (name === 'debts') renderDebts(); 
+  if (name === 'credits') renderCredits(); 
+  if (name === 'rates') renderRates(); 
+}
 function goToLogin() { showScreen('login'); }
 
 // ==================== FORGOT PASSWORD ====================
 function showForgotPasswordModal() { el('modal-forgot-password').classList.add('show'); }
 function closeForgotPasswordModal() { el('modal-forgot-password').classList.remove('show'); }
-function sendResetRequest() { const phone = el('forgot-phone').value.trim(); if (!DB.customers[phone]) { alert('❌ رقم الهاتف غير مسجل'); return; } alert('✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً'); closeForgotPasswordModal(); }
+function sendResetRequest() { 
+  const phone = el('forgot-phone').value.trim(); 
+  if (!DB.customers[phone]) { alert('❌ رقم الهاتف غير مسجل'); return; } 
+  alert('✅ تم إرسال طلبك للمدير. سيتواصل معك قريباً'); closeForgotPasswordModal(); 
+}
 
 // ==================== RESET CUSTOMER PASSWORD ====================
-function showResetCustPasswordModal(phone) { resetCustPhone = phone; const c = DB.customers[phone]; el('reset-cust-name').textContent = `${c.fname} ${c.lname}`; el('new-cust-password').value = ''; el('confirm-cust-password').value = ''; el('modal-reset-cust-password').classList.add('show'); }
+function showResetCustPasswordModal(phone) { 
+  resetCustPhone = phone; 
+  const c = DB.customers[phone]; 
+  el('reset-cust-name').textContent = `${c.fname} ${c.lname}`; 
+  el('new-cust-password').value = ''; 
+  el('confirm-cust-password').value = ''; 
+  el('modal-reset-cust-password').classList.add('show'); 
+}
 function closeResetCustPasswordModal() { el('modal-reset-cust-password').classList.remove('show'); resetCustPhone = null; }
-function resetCustomerPassword() { const newPass = el('new-cust-password').value, confirmPass = el('confirm-cust-password').value; if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; } if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; } DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString(); save(DB); alert('✅ تم تغيير كلمة السر بنجاح'); closeResetCustPasswordModal(); renderCustomers(); }
+function resetCustomerPassword() { 
+  const newPass = el('new-cust-password').value, confirmPass = el('confirm-cust-password').value; 
+  if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; } 
+  if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; } 
+  DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString(); 
+  save(DB); 
+  alert('✅ تم تغيير كلمة السر بنجاح'); 
+  closeResetCustPasswordModal(); 
+  renderCustomers(); 
+}
 
 // ==================== ADMIN PROFILE ====================
 function showAdminProfileModal() { el('modal-admin-profile').classList.add('show'); }
@@ -891,9 +1150,80 @@ function updateAdminProfile() {
   save(DB); alert('✅ تم حفظ التغييرات'); closeAdminProfileModal();
 }
 
+// ==================== BACKUP & IMPORT ====================
+function exportData() {
+  const dataStr = localStorage.getItem(STORE);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Sayrafa_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const content = e.target.result;
+      CryptoJS.AES.decrypt(content, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+      localStorage.setItem(STORE, content);
+      alert('✅ تم استيراد البيانات بنجاح! سيتم إعادة تحميل التطبيق.');
+      location.reload();
+    } catch (err) {
+      alert('❌ فشل الاستيراد: الملف غير صحيح أو تالف.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ==================== REPORTS ====================
+function generateReport() {
+  const from = el('rep-from').value;
+  const to = el('rep-to').value;
+  if (!from || !to) return alert('يرجى اختيار الفترة الزمنية');
+
+  const filtered = DB.transactions.filter(tx => {
+    const txDate = tx.date.split(' ')[0].split('/').reverse().join('-');
+    return txDate >= from && txDate <= to;
+  });
+
+  const report = {};
+  for (const tx of filtered) {
+    if (!report[tx.currency]) report[tx.currency] = { in: 0, out: 0 };
+    if (tx.type === 'deposit') report[tx.currency].in += tx.amount;
+    else report[tx.currency].out += tx.amount;
+  }
+
+  let html = `<h3>من ${from} إلى ${to}</h3>`;
+  for (const [cur, val] of Object.entries(report)) {
+    html += `
+    <div class="fund-block" style="margin-top:10px">
+      <div class="fund-block-title">${cur}</div>
+      <div class="daily-row"><span class="daily-label">إجمالي الإيداع (+)</span><span class="daily-value" style="color:var(--green)">${fmt(val.in)}</span></div>
+      <div class="daily-row"><span class="daily-label">إجمالي السحب (-)</span><span class="daily-value" style="color:var(--red)">${fmt(val.out)}</span></div>
+      <div class="daily-row" style="border-top:1px solid var(--gold)"><span class="daily-label">الصافي</span><span class="daily-value">${fmt(val.in - val.out)}</span></div>
+    </div>`;
+  }
+  el('report-results').innerHTML = html || '<p>لا توجد حركات لهذه الفترة</p>';
+}
+
 // ==================== INSTALL ====================
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-function showInstallInstructions() { const instructions = el('install-instructions'); const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent); if (deferredPrompt) { instructions.innerHTML = `<p style="margin-bottom:16px;text-align:center">✅ جهازك يدعم التثبيت المباشر</p><button class="install-btn" onclick="installPWA()" style="font-size:16px">📱 تثبيت الآن</button>`; } else if (isIOS) { instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p>3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`; } else { instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`; } el('install-modal').classList.add('show'); }
+function showInstallInstructions() { 
+  const instructions = el('install-instructions'); 
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent); 
+  if (deferredPrompt) { 
+    instructions.innerHTML = `<p style="margin-bottom:16px;text-align:center">✅ جهازك يدعم التثبيت المباشر</p><button class="install-btn" onclick="installPWA()" style="font-size:16px">📱 تثبيت الآن</button>`; 
+  } else if (isIOS) { 
+    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p>3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`; 
+  } else { 
+    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`; 
+  } 
+  el('install-modal').classList.add('show'); 
+}
 function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(() => { deferredPrompt = null; closeInstallModal(); }); } }
 function closeInstallModal() { el('install-modal').classList.remove('show'); }
 
@@ -906,142 +1236,9 @@ el('modal-forgot-password')?.addEventListener('click', function(e) { if (e.targe
 el('modal-reset-cust-password')?.addEventListener('click', function(e) { if (e.target === this) closeResetCustPasswordModal(); });
 el('modal-admin-profile')?.addEventListener('click', function(e) { if (e.target === this) closeAdminProfileModal(); });
 el('install-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInstallModal(); });
-// ====================   النسخ الاحتياطي====================
-  <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
-<p style="color:var(--gold);font-weight:700;margin-bottom:10px">📦 إدارة البيانات (النسخ الاحتياطي)</p>
-<div style="display:flex;gap:10px">
-  <button class="btn btn-sm" onclick="exportData()" style="flex:1;background:#27ae60;color:white">📤 تصدير نسخة</button>
-  <button class="btn btn-sm btn-outline" onclick="el('importFile').click()" style="flex:1">📥 استيراد نسخة</button>
-  <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-</div>
-// ====================    تقارير ====================
-<button class="tab" onclick="showTab('reports')">📊 تقارير</button>
-
-  // ==================== تقرير الحركات الإجمالي  ====================
-<div id="panel-reports" class="tab-panel">
-  <div class="content">
-    <div class="section-title">📊 تقرير الحركات الإجمالي</div>
-    <div class="card" style="margin-bottom:15px">
-      <label>من تاريخ</label><input type="date" id="rep-from" class="fund-input" style="margin-bottom:10px">
-      <label>إلى تاريخ</label><input type="date" id="rep-to" class="fund-input">
-      <button class="btn" onclick="generateReport()">توليد التقرير</button>
-    </div>
-    <div id="report-results"></div>
-  </div>
-</div>
-
-  // ==================== 1. طباعة الوصل (Thermal Print Style) ====================
-function printReceipt(txId) {
-    const tx = DB.transactions.find(t => t.id === txId);
-    if (!tx) return;
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <html dir="rtl">
-        <head>
-            <title>وصل صيرفة المستقبل</title>
-            <style>
-                body { font-family: 'Tajawal', sans-serif; padding: 20px; text-align: center; color: #333; }
-                .receipt-box { border: 1px dashed #000; padding: 15px; width: 300px; margin: auto; }
-                .header { font-weight: bold; font-size: 20px; margin-bottom: 5px; }
-                .divider { border-top: 1px dashed #000; margin: 10px 0; }
-                .row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 14px; }
-                .footer { font-size: 12px; margin-top: 20px; }
-            </style>
-        </head>
-        <body onload="window.print();window.close()">
-            <div class="receipt-box">
-                <div class="header">🏦 صيرفة المستقبل</div>
-                <div>إدارة: برهان دكاني</div>
-                <div class="divider"></div>
-                <div class="row"><span>التاريخ:</span> <span>${tx.date}</span></div>
-                <div class="row"><span>الزبون:</span> <span>${tx.customerName}</span></div>
-                <div class="row"><span>النوع:</span> <span>${tx.type === 'deposit' ? 'إيداع (له)' : 'سحب (عليه)'}</span></div>
-                <div class="divider"></div>
-                <div style="font-size: 22px; font-weight: bold; margin: 10px 0;">
-                    ${fmt(tx.amount)} ${tx.currency}
-                </div>
-                <div class="row"><span>ملاحظات:</span> <span>${tx.note || '—'}</span></div>
-                <div class="divider"></div>
-                <div class="footer">شكراً لتعاملكم معنا</div>
-            </div>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-}
-
-// تعديل دالة renderTxItem لإضافة زر الطباعة
-const originalRenderTxItem = renderTxItem;
-renderTxItem = function(tx) {
-    let html = originalRenderTxItem(tx);
-    const printBtn = `<button class="btn-edit" onclick="printReceipt('${tx.id}')" style="background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); margin-right:5px">🖨️ وصل</button>`;
-    return html.replace('</div><div class="tx-amount', printBtn + '</div><div class="tx-amount');
-};
-
-// ==================== 2. النسخ الاحتياطي ====================
-function exportData() {
-    const dataStr = localStorage.getItem(STORE);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Sayrafa_Backup_${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-}
-
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const content = e.target.result;
-            // تجربة فك التشفير للتأكد من صحة الملف
-            CryptoJS.AES.decrypt(content, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
-            localStorage.setItem(STORE, content);
-            alert('✅ تم استيراد البيانات بنجاح! سيتم إعادة تحميل التطبيق.');
-            location.reload();
-        } catch (err) {
-            alert('❌ فشل الاستيراد: الملف غير صحيح أو تالف.');
-        }
-    };
-    reader.readAsText(file);
-}
-
-// ==================== 3. التقارير ====================
-function generateReport() {
-    const from = el('rep-from').value;
-    const to = el('rep-to').value;
-    if (!from || !to) return alert('يرجى اختيار الفترة الزمنية');
-
-    const filtered = DB.transactions.filter(tx => {
-        const txDate = tx.date.split(' ')[0].split('/').reverse().join('-');
-        return txDate >= from && txDate <= to;
-    });
-
-    const report = {};
-    filtered.forEach(tx => {
-        if (!report[tx.currency]) report[tx.currency] = { in: 0, out: 0 };
-        if (tx.type === 'deposit') report[tx.currency].in += tx.amount;
-        else report[tx.currency].out += tx.amount;
-    });
-
-    let html = `<h3>من ${from} إلى ${to}</h3>`;
-    for (const [cur, val] of Object.entries(report)) {
-        html += `
-        <div class="fund-block" style="margin-top:10px">
-            <div class="fund-block-title">${cur}</div>
-            <div class="daily-row"><span class="daily-label">إجمالي الإيداع (+)</span><span class="daily-value" style="color:var(--green)">${fmt(val.in)}</span></div>
-            <div class="daily-row"><span class="daily-label">إجمالي السحب (-)</span><span class="daily-value" style="color:var(--red)">${fmt(val.out)}</span></div>
-            <div class="daily-row" style="border-top:1px solid var(--gold)"><span class="daily-label">الصافي</span><span class="daily-value">${fmt(val.in - val.out)}</span></div>
-        </div>`;
-    }
-    el('report-results').innerHTML = html || '<p>لا توجد حركات لهذه الفترة</p>';
-}
 
 // ==================== INIT ====================
-window.addEventListener('load', () => { setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 2000); });
+window.addEventListener('load', () => { setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 1800); });
 </script>
 </body>
 </html>
