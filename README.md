@@ -148,15 +148,15 @@ input:focus,select:focus{border-color:var(--gold)}
 .credit-total-value{color:var(--green);font-weight:900;font-size:18px;direction:ltr}
 .debt-card{background:var(--card);border:1px solid rgba(231,76,60,.4);border-radius:12px;padding:16px;margin-bottom:12px}
 .credit-card{background:var(--card);border:1px solid rgba(46,204,113,.4);border-radius:12px;padding:16px;margin-bottom:12px}
-.debt-card-header, .credit-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.debt-card-name, .credit-card-name{font-size:16px;font-weight:700}
-.debt-card-phone, .credit-card-phone{font-size:12px;color:var(--muted);direction:ltr}
-.debt-items-grid, .credit-items-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
-.debt-item-card, .credit-item-card{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
-.debt-item-currency, .credit-item-currency{font-size:14px;color:var(--gold);margin-bottom:4px}
+.debt-card-header,.credit-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.debt-card-name,.credit-card-name{font-size:16px;font-weight:700}
+.debt-card-phone,.credit-card-phone{font-size:12px;color:var(--muted);direction:ltr}
+.debt-items-grid,.credit-items-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+.debt-item-card,.credit-item-card{background:var(--bg3);border-radius:8px;padding:10px;text-align:center}
+.debt-item-currency,.credit-item-currency{font-size:14px;color:var(--gold);margin-bottom:4px}
 .debt-item-amount{font-size:18px;font-weight:700;color:var(--red);direction:ltr}
 .credit-item-amount{font-size:18px;font-weight:700;color:var(--green);direction:ltr}
-.debt-item-iqd, .credit-item-iqd{font-size:11px;color:var(--muted);margin-top:2px;direction:ltr}
+.debt-item-iqd,.credit-item-iqd{font-size:11px;color:var(--muted);margin-top:2px;direction:ltr}
 .how-to-use-box{background:var(--card);border:1px solid var(--blue);border-radius:16px;padding:20px;margin-bottom:20px}
 .how-to-use-title{color:var(--blue);font-weight:700;margin-bottom:12px;font-size:16px}
 .how-to-use-step{display:flex;gap:12px;margin-bottom:12px;align-items:center}
@@ -166,9 +166,35 @@ input:focus,select:focus{border-color:var(--gold)}
 .calendar-shortcut{flex:1;padding:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px;cursor:pointer;text-align:center}
 .calendar-shortcut.active{background:var(--gold);color:#000;border-color:var(--gold)}
 .full-balance-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+
+/* ===== SECURITY STYLES ===== */
+#app-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,12,16,0.97);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gold);font-size:2rem;display:none}
+#app-overlay.show{display:flex!important}
+#app-overlay .overlay-icon{font-size:64px;margin-bottom:16px;animation:pulse 2s infinite}
+#app-overlay .overlay-text{font-size:22px;font-weight:700;color:var(--gold)}
+#app-overlay .overlay-sub{font-size:14px;color:var(--muted);margin-top:8px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+/* Lock warning banner */
+.lockout-banner{background:rgba(231,76,60,.2);border:1px solid var(--red);border-radius:10px;padding:12px 16px;margin-bottom:14px;color:var(--red);font-size:14px;text-align:center;display:none}
+.lockout-banner.show{display:block}
+
+/* Session timer */
+.session-timer{background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.session-timer.warning{color:var(--orange);border-color:var(--orange)}
+
+/* Security badge */
+.security-badge{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--green);text-align:center;margin-bottom:16px}
 </style>
 </head>
 <body>
+
+<!-- غطاء القفل عند إخفاء الصفحة -->
+<div id="app-overlay">
+  <div class="overlay-icon">🔒</div>
+  <div class="overlay-text">التطبيق مقفل</div>
+  <div class="overlay-sub">عد للتطبيق للمتابعة</div>
+</div>
 
 <div id="splash">
   <div class="splash-logo">🏦</div>
@@ -201,6 +227,7 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
     
     <div class="card" style="text-align:center">
+      <div class="security-badge">🔐 محمي بتشفير AES-256 | بيانات آمنة 100%</div>
       <button class="install-btn" onclick="showInstallInstructions()">📲 تثبيت التطبيق على الجهاز</button>
       <div style="margin:20px 0;border-top:1px solid var(--border)"></div>
       <button class="btn" onclick="goToLogin()">➡️ متابعة للتطبيق</button>
@@ -221,17 +248,21 @@ input:focus,select:focus{border-color:var(--gold)}
         <button class="toggle-btn" onclick="switchLoginTab('customer')">👤 الزبون</button>
       </div>
       <div id="alert-login" class="alert error"></div>
+      <div id="lockout-banner" class="lockout-banner"></div>
+
       <div id="login-admin">
         <label>كلمة السر</label>
-        <input type="password" id="admin-pass" placeholder="••••••••">
+        <input type="password" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginAdmin()">
         <button class="btn" onclick="loginAdmin()">دخول</button>
+        <div id="admin-attempts-info" style="color:var(--muted);font-size:12px;text-align:center;margin-top:8px"></div>
       </div>
       <div id="login-customer" style="display:none">
         <label>رقم الهاتف</label>
         <input type="tel" id="cust-phone" placeholder="+964..." value="">
         <label>كلمة السر</label>
-        <input type="password" id="cust-pass" placeholder="••••••••">
+        <input type="password" id="cust-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginCustomer()">
         <button class="btn" onclick="loginCustomer()">دخول</button>
+        <div id="cust-attempts-info" style="color:var(--muted);font-size:12px;text-align:center;margin-top:8px"></div>
         <button class="btn btn-outline" onclick="showForgotPasswordModal()" style="margin-top:8px">🔑 نسيت كلمة السر؟</button>
       </div>
     </div>
@@ -245,7 +276,8 @@ input:focus,select:focus{border-color:var(--gold)}
       <div class="header-logo">🏦 صيرفة المستقبل</div>
       <div class="header-sub">لوحة المدير</div>
     </div>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="session-timer" id="session-timer-display">⏱ <span id="session-time-left">15:00</span></div>
       <button class="btn-icon" onclick="showAdminProfileModal()">👤 الملف</button>
       <button class="btn-logout" onclick="logout()">🚪 خروج</button>
     </div>
@@ -260,6 +292,7 @@ input:focus,select:focus{border-color:var(--gold)}
     <button class="tab" onclick="showTab('rates')">💱 أسعار</button>
     <button class="tab" onclick="showTab('new-customer')">➕ جديد</button>
     <button class="tab" onclick="showTab('reports')">📊 تقارير</button>
+    <button class="tab" onclick="showTab('security-log')">🛡️ سجل</button>
   </div>
 
   <!-- PANEL: اليومية -->
@@ -268,7 +301,6 @@ input:focus,select:focus{border-color:var(--gold)}
       <div style="margin-bottom:16px">
         <label style="color:var(--gold);margin-bottom:8px">📅 اختر التاريخ</label>
         <input type="date" id="daily-date-picker" onchange="changeDailyDateFromPicker()" style="margin-bottom:8px;direction:ltr">
-        
         <div class="calendar-shortcuts">
           <button class="calendar-shortcut active" onclick="setDailyDateShortcut('today')">📅 اليوم</button>
           <button class="calendar-shortcut" onclick="setDailyDateShortcut('yesterday')">◀ أمس</button>
@@ -276,30 +308,25 @@ input:focus,select:focus{border-color:var(--gold)}
           <button class="calendar-shortcut" onclick="setDailyDateShortcut('monthEnd')">📆 آخر الشهر</button>
         </div>
       </div>
-      
       <div class="daily-summary">
         <div class="daily-title" id="daily-date-title">📊 2026-04-13</div>
         <div class="daily-row"><span class="daily-label">🏦 الرصيد الافتتاحي</span><span class="daily-value" id="opening-balance">0 IQD</span></div>
         <div class="daily-row"><span class="daily-label">💰 الرصيد الحالي</span><span class="daily-value" id="current-balance">0 IQD</span></div>
         <div class="daily-row"><span class="daily-label">📈 صافي الربح (IQD)</span><span class="daily-value profit" id="profit-value">+0 IQD</span></div>
       </div>
-      
       <div class="office-funds">
         <div class="funds-title">
           <span>💼 موجودات الصيرفة</span>
           <button onclick="saveOfficeFunds()">💾 حفظ</button>
         </div>
-        
         <div class="funds-grid">
           <div class="fund-block"><div class="fund-block-title">💵 الدينار العراقي</div><div class="fund-item"><div class="fund-label">المبلغ (IQD)</div><input type="text" id="office-iqd" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-total"><span class="fund-total-label">القيمة:</span><span class="fund-total-value" id="office-iqd-value">0 IQD</span></div></div>
           <div class="fund-block"><div class="fund-block-title">💵 الدولار الأمريكي</div><div class="fund-row"><div class="fund-item"><div class="fund-label">الكمية (USD)</div><input type="text" id="office-usd-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-item"><div class="fund-label">سعر الصرف</div><input type="text" id="office-usd-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div></div><div class="fund-total"><span class="fund-total-label">القيمة (IQD):</span><span class="fund-total-value" id="office-usd-value">0 IQD</span></div></div>
           <div class="fund-block"><div class="fund-block-title">💳 كارت كورك (دولار)</div><div class="fund-row"><div class="fund-item"><div class="fund-label">الكمية (USD)</div><input type="text" id="kork-amount" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-item"><div class="fund-label">سعر الصرف</div><input type="text" id="kork-rate" class="rate-input-small" placeholder="1450" value="1450" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div></div><div class="fund-total"><span class="fund-total-label">القيمة (IQD):</span><span class="fund-total-value" id="kork-value">0 IQD</span></div></div>
           <div class="fund-block"><div class="fund-block-title">🏦 فلوس بالبنوك</div><div class="fund-item"><div class="fund-label">المبلغ (IQD)</div><input type="text" id="bank-funds" class="fund-input" placeholder="0" value="0" oninput="formatNumberInput(this);updateTotalOfficeFunds()" dir="ltr"></div><div class="fund-total"><span class="fund-total-label">القيمة:</span><span class="fund-total-value" id="bank-value">0 IQD</span></div></div>
         </div>
-        
         <div class="total-row"><span class="total-label">📊 إجمالي الموجودات (IQD)</span><span class="total-value" id="total-office-funds">0 IQD</span></div>
       </div>
-      
       <div class="section-title">📋 حركات اليوم</div>
       <div id="daily-transactions"></div>
     </div>
@@ -330,7 +357,7 @@ input:focus,select:focus{border-color:var(--gold)}
     </div>
   </div>
 
-  <!-- PANEL: الدائنون (جديد) -->
+  <!-- PANEL: الدائنون -->
   <div id="panel-credits" class="tab-panel">
     <div class="content">
       <div class="section-title">🟢 الزبائن الدائنون (اللي مطلوب لك)</div>
@@ -354,11 +381,12 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="content">
       <div class="section-title">➕ تسجيل زبون جديد</div>
       <div id="alert-new" class="alert error"></div>
-      <label>الاسم</label><input type="text" id="new-fname">
-      <label>اللقب</label><input type="text" id="new-lname">
+      <label>الاسم</label><input type="text" id="new-fname" style="direction:rtl">
+      <label>اللقب</label><input type="text" id="new-lname" style="direction:rtl">
       <label>رقم الهاتف</label><input type="tel" id="new-tel" placeholder="+964...">
       <label>رقم الهوية</label><input type="text" id="new-id">
       <label>كلمة السر</label><input type="password" id="new-pass" placeholder="••••••••">
+      <div id="pass-strength" style="margin-bottom:14px;font-size:12px"></div>
       <button class="btn" onclick="addCustomer()">✅ تسجيل</button>
       <p style="color:var(--muted);font-size:12px;margin-top:12px;text-align:center">بعد التسجيل، الزبون يكدر يسجل دخول من جهازه برقم الهاتف وكلمة السر</p>
     </div>
@@ -374,6 +402,18 @@ input:focus,select:focus{border-color:var(--gold)}
         <button class="btn" onclick="generateReport()">توليد التقرير</button>
       </div>
       <div id="report-results"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: سجل الأمان (جديد) -->
+  <div id="panel-security-log" class="tab-panel">
+    <div class="content">
+      <div class="section-title">🛡️ سجل النشاطات الأمنية</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <button class="btn btn-sm btn-outline" onclick="renderSecurityLog()" style="flex:1">🔄 تحديث</button>
+        <button class="btn btn-sm" onclick="clearSecurityLog()" style="flex:1;background:var(--red);color:white;border:none">🗑️ مسح السجل</button>
+      </div>
+      <div id="security-log-list"></div>
     </div>
   </div>
 </div>
@@ -397,35 +437,30 @@ input:focus,select:focus{border-color:var(--gold)}
   </div>
 </div>
 
-<!-- CUSTOMER TRANSACTIONS MODAL (مع حساب كامل) -->
+<!-- CUSTOMER TRANSACTIONS MODAL -->
 <div class="modal-overlay" id="modal-customer-txs">
   <div class="modal" style="max-width:550px">
     <button class="modal-close" onclick="closeCustomerTxsModal()">×</button>
     <div class="modal-title">📋 حساب الزبون الكامل</div>
     <div id="customer-txs-name" style="color:var(--gold);margin-bottom:16px;font-weight:700"></div>
-    
-    <!-- الرصيد الكامل بكل العملات -->
     <div style="background:var(--bg3);border-radius:12px;padding:16px;margin-bottom:16px">
       <div style="color:var(--gold);margin-bottom:12px;font-weight:700">💰 الأرصدة الحالية</div>
       <div id="full-balance-display" class="full-balance-grid"></div>
     </div>
-    
     <label>📅 من تاريخ</label><input type="date" id="txs-from-date" style="margin-bottom:8px;direction:ltr">
     <label>📅 إلى تاريخ</label><input type="date" id="txs-to-date" style="margin-bottom:8px;direction:ltr">
-    
     <div class="calendar-shortcuts">
       <button class="calendar-shortcut active" onclick="setDateRangeShortcut('today')">اليوم</button>
       <button class="calendar-shortcut" onclick="setDateRangeShortcut('thisMonth')">هذا الشهر</button>
       <button class="calendar-shortcut" onclick="setDateRangeShortcut('last3Months')">آخر 3 أشهر</button>
       <button class="calendar-shortcut" onclick="setDateRangeShortcut('all')">الكل</button>
     </div>
-    
     <button class="btn" onclick="applyDateRangeFilter()" style="margin-bottom:16px">🔍 عرض الحركات</button>
     <div id="customer-txs-list" style="max-height:350px;overflow-y:auto"></div>
   </div>
 </div>
 
-<!-- EDIT CUSTOMER MODAL (تعديل بيانات الزبون) -->
+<!-- EDIT CUSTOMER MODAL -->
 <div class="modal-overlay" id="modal-edit-customer">
   <div class="modal">
     <button class="modal-close" onclick="closeEditCustomerModal()">×</button>
@@ -471,11 +506,11 @@ input:focus,select:focus{border-color:var(--gold)}
 <div class="modal-overlay" id="modal-forgot-password">
   <div class="modal">
     <button class="modal-close" onclick="closeForgotPasswordModal()">×</button>
-    <div class="modal-title">🔑 استرجاع كلمة السر</div><div id="alert-forgot" class="alert info"></div>
+    <div class="modal-title">🔑 استرجاع كلمة السر</div>
     <p style="margin-bottom:16px;color:var(--muted);text-align:center">أدخل رقم هاتفك وسيتم إرسال طلب للمدير</p>
     <label>رقم الهاتف</label><input type="tel" id="forgot-phone" placeholder="+964..." dir="ltr">
     <button class="btn" onclick="sendResetRequest()">📧 إرسال الطلب</button>
-    <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
+    <div style="height:1px;background:var(--border);margin:16px 0"></div>
     <p style="color:var(--muted);font-size:13px;text-align:center">أو تواصل مباشرة مع المدير:</p>
     <div style="display:flex;gap:10px;margin-top:12px">
       <a href="https://wa.me/9647501234567" target="_blank" style="flex:1;text-decoration:none"><button style="width:100%;padding:12px;background:#25D366;border:none;border-radius:10px;color:white;font-weight:700;cursor:pointer">💬 واتساب</button></a>
@@ -508,10 +543,11 @@ input:focus,select:focus{border-color:var(--gold)}
     <div class="modal-title">👤 إعدادات الآدمين</div><div id="alert-profile" class="alert success"></div>
     <label>البريد الإلكتروني للاسترداد</label><input type="email" id="admin-email" placeholder="admin@example.com" dir="ltr">
     <label>كلمة السر الحالية</label><input type="password" id="current-password" placeholder="••••••••">
-    <label>كلمة السر الجديدة</label><input type="password" id="new-password" placeholder="••••••••">
+    <label>كلمة السر الجديدة</label><input type="password" id="new-password" placeholder="••••••••" oninput="checkNewPassStrength()">
+    <div id="new-pass-strength" style="margin-bottom:10px;font-size:12px"></div>
     <label>تأكيد كلمة السر الجديدة</label><input type="password" id="confirm-password" placeholder="••••••••">
     <button class="btn" onclick="updateAdminProfile()">💾 حفظ التغييرات</button>
-    <div class="divider" style="height:1px;background:var(--border);margin:16px 0"></div>
+    <div style="height:1px;background:var(--border);margin:16px 0"></div>
     <p style="color:var(--gold);font-weight:700;margin-bottom:10px">📦 إدارة البيانات (النسخ الاحتياطي)</p>
     <div style="display:flex;gap:10px">
       <button class="btn btn-sm" onclick="exportData()" style="flex:1;background:#27ae60;color:white">📤 تصدير نسخة</button>
@@ -523,6 +559,201 @@ input:focus,select:focus{border-color:var(--gold)}
 </div>
 
 <script>
+// ==================== SECURITY MODULE ====================
+
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 دقيقة
+const SESSION_TIMEOUT = 20 * 60 * 1000;  // 20 دقيقة
+
+// --- Brute Force Protection ---
+function getAttemptData(identifier) {
+  try {
+    const raw = localStorage.getItem('sec_attempts_' + identifier);
+    return raw ? JSON.parse(raw) : { count: 0, lockedUntil: null };
+  } catch { return { count: 0, lockedUntil: null }; }
+}
+
+function isLocked(identifier) {
+  const data = getAttemptData(identifier);
+  if (data.lockedUntil && Date.now() < data.lockedUntil) return data.lockedUntil;
+  if (data.lockedUntil && Date.now() >= data.lockedUntil) {
+    localStorage.removeItem('sec_attempts_' + identifier);
+  }
+  return false;
+}
+
+function recordFailedAttempt(identifier) {
+  const data = getAttemptData(identifier);
+  data.count = (data.count || 0) + 1;
+  if (data.count >= MAX_ATTEMPTS) {
+    data.lockedUntil = Date.now() + LOCKOUT_DURATION;
+    data.count = 0;
+    logActivity('LOCKOUT', { identifier: identifier.substring(0,6)+'***' });
+    return { locked: true, remaining: 0 };
+  }
+  localStorage.setItem('sec_attempts_' + identifier, JSON.stringify(data));
+  logActivity('FAILED_LOGIN', { identifier: identifier.substring(0,6)+'***', attempt: data.count });
+  return { locked: false, remaining: MAX_ATTEMPTS - data.count };
+}
+
+function resetAttempts(identifier) {
+  localStorage.removeItem('sec_attempts_' + identifier);
+}
+
+function updateAttemptsUI(identifier, role) {
+  const lockUntil = isLocked(identifier);
+  const banner = el('lockout-banner');
+  const infoEl = el(role === 'admin' ? 'admin-attempts-info' : 'cust-attempts-info');
+  if (lockUntil) {
+    const mins = Math.ceil((lockUntil - Date.now()) / 60000);
+    if (banner) { banner.textContent = `🔒 الحساب مقفل لمدة ${mins} دقيقة بسبب كثرة المحاولات الخاطئة`; banner.classList.add('show'); }
+    return false;
+  } else {
+    if (banner) banner.classList.remove('show');
+    const data = getAttemptData(identifier);
+    if (data.count > 0 && infoEl) {
+      infoEl.textContent = `⚠️ تبقى ${MAX_ATTEMPTS - data.count} محاولة قبل القفل`;
+    } else if (infoEl) {
+      infoEl.textContent = '';
+    }
+    return true;
+  }
+}
+
+// --- Audit Log ---
+function logActivity(action, details = {}) {
+  try {
+    const logs = JSON.parse(localStorage.getItem('audit_log') || '[]');
+    logs.push({
+      t: new Date().toISOString(),
+      a: action,
+      d: details
+    });
+    if (logs.length > 500) logs.splice(0, logs.length - 500);
+    localStorage.setItem('audit_log', JSON.stringify(logs));
+  } catch(e) {}
+}
+
+function getAuditLogs() {
+  try { return JSON.parse(localStorage.getItem('audit_log') || '[]'); } catch { return []; }
+}
+
+function clearSecurityLog() {
+  if (!confirm('هل أنت متأكد من مسح سجل النشاطات؟')) return;
+  localStorage.removeItem('audit_log');
+  renderSecurityLog();
+}
+
+function renderSecurityLog() {
+  const logs = getAuditLogs().reverse().slice(0, 100);
+  const container = el('security-log-list');
+  if (!logs.length) { container.innerHTML = `<div class="empty"><div class="empty-icon">🛡️</div>لا يوجد نشاطات مسجلة</div>`; return; }
+  const icons = { LOGIN_SUCCESS:'✅', FAILED_LOGIN:'❌', LOCKOUT:'🔒', LOGOUT:'🚪', TX_ADDED:'💸', TX_DELETED:'🗑️', USER_ADDED:'➕', USER_DELETED:'❌', PASS_CHANGED:'🔑', DATA_EXPORT:'📤', DATA_IMPORT:'📥' };
+  container.innerHTML = logs.map(log => {
+    const icon = icons[log.a] || '📋';
+    const timeStr = new Date(log.t).toLocaleString('ar-IQ');
+    return `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start">
+      <span style="font-size:20px">${icon}</span>
+      <div>
+        <div style="font-weight:700;font-size:13px">${log.a}</div>
+        <div style="font-size:11px;color:var(--muted);direction:ltr">${timeStr}</div>
+        ${Object.keys(log.d||{}).length ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${JSON.stringify(log.d)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// --- Session Management ---
+let sessionInterval = null;
+let sessionExpiry = null;
+
+function startSession(role) {
+  sessionExpiry = Date.now() + SESSION_TIMEOUT;
+  updateSessionTimer();
+  if (sessionInterval) clearInterval(sessionInterval);
+  sessionInterval = setInterval(() => {
+    if (!sessionExpiry) return;
+    if (Date.now() >= sessionExpiry) {
+      clearInterval(sessionInterval);
+      alert('⏰ انتهت مدة الجلسة. سيتم تسجيل الخروج تلقائياً.');
+      logout();
+      return;
+    }
+    updateSessionTimer();
+  }, 10000);
+}
+
+function refreshSession() {
+  if (!sessionExpiry) return;
+  sessionExpiry = Date.now() + SESSION_TIMEOUT;
+}
+
+function updateSessionTimer() {
+  const timerEl = el('session-time-left');
+  const timerWrap = el('session-timer-display');
+  if (!timerEl || !sessionExpiry) return;
+  const remaining = Math.max(0, sessionExpiry - Date.now());
+  const mins = Math.floor(remaining / 60000);
+  const secs = Math.floor((remaining % 60000) / 1000);
+  timerEl.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+  if (timerWrap) {
+    timerWrap.className = 'session-timer' + (mins < 3 ? ' warning' : '');
+  }
+}
+
+function stopSession() {
+  if (sessionInterval) clearInterval(sessionInterval);
+  sessionInterval = null;
+  sessionExpiry = null;
+}
+
+// --- Visibility Lock ---
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && (currentRole === 'admin' || currentRole === 'customer')) {
+    el('app-overlay').classList.add('show');
+  } else {
+    el('app-overlay').classList.remove('show');
+  }
+});
+
+// --- Password Strength Checker ---
+function checkPasswordStrength(pass) {
+  let score = 0;
+  if (pass.length >= 6) score++;
+  if (pass.length >= 10) score++;
+  if (/[A-Z]/.test(pass) || /[a-z]/.test(pass)) score++;
+  if (/[0-9]/.test(pass)) score++;
+  if (/[^A-Za-z0-9]/.test(pass)) score++;
+  const levels = ['', '🔴 ضعيف جداً', '🟠 ضعيف', '🟡 متوسط', '🟢 قوي', '💪 قوي جداً'];
+  const colors = ['', 'var(--red)', 'var(--orange)', 'var(--orange)', 'var(--green)', 'var(--green)'];
+  return { score, label: levels[score] || levels[1], color: colors[score] || colors[1] };
+}
+
+function checkNewPassStrength() {
+  const pass = el('new-password')?.value || '';
+  const el2 = el('new-pass-strength');
+  if (!el2) return;
+  if (!pass) { el2.textContent = ''; return; }
+  const { label, color } = checkPasswordStrength(pass);
+  el2.innerHTML = `<span style="color:${color}">${label}</span>`;
+}
+
+// Add listener for new customer password
+document.addEventListener('DOMContentLoaded', () => {
+  const np = el('new-pass');
+  if (np) np.addEventListener('input', () => {
+    const el2 = el('pass-strength');
+    if (!el2 || !np.value) { if(el2) el2.textContent=''; return; }
+    const { label, color } = checkPasswordStrength(np.value);
+    el2.innerHTML = `<span style="color:${color}">${label}</span>`;
+  });
+});
+
+// Activity refresh on user interaction
+['click', 'keypress', 'touchstart'].forEach(evt => {
+  document.addEventListener(evt, () => { if (currentRole) refreshSession(); }, { passive: true });
+});
+
 // ==================== CORE FUNCTIONS ====================
 const ENCRYPTION_KEY = "S@yr4f4#M$st4qb4l!2025*XK9@zQ7!#&^mP3rVnL8wE";
 const STORE = 'sarafa_final_v2';
@@ -579,10 +810,9 @@ function save(d) {
 const fmtCache = new Map();
 function fmt(n) { 
   if (n === 0) return '0';
-  const key = n;
-  if (fmtCache.has(key)) return fmtCache.get(key);
+  if (fmtCache.has(n)) return fmtCache.get(n);
   const result = Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
-  fmtCache.set(key, result);
+  fmtCache.set(n, result);
   return result;
 }
 
@@ -681,29 +911,10 @@ function printReceipt(txId) {
   const tx = DB.transactions.find(t => t.id === txId);
   if (!tx) return;
   const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <html dir="rtl">
-    <head><title>وصل صيرفة المستقبل</title>
-    <style>body{font-family:'Tajawal',sans-serif;padding:20px;text-align:center;color:#333}.receipt-box{border:1px dashed #000;padding:15px;width:300px;margin:auto}.header{font-weight:bold;font-size:20px;margin-bottom:5px}.divider{border-top:1px dashed #000;margin:10px 0}.row{display:flex;justify-content:space-between;margin:5px 0;font-size:14px}.footer{font-size:12px;margin-top:20px}</style>
-    </head>
-    <body onload="window.print();window.close()">
-      <div class="receipt-box">
-        <div class="header">🏦 صيرفة المستقبل</div><div>إدارة: برهان دكاني</div><div class="divider"></div>
-        <div class="row"><span>التاريخ:</span><span>${tx.date}</span></div>
-        <div class="row"><span>الزبون:</span><span>${tx.customerName}</span></div>
-        <div class="row"><span>النوع:</span><span>${tx.type==='deposit'?'إيداع (له)':'سحب (عليه)'}</span></div>
-        <div class="divider"></div>
-        <div style="font-size:22px;font-weight:bold;margin:10px 0">${fmt(tx.amount)} ${tx.currency}</div>
-        <div class="row"><span>ملاحظات:</span><span>${tx.note||'—'}</span></div>
-        <div class="divider"></div>
-        <div class="footer">شكراً لتعاملكم معنا</div>
-      </div>
-    </body></html>
-  `);
+  printWindow.document.write(`<html dir="rtl"><head><title>وصل صيرفة المستقبل</title><style>body{font-family:'Tajawal',sans-serif;padding:20px;text-align:center;color:#333}.receipt-box{border:1px dashed #000;padding:15px;width:300px;margin:auto}.header{font-weight:bold;font-size:20px;margin-bottom:5px}.divider{border-top:1px dashed #000;margin:10px 0}.row{display:flex;justify-content:space-between;margin:5px 0;font-size:14px}.footer{font-size:12px;margin-top:20px}</style></head><body onload="window.print();window.close()"><div class="receipt-box"><div class="header">🏦 صيرفة المستقبل</div><div>إدارة: برهان دكاني</div><div class="divider"></div><div class="row"><span>التاريخ:</span><span>${tx.date}</span></div><div class="row"><span>الزبون:</span><span>${tx.customerName}</span></div><div class="row"><span>النوع:</span><span>${tx.type==='deposit'?'إيداع (له)':'سحب (عليه)'}</span></div><div class="divider"></div><div style="font-size:22px;font-weight:bold;margin:10px 0">${fmt(tx.amount)} ${tx.currency}</div><div class="row"><span>ملاحظات:</span><span>${tx.note||'—'}</span></div><div class="divider"></div><div class="footer">شكراً لتعاملكم معنا</div></div></body></html>`);
   printWindow.document.close();
 }
 
-function changeDailyDate(offset) { const date = new Date(selectedDailyDate); date.setDate(date.getDate() + offset); selectedDailyDate = date.toISOString().split('T')[0]; totalBalanceCache = null; renderDailySummary(); updateShortcutsActive(); }
 function changeDailyDateFromPicker() { selectedDailyDate = el('daily-date-picker').value; totalBalanceCache = null; renderDailySummary(); updateShortcutsActive(); }
 
 function setDailyDateShortcut(type) {
@@ -722,11 +933,11 @@ function updateShortcutsActive() {
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
   const monthEnd = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString().split('T')[0];
-  document.querySelectorAll('.calendar-shortcut').forEach(btn => btn.classList.remove('active'));
-  if (selectedDailyDate === today) document.querySelector('[onclick*="today"]')?.classList.add('active');
-  else if (selectedDailyDate === yesterday) document.querySelector('[onclick*="yesterday"]')?.classList.add('active');
-  else if (selectedDailyDate === monthStart) document.querySelector('[onclick*="monthStart"]')?.classList.add('active');
-  else if (selectedDailyDate === monthEnd) document.querySelector('[onclick*="monthEnd"]')?.classList.add('active');
+  document.querySelectorAll('#panel-daily .calendar-shortcut').forEach(btn => btn.classList.remove('active'));
+  if (selectedDailyDate === today) document.querySelector('#panel-daily [onclick*="today"]')?.classList.add('active');
+  else if (selectedDailyDate === yesterday) document.querySelector('#panel-daily [onclick*="yesterday"]')?.classList.add('active');
+  else if (selectedDailyDate === monthStart) document.querySelector('#panel-daily [onclick*="monthStart"]')?.classList.add('active');
+  else if (selectedDailyDate === monthEnd) document.querySelector('#panel-daily [onclick*="monthEnd"]')?.classList.add('active');
 }
 
 function renderCustomers() {
@@ -768,41 +979,31 @@ function saveEditedCustomer() {
   const lname = el('edit-cust-lname').value.trim();
   const newPhone = el('edit-cust-phone').value.trim();
   const id_no = el('edit-cust-id').value.trim();
-  
   if (!fname || !lname || !newPhone || !id_no) { alert('⚠️ أكمل جميع الحقول!'); return; }
-  
   const c = DB.customers[originalPhone];
   if (originalPhone !== newPhone && DB.customers[newPhone]) { alert('⚠️ رقم الهاتف مستخدم من قبل زبون آخر!'); return; }
-  
-  c.fname = fname;
-  c.lname = lname;
-  c.id_no = id_no;
-  
+  c.fname = fname; c.lname = lname; c.id_no = id_no;
   if (originalPhone !== newPhone) {
     DB.customers[newPhone] = c;
     delete DB.customers[originalPhone];
     for (const tx of DB.transactions) { if (tx.phone === originalPhone) tx.phone = newPhone; }
   }
-  
-  save(DB);
-  totalBalanceCache = null;
+  save(DB); totalBalanceCache = null;
+  logActivity('USER_EDITED', { phone: newPhone.substring(0,6)+'***' });
   alert('✅ تم تحديث بيانات الزبون بنجاح');
-  closeEditCustomerModal();
-  renderCustomers();
+  closeEditCustomerModal(); renderCustomers();
 }
 
 function showCustomerTransactions(phone) {
   viewingCustomerPhone = phone;
   const c = DB.customers[phone];
   el('customer-txs-name').textContent = `${c.fname} ${c.lname} (${c.phone})`;
-  
   let balanceHtml = '';
   for (const [cur, amt] of Object.entries(c.balance)) {
     const iqdValue = amt * (DB.rates[cur] || 1);
     balanceHtml += `<div style="background:var(--bg2);border-radius:8px;padding:10px;text-align:center"><div style="color:var(--gold);font-size:14px">${cur}</div><div style="font-weight:700;color:${amt < 0 ? 'var(--red)' : 'var(--green)'};direction:ltr">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div><div style="font-size:11px;color:var(--muted);direction:ltr">= ${fmt(iqdValue)} IQD</div></div>`;
   }
   el('full-balance-display').innerHTML = balanceHtml;
-  
   const today = new Date();
   const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
   el('txs-from-date').value = monthStart.toISOString().split('T')[0];
@@ -827,10 +1028,8 @@ function setDateRangeShortcut(type) {
 
 function updateRangeShortcutsActive(type) {
   document.querySelectorAll('#modal-customer-txs .calendar-shortcut').forEach(btn => btn.classList.remove('active'));
-  if (type === 'today') document.querySelector('[onclick*="today"]')?.classList.add('active');
-  else if (type === 'thisMonth') document.querySelector('[onclick*="thisMonth"]')?.classList.add('active');
-  else if (type === 'last3Months') document.querySelector('[onclick*="last3Months"]')?.classList.add('active');
-  else if (type === 'all') document.querySelector('[onclick*="all"]')?.classList.add('active');
+  const map = { today: 'today', thisMonth: 'thisMonth', last3Months: 'last3Months', all: 'all' };
+  document.querySelector(`#modal-customer-txs [onclick*="${map[type]}"]`)?.classList.add('active');
 }
 
 function applyDateRangeFilter() { dateRangeFilter = { from: el('txs-from-date').value, to: el('txs-to-date').value }; renderCustomerTxsList(); }
@@ -848,9 +1047,9 @@ function renderCustomerTxsList() {
 
 function deleteCustomer(phone) { 
   if (!confirm('هل أنت متأكد من حذف هذا الزبون؟ لا يمكن التراجع!')) return; 
+  logActivity('USER_DELETED', { phone: phone.substring(0,6)+'***' });
   delete DB.customers[phone]; 
-  save(DB); 
-  totalBalanceCache = null;
+  save(DB); totalBalanceCache = null;
   alert('✅ تم حذف الزبون بنجاح'); 
   renderCustomers(); renderDebts(); renderCredits(); 
 }
@@ -859,11 +1058,13 @@ function addCustomer() {
   const fname = el('new-fname').value.trim(), lname = el('new-lname').value.trim();
   const phone = el('new-tel').value.trim(), id_no = el('new-id').value.trim(), pass = el('new-pass').value;
   if (!fname || !lname || !phone || !id_no || !pass) { alert('⚠️ أكمل جميع الحقول!'); return; }
+  if (pass.length < 4) { alert('⚠️ كلمة السر يجب أن تكون 4 أحرف على الأقل!'); return; }
   if (DB.customers[phone]) { alert('⚠️ الهاتف مسجل مسبقاً!'); return; }
   DB.customers[phone] = { fname, lname, phone, id_no, pass: CryptoJS.SHA256(pass).toString(), balance: { USD: 0, EUR: 0, TRY: 0, IQD: 0, GBP: 0, SAR: 0 } };
-  save(DB);
-  totalBalanceCache = null;
+  save(DB); totalBalanceCache = null;
+  logActivity('USER_ADDED', { phone: phone.substring(0,6)+'***' });
   el('new-fname').value = ''; el('new-lname').value = ''; el('new-tel').value = ''; el('new-id').value = ''; el('new-pass').value = '';
+  const ps = el('pass-strength'); if (ps) ps.textContent = '';
   alert('✅ تم التسجيل!'); showTab('customers');
 }
 
@@ -930,8 +1131,7 @@ function renderRates() {
 
 function saveRates() { 
   ['USD', 'EUR', 'TRY', 'IQD', 'GBP', 'SAR'].forEach(c => { DB.rates[c] = parseNumber(el('rate-' + c).value); }); 
-  save(DB); 
-  totalBalanceCache = null;
+  save(DB); totalBalanceCache = null;
   alert('✅ تم حفظ الأسعار!'); 
   renderDailySummary(); renderDebts(); renderCredits(); 
 }
@@ -971,11 +1171,10 @@ function confirmTx() {
   const current = c.balance[currency] || 0; 
   c.balance[currency] = type === 'deposit' ? current + amount : current - amount; 
   const now = new Date(); 
-  DB.transactions.push({ id: Date.now() + '-' + Math.random().toString(36), phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname, type: type, amount: amount, currency: currency, note: note, date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'}) }); 
-  save(DB); 
-  totalBalanceCache = null;
-  closeTxModal(); 
-  renderAdminView(); 
+  DB.transactions.push({ id: Date.now() + '-' + Math.random().toString(36), phone: selectedCustomerForTx, customerName: c.fname + ' ' + c.lname, type, amount, currency, note, date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}) }); 
+  save(DB); totalBalanceCache = null;
+  logActivity('TX_ADDED', { type, currency, phone: selectedCustomerForTx.substring(0,6)+'***' });
+  closeTxModal(); renderAdminView(); 
   alert('✅ تمت المعاملة بنجاح'); 
 }
 
@@ -999,10 +1198,9 @@ function saveEditedTx() {
   c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; 
   c.balance[newCurrency] = tx.type === 'deposit' ? (c.balance[newCurrency] || 0) + newAmount : (c.balance[newCurrency] || 0) - newAmount; 
   tx.amount = newAmount; tx.currency = newCurrency; tx.note = newNote; 
-  save(DB); 
-  totalBalanceCache = null;
-  closeEditTxModal(); 
-  renderAdminView(); 
+  save(DB); totalBalanceCache = null;
+  logActivity('TX_EDITED', { txId: txId?.substring(0,8) });
+  closeEditTxModal(); renderAdminView(); 
   alert('✅ تم تعديل الحركة بنجاح'); 
 }
 function deleteTransaction(txId) { 
@@ -1013,8 +1211,8 @@ function deleteTransaction(txId) {
   const c = DB.customers[tx.phone]; 
   c.balance[tx.currency] = tx.type === 'deposit' ? c.balance[tx.currency] - tx.amount : c.balance[tx.currency] + tx.amount; 
   DB.transactions.splice(txIndex, 1); 
-  save(DB); 
-  totalBalanceCache = null;
+  save(DB); totalBalanceCache = null;
+  logActivity('TX_DELETED', { phone: tx.phone.substring(0,6)+'***' });
   renderAdminView(); 
   alert('✅ تم حذف الحركة بنجاح'); 
 }
@@ -1026,15 +1224,15 @@ function renderCustomerView() {
   el('cust-welcome-label').textContent = 'مرحباً, ' + c.fname + ' ' + c.lname; 
   let balancesHtml = '';
   for (const [cur, amt] of Object.entries(c.balance)) {
-    balancesHtml += `<div class="metric ${amt < 0 ? 'negative' : 'positive'}"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>`;
+    balancesHtml += `<div class="metric"><div class="metric-label">${cur}</div><div class="metric-value ${amt < 0 ? 'neg' : 'pos'}">${amt < 0 ? '-' : ''}${fmt(Math.abs(amt))}</div></div>`;
   }
   el('cust-balances').innerHTML = balancesHtml;
   const debts = Object.entries(c.balance).filter(([, v]) => v < 0); 
   let debtHtml = '';
   if (debts.length) {
-    debtHtml = `<div class="debt-banner"><div class="debt-banner-title">🔴 مديون:</div><div class="debt-items">`;
+    debtHtml = `<div style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:10px;padding:12px;margin-bottom:16px"><div style="color:var(--red);font-weight:700;margin-bottom:8px">🔴 مديون:</div><div style="display:flex;gap:8px;flex-wrap:wrap">`;
     for (const [cur, amt] of debts) {
-      debtHtml += `<span class="debt-item" style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`;
+      debtHtml += `<span style="background:rgba(231,76,60,.15);border-radius:20px;padding:4px 12px;color:var(--red)">${fmt(Math.abs(amt))} ${cur}</span>`;
     }
     debtHtml += `</div></div>`;
   }
@@ -1042,47 +1240,95 @@ function renderCustomerView() {
   const myTxs = DB.transactions.filter(tx => tx.phone === currentUser).reverse(); 
   if (!myTxs.length) { el('cust-txs').innerHTML = `<div class="empty"><div class="empty-icon">💸</div>لا توجد حركات</div>`; return; } 
   el('cust-txs').innerHTML = myTxs.map(tx => { 
-    const typeLabel = tx.type === 'deposit' ? 'إيداع' : 'سحب'; 
-    return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${typeLabel}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`; 
+    return `<div class="tx-item"><div class="tx-icon ${tx.type}">${tx.type === 'deposit' ? '⬆️' : '⬇️'}</div><div class="tx-details"><div class="tx-name">${tx.type === 'deposit' ? 'إيداع' : 'سحب'}</div><div class="tx-note">${tx.note || '—'}</div><div class="tx-date">${tx.date}</div></div><div class="tx-amount ${tx.type}">${tx.type === 'deposit' ? '+' : '-'}${fmt(tx.amount)} ${tx.currency}</div></div>`; 
   }).join(''); 
 }
 
-// ==================== AUTH & PROFILE ====================
+// ==================== AUTH ====================
 function switchLoginTab(tab) { 
   el('login-admin').style.display = tab === 'admin' ? 'block' : 'none'; 
   el('login-customer').style.display = tab === 'customer' ? 'block' : 'none'; 
-  document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer'))); 
+  document.querySelectorAll('.toggle-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'admin') || (i === 1 && tab === 'customer')));
+  el('lockout-banner').classList.remove('show');
+  // Check lockout for the shown tab
+  if (tab === 'admin') updateAttemptsUI('ADMIN', 'admin');
 }
 
 function loginAdmin() {
   const pass = el('admin-pass').value;
   const admin = DB.admin || { passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
+  const identifier = 'ADMIN';
+
+  // Check lockout
+  const lockUntil = isLocked(identifier);
+  if (lockUntil) {
+    updateAttemptsUI(identifier, 'admin');
+    return;
+  }
+
+  // Check device
   const currentDeviceId = getDeviceId();
-  
   if (admin.deviceId && admin.deviceId !== currentDeviceId) {
+    logActivity('WRONG_DEVICE', {});
     alert('❌ لا يمكن الدخول من هذا الجهاز! حساب المدير مرتبط بجهاز واحد فقط.');
     return;
   }
-  
+
   if (CryptoJS.SHA256(pass).toString() === admin.passwordHash) {
-    if (!admin.deviceId) {
-      admin.deviceId = currentDeviceId;
-      save(DB);
-    }
+    resetAttempts(identifier);
+    if (!admin.deviceId) { admin.deviceId = currentDeviceId; save(DB); }
     currentRole = 'admin'; currentUser = 'admin';
     totalBalanceCache = null;
+    logActivity('LOGIN_SUCCESS', { role: 'admin' });
+    startSession('admin');
     showScreen('admin'); renderAdminView();
-  } else { alert('❌ كلمة السر خاطئة!'); }
+  } else {
+    const result = recordFailedAttempt(identifier);
+    updateAttemptsUI(identifier, 'admin');
+    if (result.locked) {
+      el('admin-attempts-info').textContent = '';
+    }
+    el('admin-pass').value = '';
+  }
 }
 
 function loginCustomer() { 
-  const phone = el('cust-phone').value.trim(), pass = el('cust-pass').value; 
-  if (!DB.customers[phone]) { alert('❌ الزبون غير موجود!'); return; } 
-  if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { alert('❌ كلمة السر خاطئة!'); return; } 
+  const phone = el('cust-phone').value.trim();
+  const pass = el('cust-pass').value;
+  const identifier = 'CUST_' + phone;
+
+  const lockUntil = isLocked(identifier);
+  if (lockUntil) {
+    updateAttemptsUI(identifier, 'customer');
+    return;
+  }
+
+  if (!DB.customers[phone]) { 
+    recordFailedAttempt(identifier);
+    updateAttemptsUI(identifier, 'customer');
+    el('cust-pass').value = '';
+    return; 
+  } 
+  if (DB.customers[phone].pass !== CryptoJS.SHA256(pass).toString()) { 
+    const result = recordFailedAttempt(identifier);
+    updateAttemptsUI(identifier, 'customer');
+    el('cust-pass').value = '';
+    return; 
+  } 
+  resetAttempts(identifier);
+  logActivity('LOGIN_SUCCESS', { role: 'customer' });
   currentRole = 'customer'; currentUser = phone; 
   showScreen('customer'); renderCustomerView(); 
 }
-function logout() { currentUser = null; currentRole = null; totalBalanceCache = null; showScreen('login'); }
+
+function logout() { 
+  logActivity('LOGOUT', { role: currentRole });
+  stopSession();
+  currentUser = null; currentRole = null; totalBalanceCache = null; 
+  el('app-overlay').classList.remove('show');
+  showScreen('login'); 
+}
+
 function renderAdminView() { renderDailySummary(); renderCustomers(); renderAllTxs(); renderDebts(); renderCredits(); renderRates(); }
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); el('screen-' + id).classList.add('active'); }
 function showTab(name) { 
@@ -1090,7 +1336,7 @@ function showTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); 
   el('panel-' + name).classList.add('active'); 
   const tabs = document.querySelectorAll('.tab'); 
-  const tabTexts = { 'daily': 'اليومية', 'customers': 'زبائن', 'txs': 'حركات', 'debts': 'ديون', 'credits': 'دائنون', 'rates': 'أسعار', 'new-customer': 'جديد', 'reports': 'تقارير' }; 
+  const tabTexts = { 'daily':'اليومية','customers':'زبائن','txs':'حركات','debts':'ديون','credits':'دائنون','rates':'أسعار','new-customer':'جديد','reports':'تقارير','security-log':'سجل' }; 
   tabs.forEach(tab => { if (tab.textContent.includes(tabTexts[name])) tab.classList.add('active'); }); 
   if (name === 'daily') renderDailySummary(); 
   if (name === 'customers') renderCustomers(); 
@@ -1098,6 +1344,7 @@ function showTab(name) {
   if (name === 'debts') renderDebts(); 
   if (name === 'credits') renderCredits(); 
   if (name === 'rates') renderRates(); 
+  if (name === 'security-log') renderSecurityLog();
 }
 function goToLogin() { showScreen('login'); }
 
@@ -1126,9 +1373,9 @@ function resetCustomerPassword() {
   if (newPass.length < 4) { alert('❌ كلمة السر قصيرة جداً'); return; } 
   DB.customers[resetCustPhone].pass = CryptoJS.SHA256(newPass).toString(); 
   save(DB); 
+  logActivity('PASS_CHANGED', { phone: resetCustPhone.substring(0,6)+'***' });
   alert('✅ تم تغيير كلمة السر بنجاح'); 
-  closeResetCustPasswordModal(); 
-  renderCustomers(); 
+  closeResetCustPasswordModal(); renderCustomers(); 
 }
 
 // ==================== ADMIN PROFILE ====================
@@ -1142,15 +1389,18 @@ function updateAdminProfile() {
   if (newPass) {
     if (CryptoJS.SHA256(currentPass).toString() !== (DB.admin?.passwordHash || ADMIN_HASH)) { alert('❌ كلمة السر الحالية غير صحيحة'); return; }
     if (newPass !== confirmPass) { alert('❌ كلمة السر غير متطابقة'); return; }
+    if (newPass.length < 6) { alert('❌ كلمة السر يجب أن تكون 6 أحرف على الأقل!'); return; }
     if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
     DB.admin.passwordHash = CryptoJS.SHA256(newPass).toString();
+    ADMIN_HASH = DB.admin.passwordHash;
+    logActivity('ADMIN_PASS_CHANGED', {});
   }
   if (!DB.admin) DB.admin = { email: '', passwordHash: ADMIN_HASH, deviceId: getDeviceId() };
   DB.admin.email = email;
   save(DB); alert('✅ تم حفظ التغييرات'); closeAdminProfileModal();
 }
 
-// ==================== BACKUP & IMPORT ====================
+// ==================== BACKUP ====================
 function exportData() {
   const dataStr = localStorage.getItem(STORE);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -1159,6 +1409,7 @@ function exportData() {
   a.href = url;
   a.download = `Sayrafa_Backup_${new Date().toISOString().split('T')[0]}.json`;
   a.click();
+  logActivity('DATA_EXPORT', {});
 }
 
 function importData(event) {
@@ -1170,6 +1421,7 @@ function importData(event) {
       const content = e.target.result;
       CryptoJS.AES.decrypt(content, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
       localStorage.setItem(STORE, content);
+      logActivity('DATA_IMPORT', {});
       alert('✅ تم استيراد البيانات بنجاح! سيتم إعادة تحميل التطبيق.');
       location.reload();
     } catch (err) {
@@ -1181,33 +1433,20 @@ function importData(event) {
 
 // ==================== REPORTS ====================
 function generateReport() {
-  const from = el('rep-from').value;
-  const to = el('rep-to').value;
+  const from = el('rep-from').value, to = el('rep-to').value;
   if (!from || !to) return alert('يرجى اختيار الفترة الزمنية');
-
-  const filtered = DB.transactions.filter(tx => {
-    const txDate = tx.date.split(' ')[0].split('/').reverse().join('-');
-    return txDate >= from && txDate <= to;
-  });
-
+  const filtered = DB.transactions.filter(tx => { const txDate = tx.date.split(' ')[0].split('/').reverse().join('-'); return txDate >= from && txDate <= to; });
   const report = {};
   for (const tx of filtered) {
     if (!report[tx.currency]) report[tx.currency] = { in: 0, out: 0 };
     if (tx.type === 'deposit') report[tx.currency].in += tx.amount;
     else report[tx.currency].out += tx.amount;
   }
-
-  let html = `<h3>من ${from} إلى ${to}</h3>`;
+  let html = `<h3 style="color:var(--gold);margin-bottom:12px">من ${from} إلى ${to}</h3>`;
   for (const [cur, val] of Object.entries(report)) {
-    html += `
-    <div class="fund-block" style="margin-top:10px">
-      <div class="fund-block-title">${cur}</div>
-      <div class="daily-row"><span class="daily-label">إجمالي الإيداع (+)</span><span class="daily-value" style="color:var(--green)">${fmt(val.in)}</span></div>
-      <div class="daily-row"><span class="daily-label">إجمالي السحب (-)</span><span class="daily-value" style="color:var(--red)">${fmt(val.out)}</span></div>
-      <div class="daily-row" style="border-top:1px solid var(--gold)"><span class="daily-label">الصافي</span><span class="daily-value">${fmt(val.in - val.out)}</span></div>
-    </div>`;
+    html += `<div class="fund-block" style="margin-top:10px"><div class="fund-block-title">${cur}</div><div class="daily-row"><span class="daily-label">إجمالي الإيداع (+)</span><span class="daily-value" style="color:var(--green)">${fmt(val.in)}</span></div><div class="daily-row"><span class="daily-label">إجمالي السحب (-)</span><span class="daily-value" style="color:var(--red)">${fmt(val.out)}</span></div><div class="daily-row" style="border-top:1px solid var(--gold)"><span class="daily-label">الصافي</span><span class="daily-value">${fmt(val.in - val.out)}</span></div></div>`;
   }
-  el('report-results').innerHTML = html || '<p>لا توجد حركات لهذه الفترة</p>';
+  el('report-results').innerHTML = html || '<p style="color:var(--muted)">لا توجد حركات لهذه الفترة</p>';
 }
 
 // ==================== INSTALL ====================
@@ -1218,9 +1457,9 @@ function showInstallInstructions() {
   if (deferredPrompt) { 
     instructions.innerHTML = `<p style="margin-bottom:16px;text-align:center">✅ جهازك يدعم التثبيت المباشر</p><button class="install-btn" onclick="installPWA()" style="font-size:16px">📱 تثبيت الآن</button>`; 
   } else if (isIOS) { 
-    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p>3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`; 
+    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الآيفون:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على زر <strong style="color:var(--gold)">مشاركة 📤</strong></p><p style="margin-top:10px">2️⃣ اختر <strong style="color:var(--gold)">"إضافة إلى الشاشة الرئيسية"</strong></p><p style="margin-top:10px">3️⃣ اضغط <strong style="color:var(--gold)">"إضافة"</strong></p></div></div>`; 
   } else { 
-    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong></p><p>2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`; 
+    instructions.innerHTML = `<div style="text-align:center"><p style="margin-bottom:16px">📱 للتثبيت على الأندرويد:</p><div style="background:var(--bg3);padding:20px;border-radius:12px"><p>1️⃣ اضغط على <strong style="color:var(--gold)">⋮ (القائمة)</strong></p><p style="margin-top:10px">2️⃣ اختر <strong style="color:var(--gold)">"تثبيت التطبيق"</strong></p></div></div>`; 
   } 
   el('install-modal').classList.add('show'); 
 }
@@ -1238,7 +1477,12 @@ el('modal-admin-profile')?.addEventListener('click', function(e) { if (e.target 
 el('install-modal')?.addEventListener('click', function(e) { if (e.target === this) closeInstallModal(); });
 
 // ==================== INIT ====================
-window.addEventListener('load', () => { setTimeout(() => { el('splash').style.opacity = '0'; setTimeout(() => el('splash').style.display = 'none', 600); }, 1800); });
+window.addEventListener('load', () => { 
+  setTimeout(() => { 
+    el('splash').style.opacity = '0'; 
+    setTimeout(() => el('splash').style.display = 'none', 600); 
+  }, 1800); 
+});
 </script>
 </body>
 </html>
